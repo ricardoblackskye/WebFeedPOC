@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import ProductList from './components/ProductList'
 import Cart from './components/Cart'
 import ProductModal from './components/ProductModal'
+import CategoryFilter from './components/CategoryFilter'
 import { useWixProducts } from './hooks/useWixProducts'
 import './App.css'
 
@@ -9,6 +10,32 @@ function App() {
   const { products, loading, error } = useWixProducts()
   const [cart, setCart] = useState([])
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState('All')
+
+  // Extract unique categories from products
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(products.map(p => p.category).filter(Boolean))]
+    return uniqueCategories.sort()
+  }, [products])
+
+  // Get product counts per category
+  const productCounts = useMemo(() => {
+    const counts = { 'All': products.length }
+    products.forEach(product => {
+      if (product.category) {
+        counts[product.category] = (counts[product.category] || 0) + 1
+      }
+    })
+    return counts
+  }, [products])
+
+  // Filter products by selected category
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'All') {
+      return products
+    }
+    return products.filter(p => p.category === selectedCategory)
+  }, [products, selectedCategory])
 
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id)
@@ -49,6 +76,10 @@ function App() {
     setSelectedProduct(null)
   }
 
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category)
+  }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -58,15 +89,31 @@ function App() {
 
       <main className="app-main">
         <section className="products-section">
-          <h2>Available Items</h2>
+          {!loading && categories.length > 0 && (
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
+              productCounts={productCounts}
+            />
+          )}
+
+          <h2>
+            {selectedCategory === 'All' ? 'All Items' : selectedCategory}
+            <span className="product-count"> ({filteredProducts.length})</span>
+          </h2>
+          
           {loading && <div className="loading">Loading products...</div>}
           {error && <div className="error">Using demo products (Wix not configured)</div>}
-          {!loading && products.length > 0 && (
+          {!loading && filteredProducts.length > 0 && (
             <ProductList 
-              products={products} 
+              products={filteredProducts} 
               onAddToCart={addToCart}
               onProductClick={handleProductClick}
             />
+          )}
+          {!loading && filteredProducts.length === 0 && products.length > 0 && (
+            <div className="error">No products found in this category</div>
           )}
           {!loading && products.length === 0 && (
             <div className="error">No products available</div>

@@ -43,6 +43,7 @@ function getMockProducts() {
       era: 'Victorian (1890s)',
       dimensions: '2" diameter, 0.5" thick',
       material: '18k Gold-plated brass',
+      category: 'Timepieces',
     },
     {
       id: '2',
@@ -55,6 +56,7 @@ function getMockProducts() {
       era: 'Republic Period (1920s)',
       dimensions: '14" H x 6" diameter',
       material: 'Hand-painted porcelain',
+      category: 'Ceramics & Pottery',
     },
     {
       id: '3',
@@ -67,6 +69,7 @@ function getMockProducts() {
       era: 'Art Deco (1930s)',
       dimensions: '32" diameter',
       material: 'Gilt wood, beveled glass',
+      category: 'Decorative Arts',
     },
     {
       id: '4',
@@ -79,6 +82,7 @@ function getMockProducts() {
       era: 'Edwardian (1910)',
       dimensions: '48"W x 28"D x 30"H',
       material: 'Solid oak, leather inlay, brass hardware',
+      category: 'Furniture',
     },
     {
       id: '5',
@@ -91,6 +95,7 @@ function getMockProducts() {
       era: 'Victorian (1895)',
       dimensions: 'Teapot: 10" H, Set includes 4 pieces',
       material: 'Sterling silver (84 oz total weight)',
+      category: 'Silver & Metalware',
     },
     {
       id: '6',
@@ -103,6 +108,7 @@ function getMockProducts() {
       era: 'Mid-Century (1960s)',
       dimensions: '12" globe diameter, 16" total height',
       material: 'Paper map, turned wood stand',
+      category: 'Decorative Arts',
     },
     {
       id: '7',
@@ -115,6 +121,7 @@ function getMockProducts() {
       era: 'Art Nouveau Revival (1920s)',
       dimensions: '24" H x 16" shade diameter',
       material: 'Stained glass, bronze base',
+      category: 'Lighting',
     },
     {
       id: '8',
@@ -127,6 +134,7 @@ function getMockProducts() {
       era: 'Napoleon III (1880s)',
       dimensions: '16" H x 12" W x 6" D',
       material: 'Gilt bronze (ormolu), porcelain dial',
+      category: 'Timepieces',
     },
     {
       id: '9',
@@ -139,6 +147,7 @@ function getMockProducts() {
       era: 'Early 20th Century',
       dimensions: '9\' x 12\' (108" x 144")',
       material: 'Hand-knotted wool on cotton',
+      category: 'Textiles & Rugs',
     },
     {
       id: '10',
@@ -151,6 +160,7 @@ function getMockProducts() {
       era: 'Austrian Empire (1920s)',
       dimensions: '28" diameter x 32" H',
       material: 'Hand-cut crystal, brass frame',
+      category: 'Lighting',
     },
     {
       id: '11',
@@ -163,6 +173,7 @@ function getMockProducts() {
       era: 'Victorian Nautical (1880s)',
       dimensions: '58" extended, 24" collapsed',
       material: 'Solid brass, mahogany tripod, leather',
+      category: 'Scientific Instruments',
     },
     {
       id: '12',
@@ -175,6 +186,7 @@ function getMockProducts() {
       era: 'Colonial Revival (1920s)',
       dimensions: '39" H x 22" W x 20" D',
       material: 'Mahogany, needlepoint upholstery',
+      category: 'Furniture',
     },
     {
       id: '13',
@@ -187,6 +199,7 @@ function getMockProducts() {
       era: 'Art Nouveau (1905)',
       dimensions: '18" H including base',
       material: 'Cast bronze, green marble base',
+      category: 'Sculpture & Statuary',
     },
     {
       id: '14',
@@ -199,6 +212,7 @@ function getMockProducts() {
       era: 'Early 20th Century (1920s)',
       dimensions: '36"W x 20"D x 22"H',
       material: 'Canvas over wood, brass hardware',
+      category: 'Furniture',
     },
     {
       id: '15',
@@ -211,6 +225,7 @@ function getMockProducts() {
       era: 'Meiji Period (1890s)',
       dimensions: '72" H x 64" W (four 16" panels)',
       material: 'Hand-painted silk on paper, lacquered wood frame',
+      category: 'Decorative Arts',
     },
   ]
 }

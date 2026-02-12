@@ -4,6 +4,8 @@ const WIX_SITE_ID = import.meta.env.VITE_WIX_SITE_ID
 /**
  * Fetches products from Wix.com using their API
  * Documentation: https://dev.wix.com/api/rest/wix-stores/catalog/products
+ * 
+ * Wix products support collections (categories) via the productType and collections fields
  */
 export async function fetchWixProducts() {
   if (!WIX_API_KEY || !WIX_SITE_ID) {
@@ -45,6 +47,8 @@ export async function fetchWixProducts() {
       description: product.description,
       price: product.price.price,
       image: product.media?.mainMedia?.image?.url || null,
+      category: product.productType || 'Uncategorized',
+      collections: product.collections || [],
     }))
   } catch (error) {
     console.error('Failed to fetch Wix products:', error)
@@ -83,6 +87,8 @@ export async function fetchWixProduct(productId) {
       description: product.description,
       price: product.price.price,
       image: product.media?.mainMedia?.image?.url || null,
+      category: product.productType || 'Uncategorized',
+      collections: product.collections || [],
     }
   } catch (error) {
     console.error('Failed to fetch Wix product:', error)

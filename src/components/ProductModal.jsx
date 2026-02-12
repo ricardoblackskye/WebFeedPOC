@@ -59,6 +59,12 @@ function ProductModal({ product, onClose, onAddToCart }) {
               <p>{product.description}</p>
             </div>
             
+            {product.category && (
+              <div className="modal-info">
+                <strong>Category:</strong> {product.category}
+              </div>
+            )}
+            
             {product.sku && (
               <div className="modal-info">
                 <strong>SKU:</strong> {product.sku}
