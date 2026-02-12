@@ -1,0 +1,56 @@
+.app {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.app-header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.app-header p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.app-main {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+}
+
+.products-section h2 {
+  margin-bottom: 1.5rem;
+}
+
+.loading,
+.error {
+  padding: 2rem;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.loading {
+  background-color: rgba(100, 108, 255, 0.1);
+}
+
+.error {
+  background-color: rgba(255, 100, 100, 0.1);
+  color: #ff6464;
+}
+
+@media (max-width: 968px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+  
+  .cart-section {
+    order: -1;
+  }
+}
