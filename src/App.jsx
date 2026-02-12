@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import ProductList from './components/ProductList'
 import Cart from './components/Cart'
+import ProductModal from './components/ProductModal'
 import { useWixProducts } from './hooks/useWixProducts'
 import './App.css'
 
 function App() {
   const { products, loading, error } = useWixProducts()
   const [cart, setCart] = useState([])
+  const [selectedProduct, setSelectedProduct] = useState(null)
 
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id)
@@ -39,6 +41,14 @@ function App() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
   }
 
+  const handleProductClick = (product) => {
+    setSelectedProduct(product)
+  }
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null)
+  }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -52,7 +62,11 @@ function App() {
           {loading && <div className="loading">Loading products...</div>}
           {error && <div className="error">Using demo products (Wix not configured)</div>}
           {!loading && products.length > 0 && (
-            <ProductList products={products} onAddToCart={addToCart} />
+            <ProductList 
+              products={products} 
+              onAddToCart={addToCart}
+              onProductClick={handleProductClick}
+            />
           )}
           {!loading && products.length === 0 && (
             <div className="error">No products available</div>
@@ -68,6 +82,14 @@ function App() {
           />
         </aside>
       </main>
+
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          onClose={handleCloseModal}
+          onAddToCart={addToCart}
+        />
+      )}
     </div>
   )
 }
