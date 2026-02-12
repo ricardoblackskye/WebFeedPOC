@@ -1,6 +1,3 @@
-const WIX_API_KEY = import.meta.env.VITE_WIX_API_KEY
-const WIX_SITE_ID = import.meta.env.VITE_WIX_SITE_ID
-
 /**
  * Fetches products from Wix.com using their API
  * Documentation: https://dev.wix.com/api/rest/wix-stores/catalog/products
@@ -8,6 +5,9 @@ const WIX_SITE_ID = import.meta.env.VITE_WIX_SITE_ID
  * Wix products support collections (categories) via the productType and collections fields
  */
 export async function fetchWixProducts() {
+  const WIX_API_KEY = import.meta.env.VITE_WIX_API_KEY
+  const WIX_SITE_ID = import.meta.env.VITE_WIX_SITE_ID
+  
   if (!WIX_API_KEY || !WIX_SITE_ID) {
     throw new Error('Wix API credentials not configured')
   }
@@ -60,6 +60,9 @@ export async function fetchWixProducts() {
  * Fetches a single product by ID from Wix
  */
 export async function fetchWixProduct(productId) {
+  const WIX_API_KEY = import.meta.env.VITE_WIX_API_KEY
+  const WIX_SITE_ID = import.meta.env.VITE_WIX_SITE_ID
+  
   if (!WIX_API_KEY || !WIX_SITE_ID) {
     throw new Error('Wix API credentials not configured')
   }

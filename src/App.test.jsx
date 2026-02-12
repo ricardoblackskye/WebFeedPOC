@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import App from '../App'
-import * as wixHook from '../hooks/useWixProducts'
+import App from './App'
+import * as wixHook from './hooks/useWixProducts'
 
 // Mock Stripe
 vi.mock('@stripe/stripe-js', () => ({
@@ -70,8 +70,10 @@ describe('App Integration Tests', () => {
     fireEvent.click(addButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Test Product')).toBeDefined()
-      expect(screen.getByText('£100.00')).toBeDefined()
+      // Check that the cart section contains the product
+      const cart = screen.getByText('Shopping Cart').closest('.cart')
+      expect(cart.textContent).toContain('Test Product')
+      expect(cart.textContent).toContain('£100.00')
     })
   })
 
@@ -195,7 +197,9 @@ describe('App Integration Tests', () => {
     fireEvent.click(addButton)
 
     await waitFor(() => {
-      expect(screen.getByText('1')).toBeDefined()
+      const cart = screen.getByText('Shopping Cart').closest('.cart')
+      const quantityElement = cart.querySelector('.quantity')
+      expect(quantityElement.textContent).toBe('1')
     })
 
     // Increase quantity
@@ -203,7 +207,9 @@ describe('App Integration Tests', () => {
     fireEvent.click(plusButton)
 
     await waitFor(() => {
-      expect(screen.getByText('2')).toBeDefined()
+      const cart = screen.getByText('Shopping Cart').closest('.cart')
+      const quantityElement = cart.querySelector('.quantity')
+      expect(quantityElement.textContent).toBe('2')
     })
   })
 

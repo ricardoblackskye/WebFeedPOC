@@ -11,6 +11,10 @@ function Cart({ items, onUpdateQuantity, onRemoveItem, totalPrice }) {
       // TODO: Replace with actual Stripe checkout implementation
       const stripe = await stripePromise
       
+      if (!stripe) {
+        throw new Error('Stripe failed to load')
+      }
+      
       // Create checkout session on your backend
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',

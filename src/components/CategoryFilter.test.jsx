@@ -105,6 +105,6 @@ describe('CategoryFilter', () => {
       />
     )
 
-    expect(screen.getByText('All Items')).toBeDefined()
+    expect(screen.getByText(/All Items/i)).toBeDefined()
   })
 })
