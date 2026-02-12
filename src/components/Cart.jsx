@@ -55,7 +55,7 @@ function Cart({ items, onUpdateQuantity, onRemoveItem, totalPrice }) {
           <div key={item.id} className="cart-item">
             <div className="cart-item-info">
               <h4>{item.name}</h4>
-              <p className="cart-item-price">${item.price.toFixed(2)}</p>
+              <p className="cart-item-price">£{item.price.toFixed(2)}</p>
             </div>
             <div className="cart-item-controls">
               <div className="quantity-controls">
@@ -84,7 +84,7 @@ function Cart({ items, onUpdateQuantity, onRemoveItem, totalPrice }) {
         ))}
       </div>
       <div className="cart-total">
-        <h3>Total: ${totalPrice.toFixed(2)}</h3>
+        <h3>Total: £{totalPrice.toFixed(2)}</h3>
         <button onClick={handleCheckout} className="checkout-btn">
           Checkout with Stripe
         </button>

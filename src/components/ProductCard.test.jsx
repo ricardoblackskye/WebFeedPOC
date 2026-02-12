@@ -22,7 +22,7 @@ describe('ProductCard', () => {
     
     expect(screen.getByText('Test Product')).toBeDefined()
     expect(screen.getByText('Test Description')).toBeDefined()
-    expect(screen.getByText('$99.99')).toBeDefined()
+    expect(screen.getByText('£99.99')).toBeDefined()
   })
 
   it('calls onAddToCart when button is clicked', () => {

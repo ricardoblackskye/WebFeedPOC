@@ -51,7 +51,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
             <h2 className="modal-title">{product.name}</h2>
             
             <div className="modal-price">
-              ${product.price.toFixed(2)}
+              £{product.price.toFixed(2)}
             </div>
             
             <div className="modal-description">

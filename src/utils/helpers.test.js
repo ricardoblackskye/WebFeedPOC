@@ -3,9 +3,9 @@ import { formatPrice, isValidEmail, generateId } from '../utils/helpers'
 
 describe('formatPrice', () => {
   it('formats price correctly', () => {
-    expect(formatPrice(100)).toBe('$100.00')
-    expect(formatPrice(99.99)).toBe('$99.99')
-    expect(formatPrice(0)).toBe('$0.00')
+    expect(formatPrice(100)).toBe('£100.00')
+    expect(formatPrice(99.99)).toBe('£99.99')
+    expect(formatPrice(0)).toBe('£0.00')
   })
 })
 
