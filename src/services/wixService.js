@@ -1,5 +1,5 @@
 import { createClient, OAuthStrategy } from '@wix/sdk'
-import { products } from '@wix/stores'
+import { products, collections } from '@wix/stores'
 
 /**
  * Creates a Wix headless client using the official SDK
@@ -13,7 +13,7 @@ function createWixClient() {
   }
 
   return createClient({
-    modules: { products },
+    modules: { products, collections },
     auth: OAuthStrategy({ clientId }),
   })
 }
@@ -26,6 +26,13 @@ export async function fetchWixProducts() {
   const wixClient = createWixClient()
 
   try {
+    // First, fetch all collections to map IDs to names
+    const collectionsResult = await wixClient.collections.queryCollections().find()
+    const collectionMap = {}
+    collectionsResult.items.forEach(collection => {
+      collectionMap[collection._id] = collection.name
+    })
+
     let allItems = []
     let result = await wixClient.products.queryProducts().limit(100).find()
     allItems = allItems.concat(result.items)
@@ -36,17 +43,28 @@ export async function fetchWixProducts() {
     }
 
     // Transform Wix product data to our format
-    return allItems.map(product => ({
-      id: product._id,
-      name: product.name,
-      description: product.description || '',
-      price: product.price?.price || 0,
-      image: product.media?.mainMedia?.image?.url || null,
-      images: product.media?.items?.map(item => item.image?.url).filter(Boolean) || [],
-      category: product.productType || 'Uncategorized',
-      collections: product.collectionIds || [],
-      sku: product.sku || null,
-    }))
+    return allItems.map(product => {
+      // Use the first collection as the category, fallback to productType or Uncategorized
+      let category = 'Uncategorized'
+      if (product.collectionIds && product.collectionIds.length > 0) {
+        const firstCollectionId = product.collectionIds[0]
+        category = collectionMap[firstCollectionId] || category
+      } else if (product.productType) {
+        category = product.productType
+      }
+
+      return {
+        id: product._id,
+        name: product.name,
+        description: product.description || '',
+        price: product.price?.price || 0,
+        image: product.media?.mainMedia?.image?.url || null,
+        images: product.media?.items?.map(item => item.image?.url).filter(Boolean) || [],
+        category: category,
+        collections: product.collectionIds || [],
+        sku: product.sku || null,
+      }
+    })
   } catch (error) {
     console.error('Failed to fetch Wix products:', error)
     throw error
@@ -60,7 +78,23 @@ export async function fetchWixProduct(productId) {
   const wixClient = createWixClient()
 
   try {
+    // Fetch collections to map IDs to names
+    const collectionsResult = await wixClient.collections.queryCollections().find()
+    const collectionMap = {}
+    collectionsResult.items.forEach(collection => {
+      collectionMap[collection._id] = collection.name
+    })
+
     const product = await wixClient.products.getProduct(productId)
+
+    // Use the first collection as the category, fallback to productType or Uncategorized
+    let category = 'Uncategorized'
+    if (product.collectionIds && product.collectionIds.length > 0) {
+      const firstCollectionId = product.collectionIds[0]
+      category = collectionMap[firstCollectionId] || category
+    } else if (product.productType) {
+      category = product.productType
+    }
 
     return {
       id: product._id,
@@ -69,7 +103,7 @@ export async function fetchWixProduct(productId) {
       price: product.price?.price || 0,
       image: product.media?.mainMedia?.image?.url || null,
       images: product.media?.items?.map(item => item.image?.url).filter(Boolean) || [],
-      category: product.productType || 'Uncategorized',
+      category: category,
       collections: product.collectionIds || [],
       sku: product.sku || null,
     }

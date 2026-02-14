@@ -5,6 +5,7 @@ import { fetchWixProducts, fetchWixProduct } from '../services/wixService'
 const mockFind = vi.fn()
 const mockLimit = vi.fn(() => ({ find: mockFind }))
 const mockQueryProducts = vi.fn(() => ({ limit: mockLimit }))
+const mockQueryCollections = vi.fn()
 const mockGetProduct = vi.fn()
 
 vi.mock('@wix/sdk', () => ({
@@ -13,18 +14,33 @@ vi.mock('@wix/sdk', () => ({
       queryProducts: mockQueryProducts,
       getProduct: mockGetProduct,
     },
+    collections: {
+      queryCollections: mockQueryCollections,
+    },
   })),
   OAuthStrategy: vi.fn((config) => config),
 }))
 
 vi.mock('@wix/stores', () => ({
   products: {},
+  collections: {},
 }))
 
 describe('wixService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.stubEnv('VITE_WIX_CLIENT_ID', 'test-client-id')
+    
+    // Default mock for collections query
+    mockQueryCollections.mockReturnValue({
+      find: vi.fn().mockResolvedValue({
+        items: [
+          { _id: 'col1', name: 'Furniture' },
+          { _id: 'col2', name: 'Art' },
+          { _id: 'antiques', name: 'Antiques' },
+        ]
+      })
+    })
   })
 
   describe('fetchWixProducts', () => {
@@ -69,7 +85,7 @@ describe('wixService', () => {
         price: 100,
         image: 'https://example.com/image.jpg',
         images: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'],
-        category: 'Furniture',
+        category: 'Antiques',
         collections: ['antiques'],
         sku: 'SKU-001',
       })
@@ -106,12 +122,12 @@ describe('wixService', () => {
 
     it('paginates through all results', async () => {
       const page2 = {
-        items: [{ _id: '2', name: 'Product 2', description: '', price: { price: 200 }, media: null, productType: 'Art', collectionIds: [], sku: null }],
+        items: [{ _id: '2', name: 'Product 2', description: '', price: { price: 200 }, media: null, productType: 'Art', collectionIds: ['col2'], sku: null }],
         hasNext: () => false,
       }
 
       mockFind.mockResolvedValueOnce({
-        items: [{ _id: '1', name: 'Product 1', description: '', price: { price: 100 }, media: null, productType: 'Furniture', collectionIds: [], sku: null }],
+        items: [{ _id: '1', name: 'Product 1', description: '', price: { price: 100 }, media: null, productType: 'Furniture', collectionIds: ['col1'], sku: null }],
         hasNext: () => true,
         next: vi.fn().mockResolvedValueOnce(page2),
       })
@@ -120,7 +136,9 @@ describe('wixService', () => {
 
       expect(products).toHaveLength(2)
       expect(products[0].id).toBe('1')
+      expect(products[0].category).toBe('Furniture')
       expect(products[1].id).toBe('2')
+      expect(products[1].category).toBe('Art')
       expect(products[0].images).toEqual([])
       expect(products[1].images).toEqual([])
     })
