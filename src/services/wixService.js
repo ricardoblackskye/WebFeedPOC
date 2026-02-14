@@ -1,54 +1,42 @@
+import { createClient, OAuthStrategy } from '@wix/sdk'
+import { products } from '@wix/stores'
+
 /**
- * Fetches products from Wix.com using their API
- * Documentation: https://dev.wix.com/api/rest/wix-stores/catalog/products
- * 
- * Wix products support collections (categories) via the productType and collections fields
+ * Creates a Wix headless client using the official SDK
+ * Documentation: https://dev.wix.com/docs/sdk
  */
-export async function fetchWixProducts() {
-  const WIX_API_KEY = import.meta.env.VITE_WIX_API_KEY
-  const WIX_SITE_ID = import.meta.env.VITE_WIX_SITE_ID
-  
-  if (!WIX_API_KEY || !WIX_SITE_ID) {
+function createWixClient() {
+  const clientId = import.meta.env.VITE_WIX_CLIENT_ID
+
+  if (!clientId) {
     throw new Error('Wix API credentials not configured')
   }
 
+  return createClient({
+    modules: { products },
+    auth: OAuthStrategy({ clientId }),
+  })
+}
+
+/**
+ * Fetches products from Wix.com using the headless SDK
+ */
+export async function fetchWixProducts() {
+  const wixClient = createWixClient()
+
   try {
-    const response = await fetch(
-      `https://www.wixapis.com/stores/v1/products/query`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': WIX_API_KEY,
-          'wix-site-id': WIX_SITE_ID,
-        },
-        body: JSON.stringify({
-          query: {
-            filter: {},
-            paging: {
-              limit: 100,
-              offset: 0,
-            },
-          },
-        }),
-      }
-    )
+    const result = await wixClient.products.queryProducts().find()
 
-    if (!response.ok) {
-      throw new Error(`Wix API error: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    
     // Transform Wix product data to our format
-    return data.products.map(product => ({
-      id: product.id,
+    return result.items.map(product => ({
+      id: product._id,
       name: product.name,
-      description: product.description,
-      price: product.price.price,
+      description: product.description || '',
+      price: product.price?.price || 0,
       image: product.media?.mainMedia?.image?.url || null,
       category: product.productType || 'Uncategorized',
-      collections: product.collections || [],
+      collections: product.collectionIds || [],
+      sku: product.sku || null,
     }))
   } catch (error) {
     console.error('Failed to fetch Wix products:', error)
@@ -60,41 +48,24 @@ export async function fetchWixProducts() {
  * Fetches a single product by ID from Wix
  */
 export async function fetchWixProduct(productId) {
-  const WIX_API_KEY = import.meta.env.VITE_WIX_API_KEY
-  const WIX_SITE_ID = import.meta.env.VITE_WIX_SITE_ID
-  
-  if (!WIX_API_KEY || !WIX_SITE_ID) {
-    throw new Error('Wix API credentials not configured')
-  }
+  const wixClient = createWixClient()
 
   try {
-    const response = await fetch(
-      `https://www.wixapis.com/stores/v1/products/${productId}`,
-      {
-        headers: {
-          'Authorization': WIX_API_KEY,
-          'wix-site-id': WIX_SITE_ID,
-        },
-      }
-    )
+    const product = await wixClient.products.getProduct(productId)
 
-    if (!response.ok) {
-      throw new Error(`Wix API error: ${response.statusText}`)
-    }
-
-    const product = await response.json()
-    
     return {
-      id: product.id,
+      id: product._id,
       name: product.name,
-      description: product.description,
-      price: product.price.price,
+      description: product.description || '',
+      price: product.price?.price || 0,
       image: product.media?.mainMedia?.image?.url || null,
       category: product.productType || 'Uncategorized',
-      collections: product.collections || [],
+      collections: product.collectionIds || [],
+      sku: product.sku || null,
     }
   } catch (error) {
     console.error('Failed to fetch Wix product:', error)
     throw error
   }
 }
+

@@ -1,21 +1,34 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fetchWixProducts, fetchWixProduct } from '../services/wixService'
 
-// Mock fetch
-global.fetch = vi.fn()
+// Mock the Wix SDK modules
+const mockFind = vi.fn()
+const mockQueryProducts = vi.fn(() => ({ find: mockFind }))
+const mockGetProduct = vi.fn()
+
+vi.mock('@wix/sdk', () => ({
+  createClient: vi.fn(() => ({
+    products: {
+      queryProducts: mockQueryProducts,
+      getProduct: mockGetProduct,
+    },
+  })),
+  OAuthStrategy: vi.fn((config) => config),
+}))
+
+vi.mock('@wix/stores', () => ({
+  products: {},
+}))
 
 describe('wixService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Set mock environment variables
-    vi.stubEnv('VITE_WIX_API_KEY', 'test-api-key')
-    vi.stubEnv('VITE_WIX_SITE_ID', 'test-site-id')
+    vi.stubEnv('VITE_WIX_CLIENT_ID', 'test-client-id')
   })
 
   describe('fetchWixProducts', () => {
     it('throws error when API credentials not configured', async () => {
-      vi.stubEnv('VITE_WIX_API_KEY', '')
-      vi.stubEnv('VITE_WIX_SITE_ID', '')
+      vi.stubEnv('VITE_WIX_CLIENT_ID', '')
 
       await expect(fetchWixProducts()).rejects.toThrow(
         'Wix API credentials not configured'
@@ -23,23 +36,19 @@ describe('wixService', () => {
     })
 
     it('fetches products successfully', async () => {
-      const mockResponse = {
-        products: [
+      mockFind.mockResolvedValueOnce({
+        items: [
           {
-            id: '1',
+            _id: '1',
             name: 'Product 1',
             description: 'Description 1',
             price: { price: 100 },
             media: { mainMedia: { image: { url: 'https://example.com/image.jpg' } } },
             productType: 'Furniture',
-            collections: ['antiques'],
+            collectionIds: ['antiques'],
+            sku: 'SKU-001',
           },
         ],
-      }
-
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResponse,
       })
 
       const products = await fetchWixProducts()
@@ -53,26 +62,24 @@ describe('wixService', () => {
         image: 'https://example.com/image.jpg',
         category: 'Furniture',
         collections: ['antiques'],
+        sku: 'SKU-001',
       })
     })
 
     it('handles missing image gracefully', async () => {
-      const mockResponse = {
-        products: [
+      mockFind.mockResolvedValueOnce({
+        items: [
           {
-            id: '1',
+            _id: '1',
             name: 'Product 1',
             description: 'Description 1',
             price: { price: 100 },
             media: null,
             productType: 'Furniture',
+            collectionIds: [],
+            sku: null,
           },
         ],
-      }
-
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResponse,
       })
 
       const products = await fetchWixProducts()
@@ -80,31 +87,24 @@ describe('wixService', () => {
       expect(products[0].image).toBeNull()
     })
 
-    it('throws error on failed fetch', async () => {
-      global.fetch.mockResolvedValueOnce({
-        ok: false,
-        statusText: 'Not Found',
-      })
+    it('throws error on SDK failure', async () => {
+      mockFind.mockRejectedValueOnce(new Error('SDK error'))
 
-      await expect(fetchWixProducts()).rejects.toThrow('Wix API error: Not Found')
+      await expect(fetchWixProducts()).rejects.toThrow('SDK error')
     })
   })
 
   describe('fetchWixProduct', () => {
     it('fetches single product successfully', async () => {
-      const mockProduct = {
-        id: '1',
+      mockGetProduct.mockResolvedValueOnce({
+        _id: '1',
         name: 'Product 1',
         description: 'Description 1',
         price: { price: 100 },
         media: { mainMedia: { image: { url: 'https://example.com/image.jpg' } } },
         productType: 'Furniture',
-        collections: [],
-      }
-
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockProduct,
+        collectionIds: [],
+        sku: 'SKU-001',
       })
 
       const product = await fetchWixProduct('1')
@@ -117,11 +117,12 @@ describe('wixService', () => {
         image: 'https://example.com/image.jpg',
         category: 'Furniture',
         collections: [],
+        sku: 'SKU-001',
       })
     })
 
     it('throws error when API credentials not configured', async () => {
-      vi.stubEnv('VITE_WIX_API_KEY', '')
+      vi.stubEnv('VITE_WIX_CLIENT_ID', '')
 
       await expect(fetchWixProduct('1')).rejects.toThrow(
         'Wix API credentials not configured'
