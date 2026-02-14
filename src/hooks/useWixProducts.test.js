@@ -69,6 +69,7 @@ describe('useWixProducts', () => {
     const product = result.current.products[0]
     expect(product).toHaveProperty('id')
     expect(product).toHaveProperty('name')
+    expect(product).toHaveProperty('slug')
     expect(product).toHaveProperty('description')
     expect(product).toHaveProperty('price')
     expect(product).toHaveProperty('category')

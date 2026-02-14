@@ -73,7 +73,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
                         onClick={() => setSelectedImageIndex(index)}
                         aria-label={`View image ${index + 1}`}
                       >
-                        <img src={imageUrl} alt={`Thumbnail ${index + 1}`} />
+                        <img src={imageUrl} alt={`${product.name} - view ${index + 1}`} />
                       </button>
                     ))}
                   </div>

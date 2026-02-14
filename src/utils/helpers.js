@@ -42,6 +42,17 @@ export function stripHtml(html) {
 }
 
 /**
+ * Generates a URL-friendly slug from a string
+ */
+export function generateSlug(text) {
+  if (!text) return ''
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+/**
  * Truncates text to a specified number of words
  */
 export function truncateWords(text, maxWords = 50) {

@@ -1,23 +1,14 @@
-import { useState, useEffect, useMemo } from 'react'
-import ProductList from './components/ProductList'
+import { useState, useMemo } from 'react'
+import { Outlet, Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import Cart from './components/Cart'
-import ProductModal from './components/ProductModal'
-import CategoryFilter from './components/CategoryFilter'
-import SortControls from './components/SortControls'
-import Pagination from './components/Pagination'
 import { useWixProducts } from './hooks/useWixProducts'
+import { generateOrganizationSchema, generateWebSiteSchema, SITE_NAME } from './utils/structuredData'
 import './App.css'
-
-const PRODUCTS_PER_PAGE = 12
 
 function App() {
   const { products, loading, error } = useWixProducts()
   const [cart, setCart] = useState([])
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [selectedCategory, setSelectedCategory] = useState('All')
-  const [sortBy, setSortBy] = useState('name-asc')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
 
   // Extract unique categories from products
   const categories = useMemo(() => {
@@ -35,51 +26,6 @@ function App() {
     })
     return counts
   }, [products])
-
-  // Filter products by selected category and search term
-  const filteredProducts = useMemo(() => {
-    let result = products
-    if (selectedCategory !== 'All') {
-      result = result.filter(p => p.category === selectedCategory)
-    }
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase()
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(term) ||
-        (p.description && p.description.toLowerCase().includes(term))
-      )
-    }
-    return result
-  }, [products, selectedCategory, searchTerm])
-
-  // Sort filtered products
-  const sortedProducts = useMemo(() => {
-    const sorted = [...filteredProducts]
-    switch (sortBy) {
-      case 'name-asc':
-        return sorted.sort((a, b) => a.name.localeCompare(b.name))
-      case 'name-desc':
-        return sorted.sort((a, b) => b.name.localeCompare(a.name))
-      case 'price-asc':
-        return sorted.sort((a, b) => a.price - b.price)
-      case 'price-desc':
-        return sorted.sort((a, b) => b.price - a.price)
-      default:
-        return sorted
-    }
-  }, [filteredProducts, sortBy])
-
-  // Paginate sorted products
-  const totalPages = Math.ceil(sortedProducts.length / PRODUCTS_PER_PAGE)
-  const paginatedProducts = useMemo(() => {
-    const start = (currentPage - 1) * PRODUCTS_PER_PAGE
-    return sortedProducts.slice(start, start + PRODUCTS_PER_PAGE)
-  }, [sortedProducts, currentPage])
-
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [selectedCategory, searchTerm, sortBy])
 
   const addToCart = (product) => {
     const existing = cart.find(item => item.id === product.id)
@@ -112,85 +58,37 @@ function App() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
   }
 
-  const handleProductClick = (product) => {
-    setSelectedProduct(product)
-  }
-
-  const handleCloseModal = () => {
-    setSelectedProduct(null)
-  }
-
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category)
-  }
-
-  const handleSortChange = (value) => {
-    setSortBy(value)
-  }
-
-  const handleSearchChange = (value) => {
-    setSearchTerm(value)
-  }
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+  const orgSchema = generateOrganizationSchema()
+  const webSiteSchema = generateWebSiteSchema()
 
   return (
     <div className="app">
+      <Helmet>
+        <title>{SITE_NAME} — Discover Unique Antiques &amp; Vintage Treasures</title>
+        <meta name="description" content="Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more. Free delivery on selected items." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="/" />
+        <meta property="og:site_name" content={SITE_NAME} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${SITE_NAME} — Discover Unique Antiques & Vintage Treasures`} />
+        <meta property="og:description" content="Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more." />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={SITE_NAME} />
+        <meta name="twitter:description" content="Discover unique antiques and vintage treasures." />
+        <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(webSiteSchema)}</script>
+      </Helmet>
+
       <header className="app-header">
-        <h1>Antiques Marketplace</h1>
-        <p>Discover unique treasures from the past</p>
+        <Link to="/" className="app-header-link">
+          <h1>Antiques Marketplace</h1>
+          <p>Discover unique treasures from the past</p>
+        </Link>
       </header>
 
       <main className="app-main">
         <section className="products-section">
-          {!loading && categories.length > 0 && (
-            <CategoryFilter
-              categories={categories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={handleCategoryChange}
-              productCounts={productCounts}
-            />
-          )}
-
-          <h2>
-            {selectedCategory === 'All' ? 'All Items' : selectedCategory}
-            <span className="product-count"> ({filteredProducts.length})</span>
-          </h2>
-
-          {!loading && products.length > 0 && (
-            <SortControls
-              sortBy={sortBy}
-              onSortChange={handleSortChange}
-              searchTerm={searchTerm}
-              onSearchChange={handleSearchChange}
-            />
-          )}
-          
-          {loading && <div className="loading">Loading products...</div>}
-          {error && <div className="error">Using demo products (Wix not configured)</div>}
-          {!loading && paginatedProducts.length > 0 && (
-            <>
-              <ProductList 
-                products={paginatedProducts} 
-                onAddToCart={addToCart}
-                onProductClick={handleProductClick}
-              />
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </>
-          )}
-          {!loading && filteredProducts.length === 0 && products.length > 0 && (
-            <div className="error">No products found</div>
-          )}
-          {!loading && products.length === 0 && (
-            <div className="error">No products available</div>
-          )}
+          <Outlet context={{ products, loading, error, categories, productCounts, addToCart }} />
         </section>
 
         <aside className="cart-section">
@@ -203,13 +101,9 @@ function App() {
         </aside>
       </main>
 
-      {selectedProduct && (
-        <ProductModal
-          product={selectedProduct}
-          onClose={handleCloseModal}
-          onAddToCart={addToCart}
-        />
-      )}
+      <footer className="app-footer">
+        <p>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
+      </footer>
     </div>
   )
 }

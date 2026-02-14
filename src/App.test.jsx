@@ -1,12 +1,29 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { MemoryRouter, Routes, Route } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import App from './App'
+import HomePage from './pages/HomePage'
 import * as wixHook from './hooks/useWixProducts'
 
 // Mock Stripe
 vi.mock('@stripe/stripe-js', () => ({
   loadStripe: vi.fn(() => Promise.resolve(null)),
 }))
+
+function renderApp(initialEntries = ['/']) {
+  return render(
+    <HelmetProvider>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<HomePage />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </HelmetProvider>
+  )
+}
 
 describe('App Integration Tests', () => {
   it('renders main components', () => {
@@ -16,7 +33,7 @@ describe('App Integration Tests', () => {
       error: null,
     })
 
-    render(<App />)
+    renderApp()
 
     expect(screen.getByText('Antiques Marketplace')).toBeDefined()
     expect(screen.getByText('Discover unique treasures from the past')).toBeDefined()
@@ -28,6 +45,7 @@ describe('App Integration Tests', () => {
       {
         id: '1',
         name: 'Test Product',
+        slug: 'test-product',
         description: 'Test description',
         price: 100,
         image: null,
@@ -41,7 +59,7 @@ describe('App Integration Tests', () => {
       error: null,
     })
 
-    render(<App />)
+    renderApp()
 
     expect(screen.getByText('Test Product')).toBeDefined()
   })
@@ -51,6 +69,7 @@ describe('App Integration Tests', () => {
       {
         id: '1',
         name: 'Test Product',
+        slug: 'test-product',
         description: 'Test description',
         price: 100,
         image: null,
@@ -64,45 +83,15 @@ describe('App Integration Tests', () => {
       error: null,
     })
 
-    render(<App />)
+    renderApp()
 
     const addButton = screen.getByText('Add to Cart')
     fireEvent.click(addButton)
 
     await waitFor(() => {
-      // Check that the cart section contains the product
       const cart = screen.getByText('Shopping Cart').closest('.cart')
       expect(cart.textContent).toContain('Test Product')
       expect(cart.textContent).toContain('£100.00')
-    })
-  })
-
-  it('opens modal when product clicked', async () => {
-    const mockProducts = [
-      {
-        id: '1',
-        name: 'Test Product',
-        description: 'Test description',
-        price: 100,
-        image: null,
-        category: 'Test Category',
-        sku: 'TEST-001',
-      },
-    ]
-
-    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
-      products: mockProducts,
-      loading: false,
-      error: null,
-    })
-
-    render(<App />)
-
-    const productCard = screen.getByText('Test Product').closest('.product-card')
-    fireEvent.click(productCard)
-
-    await waitFor(() => {
-      expect(screen.getByText('TEST-001')).toBeDefined()
     })
   })
 
@@ -111,6 +100,7 @@ describe('App Integration Tests', () => {
       {
         id: '1',
         name: 'Furniture Item',
+        slug: 'furniture-item',
         description: 'A chair',
         price: 100,
         image: null,
@@ -119,6 +109,7 @@ describe('App Integration Tests', () => {
       {
         id: '2',
         name: 'Lighting Item',
+        slug: 'lighting-item',
         description: 'A lamp',
         price: 50,
         image: null,
@@ -132,7 +123,7 @@ describe('App Integration Tests', () => {
       error: null,
     })
 
-    render(<App />)
+    renderApp()
 
     // Initially shows all products
     expect(screen.getByText('Furniture Item')).toBeDefined()
@@ -155,7 +146,7 @@ describe('App Integration Tests', () => {
       error: null,
     })
 
-    render(<App />)
+    renderApp()
 
     expect(screen.getByText('Loading products...')).toBeDefined()
   })
@@ -167,7 +158,7 @@ describe('App Integration Tests', () => {
       error: 'API Error',
     })
 
-    render(<App />)
+    renderApp()
 
     expect(screen.getByText('Using demo products (Wix not configured)')).toBeDefined()
   })
@@ -177,6 +168,7 @@ describe('App Integration Tests', () => {
       {
         id: '1',
         name: 'Test Product',
+        slug: 'test-product',
         description: 'Test description',
         price: 100,
         image: null,
@@ -190,9 +182,8 @@ describe('App Integration Tests', () => {
       error: null,
     })
 
-    render(<App />)
+    renderApp()
 
-    // Add to cart
     const addButton = screen.getByText('Add to Cart')
     fireEvent.click(addButton)
 
@@ -202,7 +193,6 @@ describe('App Integration Tests', () => {
       expect(quantityElement.textContent).toBe('1')
     })
 
-    // Increase quantity
     const plusButton = screen.getByText('+')
     fireEvent.click(plusButton)
 
@@ -218,6 +208,7 @@ describe('App Integration Tests', () => {
       {
         id: '1',
         name: 'Test Product',
+        slug: 'test-product',
         description: 'Test description',
         price: 100,
         image: null,
@@ -231,9 +222,8 @@ describe('App Integration Tests', () => {
       error: null,
     })
 
-    render(<App />)
+    renderApp()
 
-    // Add to cart
     const addButton = screen.getByText('Add to Cart')
     fireEvent.click(addButton)
 
@@ -241,12 +231,23 @@ describe('App Integration Tests', () => {
       expect(screen.getByText('Remove')).toBeDefined()
     })
 
-    // Remove from cart
     const removeButton = screen.getByText('Remove')
     fireEvent.click(removeButton)
 
     await waitFor(() => {
       expect(screen.getByText('Your cart is empty')).toBeDefined()
     })
+  })
+
+  it('renders footer', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    expect(screen.getByText(/All rights reserved/)).toBeDefined()
   })
 })

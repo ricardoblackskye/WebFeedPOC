@@ -81,6 +81,7 @@ describe('wixService', () => {
       expect(products[0]).toEqual({
         id: '1',
         name: 'Product 1',
+        slug: 'product-1',
         description: 'Description 1',
         price: 100,
         image: 'https://example.com/image.jpg',
@@ -165,6 +166,7 @@ describe('wixService', () => {
       expect(product).toEqual({
         id: '1',
         name: 'Product 1',
+        slug: 'product-1',
         description: 'Description 1',
         price: 100,
         image: 'https://example.com/image.jpg',

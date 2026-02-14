@@ -2,7 +2,7 @@ import './CategoryFilter.css'
 
 function CategoryFilter({ categories, selectedCategory, onCategoryChange, productCounts }) {
   return (
-    <div className="category-filter">
+    <nav aria-label="Product categories" className="category-filter">
       <h3 className="category-filter-title">Categories</h3>
       <div className="category-list">
         <button
@@ -27,7 +27,7 @@ function CategoryFilter({ categories, selectedCategory, onCategoryChange, produc
           </button>
         ))}
       </div>
-    </div>
+    </nav>
   )
 }
 

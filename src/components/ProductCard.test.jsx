@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 
 describe('ProductCard', () => {
   const mockProduct = {
     id: '1',
     name: 'Test Product',
+    slug: 'test-product',
     description: 'Test Description',
     price: 99.99,
     image: null,
@@ -19,14 +21,20 @@ describe('ProductCard', () => {
     mockProductClick.mockClear()
   })
 
-  it('renders product information', () => {
-    render(
-      <ProductCard 
-        product={mockProduct} 
-        onAddToCart={mockAddToCart}
-        onProductClick={mockProductClick}
-      />
+  const renderCard = (product = mockProduct) => {
+    return render(
+      <MemoryRouter>
+        <ProductCard 
+          product={product} 
+          onAddToCart={mockAddToCart}
+          onProductClick={mockProductClick}
+        />
+      </MemoryRouter>
     )
+  }
+
+  it('renders product information', () => {
+    renderCard()
     
     expect(screen.getByText('Test Product')).toBeDefined()
     expect(screen.getByText('Test Description')).toBeDefined()
@@ -34,13 +42,7 @@ describe('ProductCard', () => {
   })
 
   it('calls onAddToCart when button is clicked', () => {
-    render(
-      <ProductCard 
-        product={mockProduct} 
-        onAddToCart={mockAddToCart}
-        onProductClick={mockProductClick}
-      />
-    )
+    renderCard()
     
     const button = screen.getByText('Add to Cart')
     fireEvent.click(button)
@@ -50,13 +52,7 @@ describe('ProductCard', () => {
   })
 
   it('calls onProductClick when card is clicked', () => {
-    render(
-      <ProductCard 
-        product={mockProduct} 
-        onAddToCart={mockAddToCart}
-        onProductClick={mockProductClick}
-      />
-    )
+    renderCard()
     
     const card = screen.getByText('Test Product').closest('.product-card')
     fireEvent.click(card)
@@ -65,13 +61,7 @@ describe('ProductCard', () => {
   })
 
   it('shows placeholder when no image', () => {
-    render(
-      <ProductCard 
-        product={mockProduct} 
-        onAddToCart={mockAddToCart}
-        onProductClick={mockProductClick}
-      />
-    )
+    renderCard()
     
     expect(screen.getByText('No Image')).toBeDefined()
   })
@@ -80,44 +70,22 @@ describe('ProductCard', () => {
     const longDescription = Array(60).fill('word').join(' ')
     const productWithLongDesc = { ...mockProduct, description: longDescription }
 
-    render(
-      <ProductCard 
-        product={productWithLongDesc} 
-        onAddToCart={mockAddToCart}
-        onProductClick={mockProductClick}
-      />
-    )
+    renderCard(productWithLongDesc)
     
     expect(screen.getByText('View More')).toBeDefined()
   })
 
   it('does not show View More for short descriptions', () => {
-    render(
-      <ProductCard 
-        product={mockProduct} 
-        onAddToCart={mockAddToCart}
-        onProductClick={mockProductClick}
-      />
-    )
+    renderCard()
     
     expect(screen.queryByText('View More')).toBeNull()
   })
 
-  it('clicking View More opens product modal', () => {
-    const longDescription = Array(60).fill('word').join(' ')
-    const productWithLongDesc = { ...mockProduct, description: longDescription }
-
-    render(
-      <ProductCard 
-        product={productWithLongDesc} 
-        onAddToCart={mockAddToCart}
-        onProductClick={mockProductClick}
-      />
-    )
+  it('renders as article element', () => {
+    const { container } = renderCard()
     
-    const viewMoreLink = screen.getByText('View More')
-    fireEvent.click(viewMoreLink)
-    
-    expect(mockProductClick).toHaveBeenCalledWith(productWithLongDesc)
+    const article = container.querySelector('article.product-card')
+    expect(article).toBeDefined()
+    expect(article).not.toBeNull()
   })
 })
