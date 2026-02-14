@@ -42,6 +42,7 @@ export async function fetchWixProducts() {
       description: product.description || '',
       price: product.price?.price || 0,
       image: product.media?.mainMedia?.image?.url || null,
+      images: product.media?.items?.map(item => item.image?.url).filter(Boolean) || [],
       category: product.productType || 'Uncategorized',
       collections: product.collectionIds || [],
       sku: product.sku || null,
@@ -67,6 +68,7 @@ export async function fetchWixProduct(productId) {
       description: product.description || '',
       price: product.price?.price || 0,
       image: product.media?.mainMedia?.image?.url || null,
+      images: product.media?.items?.map(item => item.image?.url).filter(Boolean) || [],
       category: product.productType || 'Uncategorized',
       collections: product.collectionIds || [],
       sku: product.sku || null,
@@ -76,4 +78,3 @@ export async function fetchWixProduct(productId) {
     throw error
   }
 }
-

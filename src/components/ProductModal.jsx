@@ -1,7 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './ProductModal.css'
 
 function ProductModal({ product, onClose, onAddToCart }) {
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+
+  useEffect(() => {
+    // Reset to first image when product changes
+    if (product?.id) {
+      setSelectedImageIndex(0)
+    }
+  }, [product?.id])
+
   useEffect(() => {
     // Close modal on Escape key
     const handleEscape = (e) => {
@@ -18,7 +27,15 @@ function ProductModal({ product, onClose, onAddToCart }) {
     }
   }, [onClose])
 
+  // Early return if no product provided (after all hooks)
   if (!product) return null
+
+  // Determine which images to display - use images array if available, fallback to single image
+  const displayImages = product.images && product.images.length > 0 
+    ? product.images 
+    : product.image 
+      ? [product.image] 
+      : []
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -40,8 +57,28 @@ function ProductModal({ product, onClose, onAddToCart }) {
         
         <div className="modal-body">
           <div className="modal-image-section">
-            {product.image ? (
-              <img src={product.image} alt={product.name} className="modal-image" />
+            {displayImages.length > 0 ? (
+              <>
+                <img 
+                  src={displayImages[selectedImageIndex]} 
+                  alt={`${product.name} - Image ${selectedImageIndex + 1}`} 
+                  className="modal-image" 
+                />
+                {displayImages.length > 1 && (
+                  <div className="modal-image-thumbnails">
+                    {displayImages.map((imageUrl, index) => (
+                      <button
+                        key={index}
+                        className={`thumbnail ${index === selectedImageIndex ? 'active' : ''}`}
+                        onClick={() => setSelectedImageIndex(index)}
+                        aria-label={`View image ${index + 1}`}
+                      >
+                        <img src={imageUrl} alt={`Thumbnail ${index + 1}`} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             ) : (
               <div className="modal-image-placeholder">No Image Available</div>
             )}

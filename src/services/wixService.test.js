@@ -44,7 +44,13 @@ describe('wixService', () => {
             name: 'Product 1',
             description: 'Description 1',
             price: { price: 100 },
-            media: { mainMedia: { image: { url: 'https://example.com/image.jpg' } } },
+            media: { 
+              mainMedia: { image: { url: 'https://example.com/image.jpg' } },
+              items: [
+                { image: { url: 'https://example.com/image1.jpg' } },
+                { image: { url: 'https://example.com/image2.jpg' } },
+              ]
+            },
             productType: 'Furniture',
             collectionIds: ['antiques'],
             sku: 'SKU-001',
@@ -62,6 +68,7 @@ describe('wixService', () => {
         description: 'Description 1',
         price: 100,
         image: 'https://example.com/image.jpg',
+        images: ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'],
         category: 'Furniture',
         collections: ['antiques'],
         sku: 'SKU-001',
@@ -88,6 +95,7 @@ describe('wixService', () => {
       const products = await fetchWixProducts()
 
       expect(products[0].image).toBeNull()
+      expect(products[0].images).toEqual([])
     })
 
     it('throws error on SDK failure', async () => {
@@ -113,6 +121,8 @@ describe('wixService', () => {
       expect(products).toHaveLength(2)
       expect(products[0].id).toBe('1')
       expect(products[1].id).toBe('2')
+      expect(products[0].images).toEqual([])
+      expect(products[1].images).toEqual([])
     })
   })
 
@@ -123,7 +133,10 @@ describe('wixService', () => {
         name: 'Product 1',
         description: 'Description 1',
         price: { price: 100 },
-        media: { mainMedia: { image: { url: 'https://example.com/image.jpg' } } },
+        media: { 
+          mainMedia: { image: { url: 'https://example.com/image.jpg' } },
+          items: [{ image: { url: 'https://example.com/image1.jpg' } }]
+        },
         productType: 'Furniture',
         collectionIds: [],
         sku: 'SKU-001',
@@ -137,6 +150,7 @@ describe('wixService', () => {
         description: 'Description 1',
         price: 100,
         image: 'https://example.com/image.jpg',
+        images: ['https://example.com/image1.jpg'],
         category: 'Furniture',
         collections: [],
         sku: 'SKU-001',

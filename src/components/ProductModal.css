@@ -103,6 +103,41 @@
   font-size: 1.1rem;
 }
 
+.modal-image-thumbnails {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.thumbnail {
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.thumbnail:hover {
+  border-color: #646cff;
+  transform: translateY(-2px);
+}
+
+.thumbnail.active {
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.3);
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .modal-details-section {
   display: flex;
   flex-direction: column;

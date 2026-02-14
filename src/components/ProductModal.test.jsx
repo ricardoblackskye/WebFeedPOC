@@ -162,4 +162,88 @@ describe('ProductModal', () => {
     expect(screen.queryByText('SKU:')).toBeNull()
     expect(screen.queryByText('Condition:')).toBeNull()
   })
+
+  it('displays multiple images with thumbnails', () => {
+    const productWithMultipleImages = {
+      ...mockProduct,
+      images: [
+        'https://example.com/image1.jpg',
+        'https://example.com/image2.jpg',
+        'https://example.com/image3.jpg',
+      ],
+    }
+
+    render(
+      <ProductModal
+        product={productWithMultipleImages}
+        onClose={mockOnClose}
+        onAddToCart={mockOnAddToCart}
+      />
+    )
+
+    const thumbnails = screen.getAllByRole('button', { name: /View image/i })
+    expect(thumbnails).toHaveLength(3)
+  })
+
+  it('switches images when thumbnail is clicked', () => {
+    const productWithMultipleImages = {
+      ...mockProduct,
+      images: [
+        'https://example.com/image1.jpg',
+        'https://example.com/image2.jpg',
+      ],
+    }
+
+    render(
+      <ProductModal
+        product={productWithMultipleImages}
+        onClose={mockOnClose}
+        onAddToCart={mockOnAddToCart}
+      />
+    )
+
+    const mainImage = screen.getByAltText(/Test Product - Image/i)
+    expect(mainImage.src).toContain('image1.jpg')
+
+    const thumbnail2 = screen.getByRole('button', { name: 'View image 2' })
+    fireEvent.click(thumbnail2)
+
+    expect(mainImage.src).toContain('image2.jpg')
+  })
+
+  it('does not show thumbnails for single image', () => {
+    const productWithSingleImage = {
+      ...mockProduct,
+      images: ['https://example.com/image1.jpg'],
+    }
+
+    render(
+      <ProductModal
+        product={productWithSingleImage}
+        onClose={mockOnClose}
+        onAddToCart={mockOnAddToCart}
+      />
+    )
+
+    const thumbnails = screen.queryAllByRole('button', { name: /View image/i })
+    expect(thumbnails).toHaveLength(0)
+  })
+
+  it('falls back to single image when images array is empty', () => {
+    const productWithFallback = {
+      ...mockProduct,
+      images: [],
+    }
+
+    render(
+      <ProductModal
+        product={productWithFallback}
+        onClose={mockOnClose}
+        onAddToCart={mockOnAddToCart}
+      />
+    )
+
+    const mainImage = screen.getByAltText(/Test Product - Image/i)
+    expect(mainImage.src).toContain('example.com/image.jpg')
+  })
 })
