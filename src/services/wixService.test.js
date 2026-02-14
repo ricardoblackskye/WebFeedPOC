@@ -3,7 +3,8 @@ import { fetchWixProducts, fetchWixProduct } from '../services/wixService'
 
 // Mock the Wix SDK modules
 const mockFind = vi.fn()
-const mockQueryProducts = vi.fn(() => ({ find: mockFind }))
+const mockLimit = vi.fn(() => ({ find: mockFind }))
+const mockQueryProducts = vi.fn(() => ({ limit: mockLimit }))
 const mockGetProduct = vi.fn()
 
 vi.mock('@wix/sdk', () => ({
@@ -49,6 +50,7 @@ describe('wixService', () => {
             sku: 'SKU-001',
           },
         ],
+        hasNext: () => false,
       })
 
       const products = await fetchWixProducts()
@@ -80,6 +82,7 @@ describe('wixService', () => {
             sku: null,
           },
         ],
+        hasNext: () => false,
       })
 
       const products = await fetchWixProducts()
@@ -91,6 +94,25 @@ describe('wixService', () => {
       mockFind.mockRejectedValueOnce(new Error('SDK error'))
 
       await expect(fetchWixProducts()).rejects.toThrow('SDK error')
+    })
+
+    it('paginates through all results', async () => {
+      const page2 = {
+        items: [{ _id: '2', name: 'Product 2', description: '', price: { price: 200 }, media: null, productType: 'Art', collectionIds: [], sku: null }],
+        hasNext: () => false,
+      }
+
+      mockFind.mockResolvedValueOnce({
+        items: [{ _id: '1', name: 'Product 1', description: '', price: { price: 100 }, media: null, productType: 'Furniture', collectionIds: [], sku: null }],
+        hasNext: () => true,
+        next: vi.fn().mockResolvedValueOnce(page2),
+      })
+
+      const products = await fetchWixProducts()
+
+      expect(products).toHaveLength(2)
+      expect(products[0].id).toBe('1')
+      expect(products[1].id).toBe('2')
     })
   })
 

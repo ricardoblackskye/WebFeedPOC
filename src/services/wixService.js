@@ -19,16 +19,24 @@ function createWixClient() {
 }
 
 /**
- * Fetches products from Wix.com using the headless SDK
+ * Fetches all products from Wix.com using the headless SDK.
+ * Paginates through all results since the SDK defaults to 50 per page.
  */
 export async function fetchWixProducts() {
   const wixClient = createWixClient()
 
   try {
-    const result = await wixClient.products.queryProducts().find()
+    let allItems = []
+    let result = await wixClient.products.queryProducts().limit(100).find()
+    allItems = allItems.concat(result.items)
+
+    while (result.hasNext()) {
+      result = await result.next()
+      allItems = allItems.concat(result.items)
+    }
 
     // Transform Wix product data to our format
-    return result.items.map(product => ({
+    return allItems.map(product => ({
       id: product._id,
       name: product.name,
       description: product.description || '',
