@@ -24,9 +24,19 @@ export function generateId() {
 }
 
 /**
- * Strips HTML tags from a string, returning plain text
+ * Strips HTML tags from a string and decodes HTML entities, returning plain text
  */
 export function stripHtml(html) {
   if (!html) return ''
-  return html.replace(/<[^>]*>/g, '')
+  
+  // Remove HTML tags
+  let text = html.replace(/<[^>]*>/g, '')
+  
+  // Decode HTML entities using a temporary DOM element
+  const textarea = document.createElement('textarea')
+  textarea.innerHTML = text
+  text = textarea.value
+  
+  // Clean up extra whitespace
+  return text.replace(/\s+/g, ' ').trim()
 }

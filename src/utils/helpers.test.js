@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatPrice, isValidEmail, generateId } from '../utils/helpers'
+import { formatPrice, isValidEmail, generateId, stripHtml } from '../utils/helpers'
 
 describe('formatPrice', () => {
   it('formats price correctly', () => {
@@ -24,5 +24,34 @@ describe('generateId', () => {
     const id2 = generateId()
     expect(id1).not.toBe(id2)
     expect(typeof id1).toBe('string')
+  })
+})
+
+describe('stripHtml', () => {
+  it('removes HTML tags', () => {
+    expect(stripHtml('<p>Hello world</p>')).toBe('Hello world')
+    expect(stripHtml('<div><span>Test</span></div>')).toBe('Test')
+  })
+
+  it('decodes HTML entities', () => {
+    expect(stripHtml('Hello&nbsp;world')).toBe('Hello world')
+    expect(stripHtml('Test&amp;demo')).toBe('Test&demo')
+    expect(stripHtml('&lt;tag&gt;')).toBe('<tag>')
+  })
+
+  it('removes tags and decodes entities together', () => {
+    expect(stripHtml('<p>Hello&nbsp;world</p>')).toBe('Hello world')
+    expect(stripHtml('<div>Test&nbsp;&nbsp;multiple&nbsp;spaces</div>')).toBe('Test multiple spaces')
+  })
+
+  it('handles empty or null input', () => {
+    expect(stripHtml('')).toBe('')
+    expect(stripHtml(null)).toBe('')
+    expect(stripHtml(undefined)).toBe('')
+  })
+
+  it('cleans up extra whitespace', () => {
+    expect(stripHtml('  Multiple   spaces  ')).toBe('Multiple spaces')
+    expect(stripHtml('<p>  Text  with  spaces  </p>')).toBe('Text with spaces')
   })
 })
