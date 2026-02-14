@@ -75,4 +75,49 @@ describe('ProductCard', () => {
     
     expect(screen.getByText('No Image')).toBeDefined()
   })
+
+  it('shows View More link for long descriptions', () => {
+    const longDescription = Array(60).fill('word').join(' ')
+    const productWithLongDesc = { ...mockProduct, description: longDescription }
+
+    render(
+      <ProductCard 
+        product={productWithLongDesc} 
+        onAddToCart={mockAddToCart}
+        onProductClick={mockProductClick}
+      />
+    )
+    
+    expect(screen.getByText('View More')).toBeDefined()
+  })
+
+  it('does not show View More for short descriptions', () => {
+    render(
+      <ProductCard 
+        product={mockProduct} 
+        onAddToCart={mockAddToCart}
+        onProductClick={mockProductClick}
+      />
+    )
+    
+    expect(screen.queryByText('View More')).toBeNull()
+  })
+
+  it('clicking View More opens product modal', () => {
+    const longDescription = Array(60).fill('word').join(' ')
+    const productWithLongDesc = { ...mockProduct, description: longDescription }
+
+    render(
+      <ProductCard 
+        product={productWithLongDesc} 
+        onAddToCart={mockAddToCart}
+        onProductClick={mockProductClick}
+      />
+    )
+    
+    const viewMoreLink = screen.getByText('View More')
+    fireEvent.click(viewMoreLink)
+    
+    expect(mockProductClick).toHaveBeenCalledWith(productWithLongDesc)
+  })
 })

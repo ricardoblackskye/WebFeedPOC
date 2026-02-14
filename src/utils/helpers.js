@@ -40,3 +40,13 @@ export function stripHtml(html) {
   // Clean up extra whitespace
   return text.replace(/\s+/g, ' ').trim()
 }
+
+/**
+ * Truncates text to a specified number of words
+ */
+export function truncateWords(text, maxWords = 50) {
+  if (!text) return ''
+  const words = text.split(/\s+/)
+  if (words.length <= maxWords) return text
+  return words.slice(0, maxWords).join(' ') + '...'
+}

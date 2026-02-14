@@ -1,4 +1,4 @@
-import { stripHtml } from '../utils/helpers'
+import { stripHtml, truncateWords } from '../utils/helpers'
 import './ProductCard.css'
 
 function ProductCard({ product, onAddToCart, onProductClick }) {
@@ -13,6 +13,10 @@ function ProductCard({ product, onAddToCart, onProductClick }) {
     onAddToCart(product)
   }
 
+  const plainDescription = stripHtml(product.description)
+  const truncatedDescription = truncateWords(plainDescription, 50)
+  const isTruncated = plainDescription.length > truncatedDescription.length
+
   return (
     <div className="product-card" onClick={handleCardClick}>
       <div className="product-image">
@@ -24,7 +28,12 @@ function ProductCard({ product, onAddToCart, onProductClick }) {
       </div>
       <div className="product-info">
         <h3 className="product-name">{product.name}</h3>
-        <p className="product-description">{stripHtml(product.description)}</p>
+        <div className="product-description">
+          {truncatedDescription}
+          {isTruncated && (
+            <span className="view-more"> View More</span>
+          )}
+        </div>
         <div className="product-footer">
           <span className="product-price">
             £{product.price.toFixed(2)}

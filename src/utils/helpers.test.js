@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatPrice, isValidEmail, generateId, stripHtml } from '../utils/helpers'
+import { formatPrice, isValidEmail, generateId, stripHtml, truncateWords } from '../utils/helpers'
 
 describe('formatPrice', () => {
   it('formats price correctly', () => {
@@ -53,5 +53,30 @@ describe('stripHtml', () => {
   it('cleans up extra whitespace', () => {
     expect(stripHtml('  Multiple   spaces  ')).toBe('Multiple spaces')
     expect(stripHtml('<p>  Text  with  spaces  </p>')).toBe('Text with spaces')
+  })
+})
+
+describe('truncateWords', () => {
+  it('truncates text to specified number of words', () => {
+    const text = 'one two three four five six seven eight nine ten'
+    expect(truncateWords(text, 5)).toBe('one two three four five...')
+  })
+
+  it('does not truncate if text is shorter than limit', () => {
+    const text = 'short text'
+    expect(truncateWords(text, 50)).toBe('short text')
+  })
+
+  it('handles empty or null input', () => {
+    expect(truncateWords('')).toBe('')
+    expect(truncateWords(null)).toBe('')
+    expect(truncateWords(undefined)).toBe('')
+  })
+
+  it('defaults to 50 words', () => {
+    const words = Array(60).fill('word').join(' ')
+    const result = truncateWords(words)
+    const resultWords = result.replace('...', '').trim().split(' ')
+    expect(resultWords.length).toBe(50)
   })
 })

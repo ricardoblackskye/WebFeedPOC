@@ -50,6 +50,17 @@
   line-height: 1.4;
 }
 
+.view-more {
+  color: #646cff;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.view-more:hover {
+  text-decoration: underline;
+}
+
 .product-footer {
   display: flex;
   justify-content: space-between;
