@@ -56,7 +56,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
             
             <div className="modal-description">
               <h3>Description</h3>
-              <p>{product.description}</p>
+              <div dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
             
             {product.category && (
