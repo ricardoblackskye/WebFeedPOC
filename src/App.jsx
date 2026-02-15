@@ -6,8 +6,8 @@ import { useWixProducts } from './hooks/useWixProducts'
 import { generateOrganizationSchema, generateWebSiteSchema, SITE_NAME } from './utils/structuredData'
 import './App.css'
 
-function App() {
-  const { products, loading, error } = useWixProducts()
+function App({ initialProducts }) {
+  const { products, loading, error } = useWixProducts(initialProducts)
   const [cart, setCart] = useState([])
 
   // Extract unique categories from products

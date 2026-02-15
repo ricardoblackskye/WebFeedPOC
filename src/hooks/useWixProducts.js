@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { fetchWixProducts } from '../services/wixService'
 
-export function useWixProducts() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+export function useWixProducts(initialProducts = null) {
+  const [products, setProducts] = useState(initialProducts || [])
+  const [loading, setLoading] = useState(!initialProducts)
   const [error, setError] = useState(null)
 
   useEffect(() => {
+    // Skip fetch if pre-loaded data was provided (SSR/prerender)
+    if (initialProducts) return
+
     async function loadProducts() {
       try {
         setLoading(true)
@@ -24,7 +27,7 @@ export function useWixProducts() {
     }
 
     loadProducts()
-  }, [])
+  }, [initialProducts])
 
   return { products, loading, error }
 }
