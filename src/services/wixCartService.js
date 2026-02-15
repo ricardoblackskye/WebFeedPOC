@@ -1,24 +1,10 @@
-import { createClient, OAuthStrategy } from '@wix/sdk'
-import { currentCart } from '@wix/ecom'
-import { products } from '@wix/stores'
+import { wixSession } from './wixSession'
 
 /**
- * Creates a Wix SDK client for cart operations
- * Note: Cart operations require visitor/member authentication
+ * Wix Cart Service
+ * Uses backend API routes for proper authentication and cart operations
  * Documentation: https://dev.wix.com/docs/sdk/backend-modules/ecom/current-cart
  */
-function createWixCartClient() {
-  const clientId = import.meta.env.VITE_WIX_CLIENT_ID
-
-  if (!clientId) {
-    throw new Error('Wix API credentials not configured')
-  }
-
-  return createClient({
-    modules: { currentCart, products },
-    auth: OAuthStrategy({ clientId }),
-  })
-}
 
 /**
  * Get the current cart for the session
@@ -26,12 +12,20 @@ function createWixCartClient() {
  */
 export async function getCurrentCart() {
   try {
-    const wixClient = createWixCartClient()
-    const cart = await wixClient.currentCart.getCurrentCart()
-    return cart
+    const response = await wixSession.makeAuthenticatedRequest('/api/wix-cart?action=get')
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.warn('Cart authentication required')
+        return null
+      }
+      throw new Error(`Failed to get cart: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    return data.cart
   } catch (error) {
     console.error('Failed to get current cart:', error)
-    // Return empty cart structure if cart doesn't exist yet
     return null
   }
 }
@@ -40,25 +34,25 @@ export async function getCurrentCart() {
  * Add a product to the cart
  * @param {string} productId - Wix product ID
  * @param {number} quantity - Quantity to add (default: 1)
+ * @param {Object} options - Product options (variants, etc.)
  */
-export async function addToWixCart(productId, quantity = 1) {
+export async function addToWixCart(productId, quantity = 1, options = {}) {
   try {
-    const wixClient = createWixCartClient()
-    
-    // Add line item to cart
-    const result = await wixClient.currentCart.addToCurrentCart({
-      lineItems: [
-        {
-          catalogReference: {
-            catalogItemId: productId,
-            appId: import.meta.env.VITE_WIX_STORES_APP_ID || '1380b703-ce81-ff05-f115-39571d94dfcd', // Default Wix Stores app ID
-          },
-          quantity,
-        },
-      ],
+    const response = await wixSession.makeAuthenticatedRequest('/api/wix-cart?action=add', {
+      method: 'POST',
+      body: JSON.stringify({
+        productId,
+        quantity,
+        options,
+      }),
     })
-    
-    return result.cart
+
+    if (!response.ok) {
+      throw new Error(`Failed to add to cart: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    return data.cart
   } catch (error) {
     console.error('Failed to add item to cart:', error)
     throw error
@@ -72,16 +66,20 @@ export async function addToWixCart(productId, quantity = 1) {
  */
 export async function updateCartItemQuantity(lineItemId, quantity) {
   try {
-    const wixClient = createWixCartClient()
-    
-    const result = await wixClient.currentCart.updateCurrentCartLineItemQuantity([
-      {
-        _id: lineItemId,
-        quantity,
-      },
-    ])
-    
-    return result.cart
+    const response = await wixSession.makeAuthenticatedRequest('/api/wix-cart?action=update', {
+      method: 'PUT',
+      body: JSON.stringify({
+        lineItemId,
+        newQuantity: quantity,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to update cart: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    return data.cart
   } catch (error) {
     console.error('Failed to update cart item quantity:', error)
     throw error
@@ -94,11 +92,19 @@ export async function updateCartItemQuantity(lineItemId, quantity) {
  */
 export async function removeFromWixCart(lineItemId) {
   try {
-    const wixClient = createWixCartClient()
-    
-    const result = await wixClient.currentCart.removeLineItemsFromCurrentCart([lineItemId])
-    
-    return result.cart
+    const response = await wixSession.makeAuthenticatedRequest('/api/wix-cart?action=remove', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        lineItemId,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to remove from cart: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    return data.cart
   } catch (error) {
     console.error('Failed to remove item from cart:', error)
     throw error
@@ -110,8 +116,14 @@ export async function removeFromWixCart(lineItemId) {
  */
 export async function clearWixCart() {
   try {
-    const wixClient = createWixCartClient()
-    await wixClient.currentCart.deleteCurrentCart()
+    const response = await wixSession.makeAuthenticatedRequest('/api/wix-cart?action=remove&clear=true', {
+      method: 'DELETE',
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to clear cart: ${response.statusText}`)
+    }
+
     return true
   } catch (error) {
     console.error('Failed to clear cart:', error)

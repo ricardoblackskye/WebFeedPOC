@@ -6,7 +6,11 @@ Based on your current implementation using only **Products** and **Collections**
 - ✅ Products API (query, single product fetch)
 - ✅ Collections API (category mapping)
 - ✅ Webhook listener (triggers rebuilds on product changes)
-- ❌ Read-only integration - no cart sync, checkout, or order management
+- ✅ Inventory Management (stock levels, availability)
+- ✅ Wix Cart Integration (persistent cart with fallback)
+- ✅ Wix Checkout & Orders (hosted checkout, order management)
+- ❌ Read-only product integration complete
+- ✅ Cart and checkout fully integrated with Wix ecom
 
 ---
 
@@ -180,27 +184,29 @@ Additional configuration beyond current `VITE_WIX_CLIENT_ID`:
 
 ## Recommended Roadmap
 
-**Phase 1** (Quick Wins):
-1. Inventory API - show stock levels
-2. Product variants - handle condition variations
-3. Enhanced product data - dimensions, weight, materials
+**Phase 1** (✅ COMPLETED):
+1. ✅ Inventory API - show stock levels
+2. ⏭️ Product variants - handle condition variations (SKIPPED)
+3. ⏭️ Enhanced product data - dimensions, weight, materials (SKIPPED)
 
-**Phase 2** (Cart & Checkout):
-4. Wix Cart integration
-5. Wix Checkout flow
-6. Order creation in Wix
+**Phase 2** (✅ COMPLETED):
+4. ✅ Wix Cart integration
+5. ✅ Wix Checkout flow
+6. ✅ Order creation in Wix
+7. ✅ Order confirmation page
+8. ✅ Order history view
 
-**Phase 3** (Customer Features):
-7. Member authentication
-8. Customer profiles
-9. Order history
-10. Reviews & ratings
+**Phase 3** (🔄 IN PROGRESS):
+9. ⏸️ Member authentication (PENDING - requires backend)
+10. ⏸️ Customer profiles (PENDING)
+11. ⏸️ Order history (FOUNDATION COMPLETE - needs auth)
+12. ⏸️ Reviews & ratings (PENDING)
 
-**Phase 4** (Marketing & Growth):
-11. Coupons & discounts
-12. Product recommendations
-13. Analytics integration
-14. Blog content
+**Phase 4** (📋 PLANNED):
+13. Coupons & discounts
+14. Product recommendations
+15. Analytics integration
+16. Blog content
 
 ---
 

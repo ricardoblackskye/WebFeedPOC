@@ -1,7 +1,6 @@
-import { loadStripe } from '@stripe/stripe-js'
+import { useState } from 'react'
+import { initiateCheckout } from '../services/wixCheckoutService'
 import './Cart.css'
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_placeholder')
 
 function Cart({ 
   items, 
@@ -13,39 +12,36 @@ function Cart({
   useWixBackend = false,
   totals = null,
 }) {
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState(null)
+
   const handleCheckout = async () => {
     if (items.length === 0) return
 
+    setCheckoutLoading(true)
+    setCheckoutError(null)
+
     try {
-      // TODO: Replace with actual Stripe checkout implementation
-      const stripe = await stripePromise
+      // Always try to use Wix checkout flow
+      const checkoutUrl = await initiateCheckout()
       
-      if (!stripe) {
-        throw new Error('Stripe failed to load')
-      }
-      
-      // Create checkout session on your backend
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ items }),
-      })
-
-      const session = await response.json()
-      
-      // Redirect to Stripe Checkout
-      const result = await stripe.redirectToCheckout({
-        sessionId: session.id,
-      })
-
-      if (result.error) {
-        console.error(result.error.message)
-      }
+      // Redirect to Wix hosted checkout page
+      window.location.href = checkoutUrl
     } catch (error) {
       console.error('Checkout error:', error)
-      alert('Checkout functionality requires backend setup')
+      
+      // Provide helpful error message based on the issue
+      if (error.message?.includes('not configured') || error.message?.includes('credentials')) {
+        setCheckoutError('Checkout requires Wix configuration. Please configure VITE_WIX_CLIENT_ID in your environment.')
+      } else if (error.message?.includes('cart')) {
+        setCheckoutError('Unable to access cart. Please try adding items again.')
+      } else {
+        setCheckoutError('Checkout is temporarily unavailable. Please try again later.')
+      }
+      
+      setTimeout(() => setCheckoutError(null), 8000)
+    } finally {
+      setCheckoutLoading(false)
     }
   }
 
@@ -78,6 +74,7 @@ function Cart({
         </div>
       )}
       {error && <div className="cart-error-small">{error}</div>}
+      {checkoutError && <div className="cart-error-small">{checkoutError}</div>}
       {loading && <div className="cart-loading-small">Updating...</div>}
       <div className="cart-items">
         {items.map(item => (
@@ -147,9 +144,19 @@ function Cart({
           // Simple total display
           <h3>Total: £{totalPrice.toFixed(2)}</h3>
         )}
-        <button onClick={handleCheckout} className="checkout-btn">
-          {useWixBackend ? 'Proceed to Checkout' : 'Checkout with Stripe'}
+        <button 
+          onClick={handleCheckout} 
+          className="checkout-btn"
+          disabled={checkoutLoading || items.length === 0}
+          title={!useWixBackend ? 'Cart is in local mode. Checkout requires Wix backend configuration.' : ''}
+        >
+          {checkoutLoading ? 'Processing...' : 'Proceed to Checkout'}
         </button>
+        {!useWixBackend && items.length > 0 && (
+          <p className="cart-local-mode-notice">
+            Note: Your cart is stored locally. Wix checkout requires backend configuration.
+          </p>
+        )}
       </div>
     </div>
   )
