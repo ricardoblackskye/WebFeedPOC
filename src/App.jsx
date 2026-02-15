@@ -1,14 +1,24 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import Cart from './components/Cart'
 import { useWixProducts } from './hooks/useWixProducts'
+import { useWixCart } from './hooks/useWixCart'
 import { generateOrganizationSchema, generateWebSiteSchema, SITE_NAME } from './utils/structuredData'
 import './App.css'
 
 function App({ initialProducts }) {
   const { products, loading, error } = useWixProducts(initialProducts)
-  const [cart, setCart] = useState([])
+  const { 
+    cart, 
+    loading: cartLoading, 
+    error: cartError,
+    useWixBackend,
+    addToCart, 
+    removeFromCart, 
+    updateQuantity,
+    totals,
+  } = useWixCart()
 
   // Extract unique categories from products
   const categories = useMemo(() => {
@@ -26,37 +36,6 @@ function App({ initialProducts }) {
     })
     return counts
   }, [products])
-
-  const addToCart = (product) => {
-    const existing = cart.find(item => item.id === product.id)
-    if (existing) {
-      setCart(cart.map(item =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      ))
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }])
-    }
-  }
-
-  const removeFromCart = (productId) => {
-    setCart(cart.filter(item => item.id !== productId))
-  }
-
-  const updateQuantity = (productId, quantity) => {
-    if (quantity <= 0) {
-      removeFromCart(productId)
-    } else {
-      setCart(cart.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      ))
-    }
-  }
-
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
-  }
 
   const orgSchema = generateOrganizationSchema()
   const webSiteSchema = generateWebSiteSchema()
@@ -96,7 +75,11 @@ function App({ initialProducts }) {
             items={cart}
             onUpdateQuantity={updateQuantity}
             onRemoveItem={removeFromCart}
-            totalPrice={getTotalPrice()}
+            totalPrice={totals.total}
+            loading={cartLoading}
+            error={cartError}
+            useWixBackend={useWixBackend}
+            totals={totals}
           />
         </aside>
       </main>
