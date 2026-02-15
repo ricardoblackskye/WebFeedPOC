@@ -15,13 +15,18 @@
 }
 
 .app-header h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: 0.5rem;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .app-header p {
   font-size: 1.2rem;
   opacity: 0.8;
+  font-family: var(--font-primary);
+  font-style: italic;
 }
 
 .app-main {
@@ -96,8 +101,9 @@
 }
 
 .breadcrumb a {
-  color: #646cff;
+  color: var(--color-gold);
   text-decoration: none;
+  font-family: var(--font-secondary);
 }
 
 .breadcrumb a:hover {

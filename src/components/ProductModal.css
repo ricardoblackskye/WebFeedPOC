@@ -50,23 +50,28 @@
   top: 1rem;
   right: 1rem;
   background: rgba(255, 255, 255, 0.1);
-  border: none;
+  border: 1px solid rgba(212, 175, 55, 0.5);
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
-  color: white;
+  color: var(--color-gold);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.3s;
   z-index: 10;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
+  padding: 0;
 }
 
 .modal-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--color-gold);
+  color: #1a1a1a;
   transform: rotate(90deg);
 }
 
@@ -114,22 +119,25 @@
   width: 70px;
   height: 70px;
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(212, 175, 55, 0.3);
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   background: rgba(0, 0, 0, 0.3);
-  transition: all 0.2s;
+  transition: all 0.3s;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
 }
 
 .thumbnail:hover {
-  border-color: #646cff;
+  border-color: var(--color-gold);
   transform: translateY(-2px);
 }
 
 .thumbnail.active {
-  border-color: #646cff;
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.3);
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
 }
 
 .thumbnail img {
@@ -149,12 +157,15 @@
   margin: 0;
   color: white;
   line-height: 1.2;
+  font-family: var(--font-primary);
+  font-weight: 600;
 }
 
 .modal-price {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #646cff;
+  color: var(--color-gold);
+  font-family: var(--font-primary);
 }
 
 .modal-description {
@@ -166,6 +177,8 @@
   font-size: 1.2rem;
   margin: 0 0 0.75rem 0;
   color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-primary);
+  font-weight: 600;
 }
 
 .modal-description p {
@@ -190,21 +203,25 @@
 .modal-add-to-cart {
   width: 100%;
   padding: 1.25rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  background: #646cff;
-  color: white;
-  border: none;
-  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--color-gold);
+  color: #1a1a1a;
+  border: 2px solid var(--color-gold);
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
   margin-top: 1rem;
+  font-family: var(--font-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .modal-add-to-cart:hover {
-  background: #535bf2;
+  background: var(--color-gold-hover);
+  border-color: var(--color-gold-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
 }
 
 .modal-add-to-cart:active {
@@ -222,12 +239,12 @@
 }
 
 .modal-content::-webkit-scrollbar-thumb {
-  background: rgba(100, 108, 255, 0.5);
+  background: rgba(212, 175, 55, 0.5);
   border-radius: 8px;
 }
 
 .modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 108, 255, 0.7);
+  background: rgba(212, 175, 55, 0.7);
 }
 
 /* Responsive */
