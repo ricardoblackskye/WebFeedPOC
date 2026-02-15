@@ -224,6 +224,24 @@
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
 }
 
+.modal-add-to-cart.disabled,
+.modal-add-to-cart:disabled {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.modal-add-to-cart.disabled:hover,
+.modal-add-to-cart:disabled:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  transform: none;
+  box-shadow: none;
+}
+
 .modal-add-to-cart:active {
   transform: translateY(0);
 }

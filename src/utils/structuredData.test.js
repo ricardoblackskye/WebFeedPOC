@@ -20,6 +20,11 @@ describe('structuredData', () => {
     images: ['https://example.com/chair1.jpg', 'https://example.com/chair2.jpg'],
     category: 'Furniture',
     sku: 'VC-001',
+    stock: {
+      trackInventory: true,
+      quantity: 10,
+      inStock: true,
+    },
   }
 
   describe('generateProductSchema', () => {
@@ -66,6 +71,70 @@ describe('structuredData', () => {
       expect(schema).not.toHaveProperty('sku')
       expect(schema).not.toHaveProperty('category')
       expect(schema).not.toHaveProperty('image')
+    })
+
+    it('shows InStock for products without inventory tracking', () => {
+      const product = {
+        ...mockProduct,
+        stock: {
+          trackInventory: false,
+          quantity: 0,
+          inStock: true,
+        },
+      }
+      const schema = generateProductSchema(product)
+
+      expect(schema.offers.availability).toBe('https://schema.org/InStock')
+    })
+
+    it('shows OutOfStock for products with zero quantity', () => {
+      const product = {
+        ...mockProduct,
+        stock: {
+          trackInventory: true,
+          quantity: 0,
+          inStock: false,
+        },
+      }
+      const schema = generateProductSchema(product)
+
+      expect(schema.offers.availability).toBe('https://schema.org/OutOfStock')
+    })
+
+    it('shows LimitedAvailability for products with low stock (<=5)', () => {
+      const product = {
+        ...mockProduct,
+        stock: {
+          trackInventory: true,
+          quantity: 3,
+          inStock: true,
+        },
+      }
+      const schema = generateProductSchema(product)
+
+      expect(schema.offers.availability).toBe('https://schema.org/LimitedAvailability')
+    })
+
+    it('shows InStock for products with sufficient stock', () => {
+      const product = {
+        ...mockProduct,
+        stock: {
+          trackInventory: true,
+          quantity: 10,
+          inStock: true,
+        },
+      }
+      const schema = generateProductSchema(product)
+
+      expect(schema.offers.availability).toBe('https://schema.org/InStock')
+    })
+
+    it('defaults to InStock when stock data is missing', () => {
+      const product = { ...mockProduct }
+      delete product.stock
+      const schema = generateProductSchema(product)
+
+      expect(schema.offers.availability).toBe('https://schema.org/InStock')
     })
   })
 

@@ -70,6 +70,11 @@ describe('wixService', () => {
             productType: 'Furniture',
             collectionIds: ['antiques'],
             sku: 'SKU-001',
+            stock: {
+              trackInventory: true,
+              quantity: 5,
+              inStock: true,
+            },
           },
         ],
         hasNext: () => false,
@@ -89,6 +94,11 @@ describe('wixService', () => {
         category: 'Antiques',
         collections: ['antiques'],
         sku: 'SKU-001',
+        stock: {
+          trackInventory: true,
+          quantity: 5,
+          inStock: true,
+        },
       })
     })
 
@@ -104,6 +114,7 @@ describe('wixService', () => {
             productType: 'Furniture',
             collectionIds: [],
             sku: null,
+            stock: null,
           },
         ],
         hasNext: () => false,
@@ -113,6 +124,11 @@ describe('wixService', () => {
 
       expect(products[0].image).toBeNull()
       expect(products[0].images).toEqual([])
+      expect(products[0].stock).toEqual({
+        trackInventory: false,
+        quantity: 0,
+        inStock: true,
+      })
     })
 
     it('throws error on SDK failure', async () => {
@@ -123,12 +139,12 @@ describe('wixService', () => {
 
     it('paginates through all results', async () => {
       const page2 = {
-        items: [{ _id: '2', name: 'Product 2', description: '', price: { price: 200 }, media: null, productType: 'Art', collectionIds: ['col2'], sku: null }],
+        items: [{ _id: '2', name: 'Product 2', description: '', price: { price: 200 }, media: null, productType: 'Art', collectionIds: ['col2'], sku: null, stock: { trackInventory: false, quantity: 0, inStock: true } }],
         hasNext: () => false,
       }
 
       mockFind.mockResolvedValueOnce({
-        items: [{ _id: '1', name: 'Product 1', description: '', price: { price: 100 }, media: null, productType: 'Furniture', collectionIds: ['col1'], sku: null }],
+        items: [{ _id: '1', name: 'Product 1', description: '', price: { price: 100 }, media: null, productType: 'Furniture', collectionIds: ['col1'], sku: null, stock: { trackInventory: true, quantity: 10, inStock: true } }],
         hasNext: () => true,
         next: vi.fn().mockResolvedValueOnce(page2),
       })
@@ -159,6 +175,11 @@ describe('wixService', () => {
         productType: 'Furniture',
         collectionIds: [],
         sku: 'SKU-001',
+        stock: {
+          trackInventory: true,
+          quantity: 3,
+          inStock: true,
+        },
       })
 
       const product = await fetchWixProduct('1')
@@ -174,6 +195,11 @@ describe('wixService', () => {
         category: 'Furniture',
         collections: [],
         sku: 'SKU-001',
+        stock: {
+          trackInventory: true,
+          quantity: 3,
+          inStock: true,
+        },
       })
     })
 

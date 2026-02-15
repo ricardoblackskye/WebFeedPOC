@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import StockIndicator from './StockIndicator'
 import './ProductModal.css'
 
 function ProductModal({ product, onClose, onAddToCart }) {
@@ -43,7 +44,11 @@ function ProductModal({ product, onClose, onAddToCart }) {
     }
   }
 
+  // Check if product is available for purchase
+  const isOutOfStock = product.stock?.trackInventory && (!product.stock?.inStock || product.stock?.quantity === 0)
+
   const handleAddToCart = () => {
+    if (isOutOfStock) return
     onAddToCart(product)
     onClose()
   }
@@ -108,6 +113,8 @@ function ProductModal({ product, onClose, onAddToCart }) {
               </div>
             )}
             
+            {product.stock && <StockIndicator stock={product.stock} />}
+            
             {product.condition && (
               <div className="modal-info">
                 <strong>Condition:</strong> {product.condition}
@@ -132,8 +139,12 @@ function ProductModal({ product, onClose, onAddToCart }) {
               </div>
             )}
             
-            <button className="modal-add-to-cart" onClick={handleAddToCart}>
-              Add to Cart
+            <button 
+              className={`modal-add-to-cart ${isOutOfStock ? 'disabled' : ''}`} 
+              onClick={handleAddToCart}
+              disabled={isOutOfStock}
+            >
+              {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
             </button>
           </div>
         </div>

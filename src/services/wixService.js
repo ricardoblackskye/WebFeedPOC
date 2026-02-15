@@ -64,6 +64,12 @@ export async function fetchWixProducts() {
         category: category,
         collections: product.collectionIds || [],
         sku: product.sku || null,
+        // Inventory data
+        stock: {
+          trackInventory: product.stock?.trackInventory || false,
+          quantity: product.stock?.quantity || 0,
+          inStock: product.stock?.inStock !== false, // Default to true if not specified
+        },
       }
     })
   } catch (error) {
@@ -108,6 +114,12 @@ export async function fetchWixProduct(productId) {
       category: category,
       collections: product.collectionIds || [],
       sku: product.sku || null,
+      // Inventory data
+      stock: {
+        trackInventory: product.stock?.trackInventory || false,
+        quantity: product.stock?.quantity || 0,
+        inStock: product.stock?.inStock !== false, // Default to true if not specified
+      },
     }
   } catch (error) {
     console.error('Failed to fetch Wix product:', error)

@@ -14,6 +14,16 @@ const SITE_URL = 'https://www.antiquesmarketplace.co.uk' // Update with real dom
 export function generateProductSchema(product) {
   if (!product) return null
 
+  // Determine availability based on stock information
+  let availability = 'https://schema.org/InStock' // Default
+  if (product.stock?.trackInventory) {
+    if (!product.stock.inStock || product.stock.quantity === 0) {
+      availability = 'https://schema.org/OutOfStock'
+    } else if (product.stock.quantity <= 5) {
+      availability = 'https://schema.org/LimitedAvailability'
+    }
+  }
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -27,7 +37,7 @@ export function generateProductSchema(product) {
       '@type': 'Offer',
       price: product.price,
       priceCurrency: 'GBP',
-      availability: 'https://schema.org/InStock',
+      availability: availability,
       url: `${SITE_URL}/products/${product.slug}`,
     },
   }

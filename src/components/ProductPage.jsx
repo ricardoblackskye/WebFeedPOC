@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { stripHtml } from '../utils/helpers'
 import { generateProductSchema, generateBreadcrumbSchema, SITE_NAME } from '../utils/structuredData'
+import StockIndicator from './StockIndicator'
 import './ProductPage.css'
 
 function ProductPage({ products, onAddToCart }) {
@@ -40,7 +41,21 @@ function ProductPage({ products, onAddToCart }) {
     { name: product.name },
   ])
 
+  // Check if product is available for purchase
+  const isOutOfStock = product.stock?.trackInventory && (!product.stock?.inStock || product.stock?.quantity === 0)
+
+  // Determine structured data availability
+  let availabilitySchema = 'https://schema.org/InStock'
+  if (product.stock?.trackInventory) {
+    if (!product.stock.inStock || product.stock.quantity === 0) {
+      availabilitySchema = 'https://schema.org/OutOfStock'
+    } else if (product.stock.quantity <= 5) {
+      availabilitySchema = 'https://schema.org/LimitedAvailability'
+    }
+  }
+
   const handleAddToCart = () => {
+    if (isOutOfStock) return
     onAddToCart(product)
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
@@ -121,7 +136,7 @@ function ProductPage({ products, onAddToCart }) {
           <div className="product-page-price" itemProp="offers" itemScope itemType="https://schema.org/Offer">
             <span itemProp="price" content={product.price}>£{product.price.toFixed(2)}</span>
             <meta itemProp="priceCurrency" content="GBP" />
-            <meta itemProp="availability" content="https://schema.org/InStock" />
+            <meta itemProp="availability" content={availabilitySchema} />
           </div>
 
           {product.sku && (
@@ -129,6 +144,9 @@ function ProductPage({ products, onAddToCart }) {
               SKU: <span itemProp="sku">{product.sku}</span>
             </div>
           )}
+
+          {/* Stock availability indicator */}
+          {product.stock && <StockIndicator stock={product.stock} />}
 
           <div className="product-page-description" itemProp="description">
             <h2>Description</h2>
@@ -169,10 +187,11 @@ function ProductPage({ products, onAddToCart }) {
           )}
 
           <button
-            className={`product-page-add-to-cart ${addedToCart ? 'added' : ''}`}
+            className={`product-page-add-to-cart ${addedToCart ? 'added' : ''} ${isOutOfStock ? 'disabled' : ''}`}
             onClick={handleAddToCart}
+            disabled={isOutOfStock}
           >
-            {addedToCart ? '✓ Added to Cart' : 'Add to Cart'}
+            {isOutOfStock ? 'Out of Stock' : addedToCart ? '✓ Added to Cart' : 'Add to Cart'}
           </button>
 
           <Link to="/" className="product-page-back">← Continue Shopping</Link>

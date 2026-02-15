@@ -1,0 +1,58 @@
+.stock-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-family: var(--font-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.75rem 0;
+}
+
+.stock-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.stock-text {
+  line-height: 1;
+}
+
+/* In stock - green */
+.stock-available {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Low stock - amber/gold warning */
+.stock-low {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-gold);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+/* Out of stock - red */
+.stock-out {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+@media (prefers-color-scheme: light) {
+  .stock-available {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+  }
+
+  .stock-low {
+    background: rgba(212, 175, 55, 0.1);
+    color: #b8941f;
+  }
+
+  .stock-out {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+  }
+}

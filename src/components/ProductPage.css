@@ -189,6 +189,24 @@
   border-color: #22c55e;
 }
 
+.product-page-add-to-cart.disabled,
+.product-page-add-to-cart:disabled {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.product-page-add-to-cart.disabled:hover,
+.product-page-add-to-cart:disabled:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  transform: none;
+  box-shadow: none;
+}
+
 .product-page-back {
   display: inline-block;
   margin-top: 1rem;
