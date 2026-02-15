@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  ssr: {
+    // Bundle these packages during SSR (they're ESM but detected as CJS)
+    noExternal: ['react-helmet-async', 'react-router-dom', 'react-router'],
+  },
   test: {
     globals: true,
     environment: 'jsdom',
