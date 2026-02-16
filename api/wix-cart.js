@@ -16,10 +16,10 @@ import { products } from '@wix/stores'
 
 // Helper to create authenticated Wix client
 function createWixClient(tokens) {
-  const clientId = process.env.VITE_WIX_CLIENT_ID || process.env.WIX_CLIENT_ID
+  const clientId = process.env.WIX_CLIENT_ID
   
   if (!clientId) {
-    throw new Error('Wix client ID not configured')
+    throw new Error('WIX_CLIENT_ID environment variable not set. Set in Vercel dashboard (without VITE_ prefix)')
   }
 
   return createClient({

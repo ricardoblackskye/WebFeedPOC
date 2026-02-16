@@ -18,13 +18,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const clientId = process.env.VITE_WIX_CLIENT_ID || process.env.WIX_CLIENT_ID
+    const clientId = process.env.WIX_CLIENT_ID
     
     if (!clientId) {
       console.error('Wix client ID not configured')
       return res.status(500).json({ 
         error: 'Wix configuration missing',
-        details: 'WIX_CLIENT_ID environment variable not set'
+        details: 'WIX_CLIENT_ID environment variable not set. Set in Vercel dashboard (without VITE_ prefix)'
       })
     }
 

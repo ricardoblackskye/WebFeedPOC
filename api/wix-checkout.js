@@ -15,10 +15,10 @@ import { currentCart } from '@wix/ecom'
 
 // Helper to create authenticated Wix client
 function createWixClient(tokens) {
-  const clientId = process.env.VITE_WIX_CLIENT_ID || process.env.WIX_CLIENT_ID
+  const clientId = process.env.WIX_CLIENT_ID
   
   if (!clientId) {
-    throw new Error('Wix client ID not configured')
+    throw new Error('WIX_CLIENT_ID environment variable not set. Set in Vercel dashboard (without VITE_ prefix)')
   }
 
   return createClient({
@@ -70,7 +70,10 @@ export default async function handler(req, res) {
       const checkoutObj = checkoutResponse.checkout
       
       // Build checkout URL
-      const siteUrl = process.env.VITE_WIX_SITE_URL || process.env.WIX_SITE_URL || 'https://www.wix.com'
+      const siteUrl = process.env.WIX_SITE_URL
+      if (!siteUrl) {
+        throw new Error('WIX_SITE_URL environment variable not set. Set in Vercel dashboard (without VITE_ prefix)')
+      }
       const checkoutUrl = `${siteUrl}/_api/checkout/v1/checkout/${checkoutObj._id}`
 
       return res.status(200).json({
