@@ -2,11 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import Cart from '../components/Cart'
 
-// Mock Stripe
-vi.mock('@stripe/stripe-js', () => ({
-  loadStripe: vi.fn(() => Promise.resolve({
-    redirectToCheckout: vi.fn(),
-  })),
+// Mock Wix checkout service
+vi.mock('../services/wixCheckoutService', () => ({
+  initiateCheckout: vi.fn(() => Promise.resolve('https://checkout.wix.com/test')),
 }))
 
 describe('Cart', () => {
@@ -126,6 +124,6 @@ describe('Cart', () => {
       />
     )
 
-    expect(screen.getByText('Checkout with Stripe')).toBeDefined()
+    expect(screen.getByText('Proceed to Checkout')).toBeDefined()
   })
 })
