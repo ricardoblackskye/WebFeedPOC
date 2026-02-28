@@ -63,7 +63,7 @@ export default async function handler(req, res) {
     // Handle different operations based on method and query params
     if (req.method === 'POST') {
       // Create checkout from current cart
-      const checkoutResponse = await wixClient.checkout.createCheckoutFromCurrentCart({
+      const checkoutResponse = await wixClient.currentCart.createCheckoutFromCurrentCart({
         channelType: 'WEB',
       })
 
