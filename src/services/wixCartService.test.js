@@ -127,7 +127,7 @@ describe('wixCartService', () => {
         tax: 0,
         shipping: 0,
         discount: 0,
-        total: 0,
+        total: 100,
       })
     })
 

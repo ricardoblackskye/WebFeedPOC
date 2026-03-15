@@ -170,11 +170,19 @@ export function getCartTotals(wixCart) {
     }
   }
 
-  return {
-    subtotal: Number.parseFloat(wixCart.subtotal?.amount || 0),
-    tax: Number.parseFloat(wixCart.taxSummary?.totalTax?.amount || 0),
-    shipping: Number.parseFloat(wixCart.shippingInfo?.cost?.amount || 0),
-    discount: Number.parseFloat(wixCart.appliedDiscounts?.reduce((sum, d) => sum + Number.parseFloat(d.discountAmount?.amount || 0), 0) || 0),
-    total: Number.parseFloat(wixCart.totals?.total?.amount || 0),
-  }
+  const subtotal = Number.parseFloat(wixCart.subtotal?.amount || 0)
+  const tax = Number.parseFloat(wixCart.taxSummary?.totalTax?.amount || 0)
+  const shipping = Number.parseFloat(
+    wixCart.shippingInfo?.cost?.amount ||
+    wixCart.shippingInfo?.region?.cost?.amount ||
+    0
+  )
+  const discount = Number.parseFloat(
+    wixCart.appliedDiscounts?.reduce((sum, d) => sum + Number.parseFloat(d.discountAmount?.amount || 0), 0) || 0
+  )
+  // Wix Cart has no totals.total — derive it; fall back to subtotal if all are zero
+  const total = Number.parseFloat(wixCart.totals?.total?.amount || 0) ||
+    (subtotal + tax + shipping - discount)
+
+  return { subtotal, tax, shipping, discount, total }
 }
