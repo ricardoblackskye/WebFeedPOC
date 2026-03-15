@@ -70,9 +70,15 @@ export default async function handler(req, res) {
     switch (action) {
       case 'get':
       case 'GET':
-        // Get current cart
-        const cart = await wixClient.currentCart.getCurrentCart()
-        return res.status(200).json({ success: true, cart })
+        // Get current cart — new visitors have no cart yet, which is not an error
+        try {
+          const cart = await wixClient.currentCart.getCurrentCart()
+          return res.status(200).json({ success: true, cart })
+        } catch (cartError) {
+          // Wix throws when the visitor has no cart yet — return an empty cart structure
+          // so the frontend stays in Wix-backend mode and adds go to Wix
+          return res.status(200).json({ success: true, cart: { lineItems: [] } })
+        }
 
       case 'add':
       case 'POST':

@@ -62,6 +62,20 @@ export default async function handler(req, res) {
 
     // Handle different operations based on method and query params
     if (req.method === 'POST') {
+      // If local cart items are provided (local-mode fallback), sync them to Wix cart first
+      const localItems = req.body?.items
+      if (localItems && localItems.length > 0) {
+        await wixClient.currentCart.addToCurrentCart({
+          lineItems: localItems.map(item => ({
+            catalogReference: {
+              catalogItemId: item.id,
+              appId: '1380b703-ce81-ff05-f115-39571d94dfcd', // Wix Stores default app ID
+            },
+            quantity: parseInt(item.quantity, 10) || 1,
+          })),
+        })
+      }
+
       // Create checkout from current cart
       const checkoutResponse = await wixClient.currentCart.createCheckoutFromCurrentCart({
         channelType: 'WEB',

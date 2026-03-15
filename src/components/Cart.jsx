@@ -23,8 +23,8 @@ function Cart({
     setCheckoutError(null)
 
     try {
-      // Always try to use Wix checkout flow
-      const checkoutUrl = await initiateCheckout()
+      // Pass local items when not using Wix backend so checkout API can sync them
+      const checkoutUrl = await initiateCheckout(useWixBackend ? undefined : items)
       
       // Redirect to Wix hosted checkout page
       globalThis.location.href = checkoutUrl

@@ -174,15 +174,24 @@ export function transformOrder(wixOrder) {
  * This is the main function to use for initiating checkout
  * @returns {Promise<string>} Checkout URL to redirect user to
  */
-export async function initiateCheckout() {
+export async function initiateCheckout(localItems) {
   try {
     // Create checkout from current cart via API
+    // Pass local cart items when in local mode so the API can sync them to Wix first
+    const body = localItems && localItems.length > 0 ? { items: localItems } : {}
     const response = await wixSession.makeAuthenticatedRequest('/api/wix-checkout', {
       method: 'POST',
+      body: JSON.stringify(body),
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to create checkout: ${response.statusText}`)
+      let message = `Failed to create checkout: ${response.statusText}`
+      try {
+        const errData = await response.json()
+        if (errData.details) message = errData.details
+        else if (errData.error) message = errData.error
+      } catch { /* ignore parse errors */ }
+      throw new Error(message)
     }
 
     const data = await response.json()
