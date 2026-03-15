@@ -145,7 +145,7 @@ export function transformWixCart(wixCart) {
     id: item.catalogReference?.catalogItemId || item.productName?.original, // Use product ID if available
     lineItemId: item._id, // Wix line item ID for updates/removes
     name: item.productName?.translated || item.productName?.original || 'Unknown Product',
-    price: item.price?.amount || 0,
+    price: parseFloat(item.price?.amount || 0),
     quantity: item.quantity || 1,
     image: item.image || null,
     url: item.url || null,
