@@ -111,9 +111,12 @@ async function handlePost(wixClient, req, res) {
   const redirectSession = await wixClient.redirects.createRedirectSession({
     ecomCheckout: { checkoutId },
     callbacks: {
+      // thankYouPageUrl: Wix appends ?orderId=... after a completed order
       thankYouPageUrl: `${siteUrl}/order-confirmation`,
-      postFlowUrl: `${siteUrl}/order-confirmation`,
-      // cartPageUrl and checkoutPageUrl prevent Wix falling back to its own
+      // postFlowUrl: triggered for intermediate flows (e.g. member login during
+      // checkout) — no orderId is provided, so send back to homepage not order-confirmation
+      postFlowUrl: siteUrl,
+      // cartPageUrl / checkoutPageUrl: prevents Wix falling back to its own
       // redirect middleware (giannadart.co.uk/__ecom/_serverless/...) when
       // the user clicks "Continue browsing" or navigates back from checkout
       cartPageUrl: siteUrl,
