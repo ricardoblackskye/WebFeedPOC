@@ -102,17 +102,18 @@ async function handlePost(wixClient, req, res) {
     channelType: 'WEB',
   })
 
-  const checkoutObj = checkoutResponse.checkout
+  // createCheckoutFromCurrentCart returns { checkoutId } not { checkout: { _id } }
+  const checkoutId = checkoutResponse.checkoutId
 
   const siteUrl = process.env.WIX_SITE_URL
   if (!siteUrl) {
     throw new Error('WIX_SITE_URL environment variable not set. Set in Vercel dashboard (without VITE_ prefix)')
   }
-  const checkoutUrl = `${siteUrl}/_api/checkout/v1/checkout/${checkoutObj._id}`
+  const checkoutUrl = `${siteUrl}/_api/checkout/v1/checkout/${checkoutId}`
 
   return res.status(200).json({
     success: true,
-    checkout: checkoutObj,
+    checkout: { _id: checkoutId },
     checkoutUrl,
   })
 }
