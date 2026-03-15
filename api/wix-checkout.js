@@ -11,6 +11,7 @@
 
 import { createClient, OAuthStrategy } from '@wix/sdk'
 import { checkout, orders, currentCart } from '@wix/ecom'
+import { redirects } from '@wix/redirects'
 
 // Helper to create authenticated Wix client
 function createWixClient(tokens) {
@@ -21,7 +22,7 @@ function createWixClient(tokens) {
   }
 
   return createClient({
-    modules: { checkout, orders, currentCart },
+    modules: { checkout, orders, currentCart, redirects },
     auth: OAuthStrategy({ 
       clientId,
       tokens: tokens || undefined
@@ -105,11 +106,20 @@ async function handlePost(wixClient, req, res) {
   // createCheckoutFromCurrentCart returns { checkoutId } not { checkout: { _id } }
   const checkoutId = checkoutResponse.checkoutId
 
-  const siteUrl = process.env.WIX_SITE_URL
-  if (!siteUrl) {
-    throw new Error('WIX_SITE_URL environment variable not set. Set in Vercel dashboard (without VITE_ prefix)')
+  // Use createRedirectSession to get the proper hosted checkout URL
+  const siteUrl = process.env.WIX_SITE_URL || ''
+  const redirectSession = await wixClient.redirects.createRedirectSession({
+    ecomCheckout: { checkoutId },
+    callbacks: {
+      postFlowUrl: `${siteUrl}/order-confirmation`,
+      thankYouPageUrl: `${siteUrl}/order-confirmation`,
+    },
+  })
+
+  const checkoutUrl = redirectSession?.redirectSession?.fullUrl
+  if (!checkoutUrl) {
+    throw new Error('Failed to create checkout redirect URL')
   }
-  const checkoutUrl = `${siteUrl}/_api/checkout/v1/checkout/${checkoutId}`
 
   return res.status(200).json({
     success: true,
