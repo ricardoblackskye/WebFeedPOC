@@ -11,7 +11,7 @@ afterEach(() => {
 })
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(globalThis, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
     matches: false,
@@ -26,12 +26,12 @@ Object.defineProperty(window, 'matchMedia', {
 })
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
+globalThis.IntersectionObserver = class IntersectionObserver {
+  // eslint-disable-next-line no-useless-constructor
+  disconnect() { /* mock */ }
+  observe() { /* mock */ }
   takeRecords() {
     return []
   }
-  unobserve() {}
+  unobserve() { /* mock */ }
 }

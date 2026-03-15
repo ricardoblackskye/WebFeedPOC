@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { initiateCheckout } from '../services/wixCheckoutService'
 import './Cart.css'
 
@@ -26,7 +27,7 @@ function Cart({
       const checkoutUrl = await initiateCheckout()
       
       // Redirect to Wix hosted checkout page
-      window.location.href = checkoutUrl
+      globalThis.location.href = checkoutUrl
     } catch (error) {
       console.error('Checkout error:', error)
       
@@ -148,7 +149,7 @@ function Cart({
           onClick={handleCheckout} 
           className="checkout-btn"
           disabled={checkoutLoading || items.length === 0}
-          title={!useWixBackend ? 'Cart is in local mode. Checkout requires Wix backend configuration.' : ''}
+          title={useWixBackend ? '' : 'Cart is in local mode. Checkout requires Wix backend configuration.'}
         >
           {checkoutLoading ? 'Processing...' : 'Proceed to Checkout'}
         </button>
@@ -160,6 +161,30 @@ function Cart({
       </div>
     </div>
   )
+}
+
+Cart.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      quantity: PropTypes.number.isRequired,
+    })
+  ).isRequired,
+  onUpdateQuantity: PropTypes.func.isRequired,
+  onRemoveItem: PropTypes.func.isRequired,
+  totalPrice: PropTypes.number.isRequired,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  useWixBackend: PropTypes.bool,
+  totals: PropTypes.shape({
+    subtotal: PropTypes.number.isRequired,
+    discount: PropTypes.number.isRequired,
+    shipping: PropTypes.number.isRequired,
+    tax: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
+  }),
 }
 
 export default Cart
