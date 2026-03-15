@@ -132,18 +132,18 @@ export function transformOrder(wixOrder) {
       productId: item.catalogReference?.catalogItemId,
       name: item.productName?.original || item.productName?.translated || 'Unknown Product',
       quantity: item.quantity,
-      price: parseFloat(item.price?.amount || 0),
-      totalPrice: parseFloat(item.totalPrice?.amount || 0),
+      price: Number.parseFloat(item.price?.amount || 0),
+      totalPrice: Number.parseFloat(item.totalPrice?.amount || 0),
       image: item.image,
       url: item.url,
     })) || [],
     
     // Pricing
-    subtotal: parseFloat(wixOrder.priceSummary?.subtotal?.amount || 0),
-    shipping: parseFloat(wixOrder.priceSummary?.shipping?.amount || 0),
-    tax: parseFloat(wixOrder.priceSummary?.tax?.amount || 0),
-    discount: parseFloat(wixOrder.priceSummary?.discount?.amount || 0),
-    total: parseFloat(wixOrder.priceSummary?.total?.amount || 0),
+    subtotal: Number.parseFloat(wixOrder.priceSummary?.subtotal?.amount || 0),
+    shipping: Number.parseFloat(wixOrder.priceSummary?.shipping?.amount || 0),
+    tax: Number.parseFloat(wixOrder.priceSummary?.tax?.amount || 0),
+    discount: Number.parseFloat(wixOrder.priceSummary?.discount?.amount || 0),
+    total: Number.parseFloat(wixOrder.priceSummary?.total?.amount || 0),
     
     // Shipping info
     shippingInfo: wixOrder.shippingInfo ? {
@@ -188,8 +188,8 @@ export async function initiateCheckout(localItems) {
       let message = `Failed to create checkout: ${response.statusText}`
       try {
         const errData = await response.json()
-        if (errData.details) message = errData.details
-        else if (errData.error) message = errData.error
+        if (typeof errData.details === 'string') message = errData.details
+        else if (typeof errData.error === 'string') message = errData.error
       } catch { /* ignore parse errors */ }
       throw new Error(message)
     }
@@ -202,8 +202,8 @@ export async function initiateCheckout(localItems) {
     }
     
     // Fallback: construct URL from checkout ID
-    if (data.checkout && data.checkout._id) {
-      return getCheckoutUrl(data.checkout._id)
+    if (data.checkout?._id) {
+      return getCheckoutUrl(data.checkout?._id)
     }
     
     throw new Error('Invalid checkout response - no URL or ID provided')

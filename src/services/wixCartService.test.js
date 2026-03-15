@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import {
   transformWixCart,
   getCartTotals,
@@ -35,7 +35,7 @@ describe('wixCartService', () => {
         id: 'product1',
         lineItemId: 'line1',
         name: 'Antique Chair',
-        price: '150.00',
+        price: 150,
         quantity: 2,
         image: 'https://example.com/chair.jpg',
         url: '/products/antique-chair',
@@ -45,7 +45,7 @@ describe('wixCartService', () => {
         id: 'product2',
         lineItemId: 'line2',
         name: 'Vintage Clock',
-        price: '75.50',
+        price: 75.5,
         quantity: 1,
         image: null,
         url: null,

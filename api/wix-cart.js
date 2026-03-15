@@ -31,16 +31,14 @@ function createWixClient(tokens) {
   })
 }
 
-// Get tokens from cookies or request body
+// Get tokens from custom header (full token objects) or cookies
 function getTokens(req) {
-  // Try to get from Authorization header
-  const authHeader = req.headers.authorization
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const accessToken = authHeader.substring(7)
-    return {
-      accessToken,
-      refreshToken: req.cookies?.wix_refresh_token
-    }
+  // Try the X-Wix-Tokens header (contains full { accessToken, refreshToken } objects)
+  const wixTokensHeader = req.headers['x-wix-tokens']
+  if (wixTokensHeader) {
+    try {
+      return JSON.parse(wixTokensHeader)
+    } catch { /* ignore malformed header */ }
   }
 
   // Try to get from cookies
@@ -69,7 +67,7 @@ export default async function handler(req, res) {
 
     switch (action) {
       case 'get':
-      case 'GET':
+      case 'GET': {
         // Get current cart — new visitors have no cart yet, which is not an error
         try {
           const cart = await wixClient.currentCart.getCurrentCart()
@@ -77,11 +75,13 @@ export default async function handler(req, res) {
         } catch (cartError) {
           // Wix throws when the visitor has no cart yet — return an empty cart structure
           // so the frontend stays in Wix-backend mode and adds go to Wix
+          console.warn('No cart found for visitor, returning empty cart:', cartError.message)
           return res.status(200).json({ success: true, cart: { lineItems: [] } })
         }
+      }
 
       case 'add':
-      case 'POST':
+      case 'POST': {
         // Add item to cart
         const { productId, quantity = 1, options } = req.body
         
@@ -96,7 +96,7 @@ export default async function handler(req, res) {
               appId: process.env.VITE_WIX_STORES_APP_ID || '1380b703-ce81-ff05-f115-39571d94dfcd',
               options: options || {}
             },
-            quantity: parseInt(quantity, 10)
+            quantity: Number.parseInt(quantity, 10)
           }]
         })
 
@@ -104,9 +104,10 @@ export default async function handler(req, res) {
           success: true, 
           cart: addResult.cart 
         })
+      }
 
       case 'update':
-      case 'PUT':
+      case 'PUT': {
         // Update cart item quantity
         const { lineItemId, newQuantity } = req.body
         
@@ -116,16 +117,17 @@ export default async function handler(req, res) {
 
         const updateResult = await wixClient.currentCart.updateCurrentCartLineItemQuantity([{
           _id: lineItemId,
-          quantity: parseInt(newQuantity, 10)
+          quantity: Number.parseInt(newQuantity, 10)
         }])
 
         return res.status(200).json({ 
           success: true, 
           cart: updateResult.cart 
         })
+      }
 
       case 'remove':
-      case 'DELETE':
+      case 'DELETE': {
         if (req.query.clear === 'true') {
           // Clear entire cart
           await wixClient.currentCart.deleteCurrentCart()
@@ -133,20 +135,21 @@ export default async function handler(req, res) {
             success: true, 
             message: 'Cart cleared' 
           })
-        } else {
-          // Remove specific item
-          const itemId = req.body.lineItemId || req.query.lineItemId
-          
-          if (!itemId) {
-            return res.status(400).json({ error: 'Line item ID required' })
-          }
-
-          const removeResult = await wixClient.currentCart.removeLineItemsFromCurrentCart([itemId])
-          return res.status(200).json({ 
-            success: true, 
-            cart: removeResult.cart 
-          })
         }
+
+        // Remove specific item
+        const itemId = req.body.lineItemId || req.query.lineItemId
+        
+        if (!itemId) {
+          return res.status(400).json({ error: 'Line item ID required' })
+        }
+
+        const removeResult = await wixClient.currentCart.removeLineItemsFromCurrentCart([itemId])
+        return res.status(200).json({ 
+          success: true, 
+          cart: removeResult.cart 
+        })
+      }
 
       default:
         return res.status(400).json({ error: 'Invalid action' })

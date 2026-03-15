@@ -40,10 +40,10 @@ export default async function handler(req, res) {
     // Generate visitor tokens
     const tokens = await wixClient.auth.generateVisitorTokens()
     
-    // Set secure cookie with tokens (for server-side use)
+    // Set secure cookie with token string values (for server-side cookie fallback)
     res.setHeader('Set-Cookie', [
-      `wix_visitor_token=${tokens.accessToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`,
-      `wix_refresh_token=${tokens.refreshToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`,
+      `wix_visitor_token=${tokens.accessToken.value}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=604800`,
+      `wix_refresh_token=${tokens.refreshToken.value}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`,
     ])
 
     // Return tokens to client (for client-side SDK use)

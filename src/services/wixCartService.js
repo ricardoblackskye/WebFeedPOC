@@ -137,7 +137,7 @@ export async function clearWixCart() {
  * @returns {Array} Array of cart items in app format
  */
 export function transformWixCart(wixCart) {
-  if (!wixCart || !wixCart.lineItems) {
+  if (!wixCart?.lineItems) {
     return []
   }
 
@@ -145,7 +145,7 @@ export function transformWixCart(wixCart) {
     id: item.catalogReference?.catalogItemId || item.productName?.original, // Use product ID if available
     lineItemId: item._id, // Wix line item ID for updates/removes
     name: item.productName?.translated || item.productName?.original || 'Unknown Product',
-    price: parseFloat(item.price?.amount || 0),
+    price: Number.parseFloat(item.price?.amount || 0),
     quantity: item.quantity || 1,
     image: item.image || null,
     url: item.url || null,
@@ -171,10 +171,10 @@ export function getCartTotals(wixCart) {
   }
 
   return {
-    subtotal: parseFloat(wixCart.subtotal?.amount || 0),
-    tax: parseFloat(wixCart.taxSummary?.totalTax?.amount || 0),
-    shipping: parseFloat(wixCart.shippingInfo?.cost?.amount || 0),
-    discount: parseFloat(wixCart.appliedDiscounts?.reduce((sum, d) => sum + parseFloat(d.discountAmount?.amount || 0), 0) || 0),
-    total: parseFloat(wixCart.totals?.total?.amount || 0),
+    subtotal: Number.parseFloat(wixCart.subtotal?.amount || 0),
+    tax: Number.parseFloat(wixCart.taxSummary?.totalTax?.amount || 0),
+    shipping: Number.parseFloat(wixCart.shippingInfo?.cost?.amount || 0),
+    discount: Number.parseFloat(wixCart.appliedDiscounts?.reduce((sum, d) => sum + Number.parseFloat(d.discountAmount?.amount || 0), 0) || 0),
+    total: Number.parseFloat(wixCart.totals?.total?.amount || 0),
   }
 }

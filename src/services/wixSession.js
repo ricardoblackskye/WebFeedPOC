@@ -8,9 +8,10 @@ const SESSION_STORAGE_KEY = 'wix_session'
 const TOKEN_EXPIRY_BUFFER = 300000 // 5 minutes before actual expiry
 
 class WixSessionManager {
+  tokens = null
+  expiresAt = null
+
   constructor() {
-    this.tokens = null
-    this.expiresAt = null
     this.initializeSession()
   }
 
@@ -54,14 +55,16 @@ class WixSessionManager {
 
   /**
    * Get authorization header for API requests
+   * Sends the full token objects as JSON so the server can reconstruct them
+   * for the Wix SDK (accessToken is an object {value, expiresAt}, not a plain string)
    */
   getAuthHeader() {
     const tokens = this.getTokens()
-    if (!tokens || !tokens.accessToken) {
+    if (!tokens) {
       return {}
     }
     return {
-      'Authorization': `Bearer ${tokens.accessToken}`
+      'X-Wix-Tokens': JSON.stringify(tokens)
     }
   }
 
