@@ -20,7 +20,7 @@ export function isValidEmail(email) {
  * Generates a unique ID
  */
 export function generateId() {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
 }
 
 /**
@@ -30,7 +30,7 @@ export function stripHtml(html) {
   if (!html) return ''
   
   // Remove HTML tags
-  let text = html.replace(/<[^>]*>/g, '')
+  let text = html.replaceAll(/<[^>]*>/g, '')
   
   // Decode HTML entities using a temporary DOM element
   const textarea = document.createElement('textarea')
@@ -38,7 +38,7 @@ export function stripHtml(html) {
   text = textarea.value
   
   // Clean up extra whitespace
-  return text.replace(/\s+/g, ' ').trim()
+  return text.replaceAll(/\s+/g, ' ').trim()
 }
 
 /**
@@ -48,8 +48,8 @@ export function generateSlug(text) {
   if (!text) return ''
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
 }
 
 /**

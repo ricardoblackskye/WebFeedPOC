@@ -189,7 +189,7 @@ export default function OrderConfirmation() {
         <Link to="/" className="btn-primary">Continue Shopping</Link>
         <button 
           className="btn-secondary"
-          onClick={() => window.print()}
+          onClick={() => globalThis.print()}
         >
           Print Order
         </button>

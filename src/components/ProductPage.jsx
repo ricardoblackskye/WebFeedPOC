@@ -1,10 +1,24 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { stripHtml } from '../utils/helpers'
 import { generateProductSchema, generateBreadcrumbSchema, SITE_NAME } from '../utils/structuredData'
 import StockIndicator from './StockIndicator'
 import './ProductPage.css'
+
+function getDisplayImages(product) {
+  if (product.images?.length > 0) return product.images
+  if (product.image) return [product.image]
+  return []
+}
+
+function getAvailabilitySchema(stock) {
+  if (!stock?.trackInventory) return 'https://schema.org/InStock'
+  if (!stock.inStock || stock.quantity === 0) return 'https://schema.org/OutOfStock'
+  if (stock.quantity <= 5) return 'https://schema.org/LimitedAvailability'
+  return 'https://schema.org/InStock'
+}
 
 function ProductPage({ products, onAddToCart }) {
   const { slug } = useParams()
@@ -27,9 +41,7 @@ function ProductPage({ products, onAddToCart }) {
     )
   }
 
-  const displayImages = product.images?.length > 0
-    ? product.images
-    : product.image ? [product.image] : []
+  const displayImages = getDisplayImages(product)
 
   const plainDescription = stripHtml(product.description)
   const metaDescription = plainDescription.substring(0, 155)
@@ -44,15 +56,11 @@ function ProductPage({ products, onAddToCart }) {
   // Check if product is available for purchase
   const isOutOfStock = product.stock?.trackInventory && (!product.stock?.inStock || product.stock?.quantity === 0)
 
-  // Determine structured data availability
-  let availabilitySchema = 'https://schema.org/InStock'
-  if (product.stock?.trackInventory) {
-    if (!product.stock.inStock || product.stock.quantity === 0) {
-      availabilitySchema = 'https://schema.org/OutOfStock'
-    } else if (product.stock.quantity <= 5) {
-      availabilitySchema = 'https://schema.org/LimitedAvailability'
-    }
-  }
+  const availabilitySchema = getAvailabilitySchema(product.stock)
+
+  let cartButtonLabel = 'Add to Cart'
+  if (isOutOfStock) cartButtonLabel = 'Out of Stock'
+  else if (addedToCart) cartButtonLabel = '✓ Added to Cart'
 
   const handleAddToCart = () => {
     if (isOutOfStock) return
@@ -98,7 +106,7 @@ function ProductPage({ products, onAddToCart }) {
             <>
               <img
                 src={displayImages[selectedImageIndex]}
-                alt={`${product.name} - Image ${selectedImageIndex + 1}`}
+                alt={product.name}
                 className="product-page-main-image"
                 width="600"
                 height="600"
@@ -108,14 +116,14 @@ function ProductPage({ products, onAddToCart }) {
                 <div className="product-page-thumbnails">
                   {displayImages.map((imageUrl, index) => (
                     <button
-                      key={index}
+                      key={imageUrl}
                       className={`product-page-thumb ${index === selectedImageIndex ? 'active' : ''}`}
                       onClick={() => setSelectedImageIndex(index)}
                       aria-label={`View ${product.name} image ${index + 1}`}
                     >
                       <img
                         src={imageUrl}
-                        alt={`${product.name} - view ${index + 1}`}
+                        alt=""
                         width="80"
                         height="80"
                         loading="lazy"
@@ -191,7 +199,7 @@ function ProductPage({ products, onAddToCart }) {
             onClick={handleAddToCart}
             disabled={isOutOfStock}
           >
-            {isOutOfStock ? 'Out of Stock' : addedToCart ? '✓ Added to Cart' : 'Add to Cart'}
+            {cartButtonLabel}
           </button>
 
           <Link to="/" className="product-page-back">← Continue Shopping</Link>
@@ -199,6 +207,30 @@ function ProductPage({ products, onAddToCart }) {
       </article>
     </div>
   )
+}
+
+ProductPage.propTypes = {
+  products: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    slug: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    price: PropTypes.number.isRequired,
+    image: PropTypes.string,
+    images: PropTypes.arrayOf(PropTypes.string),
+    category: PropTypes.string,
+    sku: PropTypes.string,
+    stock: PropTypes.shape({
+      trackInventory: PropTypes.bool,
+      inStock: PropTypes.bool,
+      quantity: PropTypes.number,
+    }),
+    condition: PropTypes.string,
+    era: PropTypes.string,
+    dimensions: PropTypes.string,
+    material: PropTypes.string,
+  })).isRequired,
+  onAddToCart: PropTypes.func.isRequired,
 }
 
 export default ProductPage

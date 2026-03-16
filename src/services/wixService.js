@@ -56,7 +56,7 @@ export async function fetchWixProducts() {
       return {
         id: product._id,
         name: product.name,
-        slug: product.slug || product.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
+        slug: product.slug || product.name?.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-+|-+$/g, ''),
         description: product.description || '',
         price: product.price?.price || 0,
         image: product.media?.mainMedia?.image?.url || null,
@@ -106,7 +106,7 @@ export async function fetchWixProduct(productId) {
     return {
       id: product._id,
       name: product.name,
-      slug: product.slug || product.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
+      slug: product.slug || product.name?.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-+|-+$/g, ''),
       description: product.description || '',
       price: product.price?.price || 0,
       image: product.media?.mainMedia?.image?.url || null,
