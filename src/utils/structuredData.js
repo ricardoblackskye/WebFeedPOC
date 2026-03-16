@@ -24,13 +24,20 @@ export function generateProductSchema(product) {
     }
   }
 
+  let image
+  if (product.images?.length > 0) {
+    image = product.images
+  } else if (product.image) {
+    image = [product.image]
+  }
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
     description: stripHtml(product.description) || undefined,
     sku: product.sku || undefined,
-    image: product.images?.length > 0 ? product.images : product.image ? [product.image] : undefined,
+    image,
     category: product.category || undefined,
     url: `${SITE_URL}/products/${product.slug}`,
     offers: {
@@ -42,8 +49,7 @@ export function generateProductSchema(product) {
     },
   }
 
-  // Remove undefined values
-  return JSON.parse(JSON.stringify(schema))
+  return structuredClone(schema)
 }
 
 /**

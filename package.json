@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test --config playwright.config.cjs",
+    "test:e2e:ui": "playwright test --config playwright.config.cjs --ui",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.10.0",
@@ -25,6 +28,7 @@
     "react-router-dom": "^7.13.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",

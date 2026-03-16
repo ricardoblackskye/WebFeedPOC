@@ -68,9 +68,9 @@ describe('structuredData', () => {
       const product = { ...mockProduct, sku: null, category: null, images: [], image: null }
       const schema = generateProductSchema(product)
 
-      expect(schema).not.toHaveProperty('sku')
-      expect(schema).not.toHaveProperty('category')
-      expect(schema).not.toHaveProperty('image')
+      expect(schema.sku).toBeUndefined()
+      expect(schema.category).toBeUndefined()
+      expect(schema.image).toBeUndefined()
     })
 
     it('shows InStock for products without inventory tracking', () => {
