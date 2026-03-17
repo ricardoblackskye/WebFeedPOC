@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.10.0",
+    "@wix/data": "^1.0.426",
     "@wix/ecom": "^1.0.1878",
     "@wix/redirects": "^1.0.112",
     "@wix/sdk": "^1.21.3",

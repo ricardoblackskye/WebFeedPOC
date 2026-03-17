@@ -14,11 +14,9 @@ describe('ProductCard', () => {
   }
 
   const mockAddToCart = vi.fn()
-  const mockProductClick = vi.fn()
 
   beforeEach(() => {
     mockAddToCart.mockClear()
-    mockProductClick.mockClear()
   })
 
   const renderCard = (product = mockProduct) => {
@@ -27,7 +25,6 @@ describe('ProductCard', () => {
         <ProductCard 
           product={product} 
           onAddToCart={mockAddToCart}
-          onProductClick={mockProductClick}
         />
       </MemoryRouter>
     )
@@ -51,13 +48,11 @@ describe('ProductCard', () => {
     expect(mockAddToCart).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onProductClick when card is clicked', () => {
+  it('navigates to product page via link', () => {
     renderCard()
-    
-    const card = screen.getByText('Test Product').closest('.product-card')
-    fireEvent.click(card)
-    
-    expect(mockProductClick).toHaveBeenCalledWith(mockProduct)
+
+    const link = screen.getByRole('link')
+    expect(link.getAttribute('href')).toBe('/products/test-product')
   })
 
   it('shows placeholder when no image', () => {
@@ -67,7 +62,7 @@ describe('ProductCard', () => {
   })
 
   it('shows View More link for long descriptions', () => {
-    const longDescription = Array(60).fill('word').join(' ')
+    const longDescription = new Array(60).fill('word').join(' ')
     const productWithLongDesc = { ...mockProduct, description: longDescription }
 
     renderCard(productWithLongDesc)

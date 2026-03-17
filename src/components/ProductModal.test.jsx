@@ -69,7 +69,7 @@ describe('ProductModal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onClose when backdrop clicked', () => {
+  it('calls onClose when close button clicked', () => {
     render(
       <ProductModal
         product={mockProduct}
@@ -78,8 +78,8 @@ describe('ProductModal', () => {
       />
     )
 
-    const backdrop = document.querySelector('.modal-backdrop')
-    fireEvent.click(backdrop)
+    const closeButton = screen.getByLabelText('Close')
+    fireEvent.click(closeButton)
 
     expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
@@ -181,7 +181,7 @@ describe('ProductModal', () => {
       />
     )
 
-    const thumbnails = screen.getAllByRole('button', { name: /View image/i })
+    const thumbnails = screen.getAllByRole('button', { name: /View \d+ of \d+/i })
     expect(thumbnails).toHaveLength(3)
   })
 
@@ -202,10 +202,10 @@ describe('ProductModal', () => {
       />
     )
 
-    const mainImage = screen.getByAltText(/Test Product - Image/i)
+    const mainImage = screen.getByAltText('Test Product (1 of 2)')
     expect(mainImage.src).toContain('image1.jpg')
 
-    const thumbnail2 = screen.getByRole('button', { name: 'View image 2' })
+    const thumbnail2 = screen.getByRole('button', { name: 'View 2 of 2' })
     fireEvent.click(thumbnail2)
 
     expect(mainImage.src).toContain('image2.jpg')
@@ -225,7 +225,7 @@ describe('ProductModal', () => {
       />
     )
 
-    const thumbnails = screen.queryAllByRole('button', { name: /View image/i })
+    const thumbnails = screen.queryAllByRole('button', { name: /View \d+ of \d+/i })
     expect(thumbnails).toHaveLength(0)
   })
 
@@ -243,7 +243,7 @@ describe('ProductModal', () => {
       />
     )
 
-    const mainImage = screen.getByAltText(/Test Product - Image/i)
+    const mainImage = screen.getByAltText('Test Product')
     expect(mainImage.src).toContain('example.com/image.jpg')
   })
 })

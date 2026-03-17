@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import './CategoryFilter.css'
 
 function CategoryFilter({ categories, selectedCategory, onCategoryChange, productCounts }) {
@@ -29,6 +30,13 @@ function CategoryFilter({ categories, selectedCategory, onCategoryChange, produc
       </div>
     </nav>
   )
+}
+
+CategoryFilter.propTypes = {
+  categories: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedCategory: PropTypes.string.isRequired,
+  onCategoryChange: PropTypes.func.isRequired,
+  productCounts: PropTypes.objectOf(PropTypes.number).isRequired,
 }
 
 export default CategoryFilter

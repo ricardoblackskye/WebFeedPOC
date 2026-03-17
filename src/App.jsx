@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import PropTypes from 'prop-types'
 import Cart from './components/Cart'
 import { useWixProducts } from './hooks/useWixProducts'
 import { useWixCart } from './hooks/useWixCart'
@@ -23,7 +24,7 @@ function App({ initialProducts }) {
   // Extract unique categories from products
   const categories = useMemo(() => {
     const uniqueCategories = [...new Set(products.map(p => p.category).filter(Boolean))]
-    return uniqueCategories.sort()
+    return uniqueCategories.sort((a, b) => a.localeCompare(b))
   }, [products])
 
   // Get product counts per category
@@ -63,6 +64,10 @@ function App({ initialProducts }) {
           <h1>Antiques Marketplace</h1>
           <p>Discover unique treasures from the past</p>
         </Link>
+        <nav className="app-nav" aria-label="Site navigation">
+          <Link to="/">Shop</Link>
+          <Link to="/about">About</Link>
+        </nav>
       </header>
 
       <main className="app-main">
@@ -89,6 +94,10 @@ function App({ initialProducts }) {
       </footer>
     </div>
   )
+}
+
+App.propTypes = {
+  initialProducts: PropTypes.array,
 }
 
 export default App

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
 import StockIndicator from './StockIndicator'
 import './ProductModal.css'
 
@@ -17,13 +18,13 @@ function ProductModal({ product, onClose, onAddToCart }) {
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose()
     }
-    window.addEventListener('keydown', handleEscape)
+    globalThis.addEventListener('keydown', handleEscape)
     
     // Prevent body scroll when modal is open
     document.body.style.overflow = 'hidden'
     
     return () => {
-      window.removeEventListener('keydown', handleEscape)
+      globalThis.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = 'unset'
     }
   }, [onClose])
@@ -32,16 +33,11 @@ function ProductModal({ product, onClose, onAddToCart }) {
   if (!product) return null
 
   // Determine which images to display - use images array if available, fallback to single image
-  const displayImages = product.images && product.images.length > 0 
-    ? product.images 
-    : product.image 
-      ? [product.image] 
-      : []
-
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
+  let displayImages = []
+  if (product.images && product.images.length > 0) {
+    displayImages = product.images
+  } else if (product.image) {
+    displayImages = [product.image]
   }
 
   // Check if product is available for purchase
@@ -54,7 +50,11 @@ function ProductModal({ product, onClose, onAddToCart }) {
   }
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
+    <dialog
+      open
+      className="modal-backdrop"
+      aria-labelledby="modal-title"
+    >
       <div className="modal-content">
         <button className="modal-close" onClick={onClose} aria-label="Close">
           ×
@@ -66,19 +66,19 @@ function ProductModal({ product, onClose, onAddToCart }) {
               <>
                 <img 
                   src={displayImages[selectedImageIndex]} 
-                  alt={`${product.name} - Image ${selectedImageIndex + 1}`} 
+                  alt={displayImages.length > 1 ? `${product.name} (${selectedImageIndex + 1} of ${displayImages.length})` : product.name} 
                   className="modal-image" 
                 />
                 {displayImages.length > 1 && (
                   <div className="modal-image-thumbnails">
                     {displayImages.map((imageUrl, index) => (
                       <button
-                        key={index}
+                        key={imageUrl}
                         className={`thumbnail ${index === selectedImageIndex ? 'active' : ''}`}
                         onClick={() => setSelectedImageIndex(index)}
-                        aria-label={`View image ${index + 1}`}
+                        aria-label={`View ${index + 1} of ${displayImages.length}`}
                       >
-                        <img src={imageUrl} alt={`${product.name} - view ${index + 1}`} />
+                        <img src={imageUrl} alt={`${product.name}, view ${index + 1}`} />
                       </button>
                     ))}
                   </div>
@@ -90,7 +90,7 @@ function ProductModal({ product, onClose, onAddToCart }) {
           </div>
           
           <div className="modal-details-section">
-            <h2 className="modal-title">{product.name}</h2>
+            <h2 id="modal-title" className="modal-title">{product.name}</h2>
             
             <div className="modal-price">
               £{product.price.toFixed(2)}
@@ -149,8 +149,32 @@ function ProductModal({ product, onClose, onAddToCart }) {
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   )
+}
+
+ProductModal.propTypes = {
+  product: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    price: PropTypes.number,
+    image: PropTypes.string,
+    images: PropTypes.arrayOf(PropTypes.string),
+    category: PropTypes.string,
+    sku: PropTypes.string,
+    condition: PropTypes.string,
+    era: PropTypes.string,
+    dimensions: PropTypes.string,
+    material: PropTypes.string,
+    stock: PropTypes.shape({
+      trackInventory: PropTypes.bool,
+      quantity: PropTypes.number,
+      inStock: PropTypes.bool,
+    }),
+  }),
+  onClose: PropTypes.func.isRequired,
+  onAddToCart: PropTypes.func.isRequired,
 }
 
 export default ProductModal

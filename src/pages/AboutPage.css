@@ -1,0 +1,215 @@
+.about-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.about-page .about-heading {
+  font-size: 2.5rem;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  margin-bottom: 2rem;
+  letter-spacing: 0.3px;
+}
+
+/* Loading skeleton */
+.about-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+.about-loading .skeleton {
+  background: linear-gradient(90deg, #f0ece4 25%, #e8e0d4 50%, #f0ece4 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 2.5rem;
+  width: 40%;
+}
+
+.skeleton-text {
+  height: 1rem;
+  width: 100%;
+}
+
+.skeleton-text.short {
+  width: 70%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Error state */
+.about-error {
+  padding: 2rem;
+  background: #fff8f8;
+  border: 1px solid #f5c6c6;
+  border-radius: 8px;
+  color: #c0392b;
+}
+
+.about-error h2 {
+  margin-bottom: 0.5rem;
+}
+
+/* Content items */
+.about-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.about-item {
+  border-bottom: 1px solid var(--color-border, #e8e0d4);
+  padding-bottom: 3rem;
+}
+
+.about-item:last-child {
+  border-bottom: none;
+}
+
+.about-item-image {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.about-owner-photo {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin-bottom: 1.5rem;
+  border: 3px solid var(--color-border, #e8e0d4);
+}
+
+.about-owner-name {
+  font-size: 1.8rem;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.about-item h2 {
+  font-size: 1.8rem;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.about-meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.about-meta dt {
+  font-weight: 600;
+  color: var(--color-text-secondary, #888);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  padding-top: 0.1rem;
+}
+
+.about-meta dd {
+  margin: 0;
+}
+
+.about-meta a {
+  color: inherit;
+}
+
+.about-item-body {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--color-text-secondary, #555);
+}
+
+.about-item-body p:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+/* Empty state */
+.about-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secondary, #888);
+  font-style: italic;
+}
+
+/* Raw field debug view (development only) */
+.about-debug {
+  background: #f7f7f0;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+
+.about-debug summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.about-debug pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Collapsible bio section */
+.about-bio {
+  margin-top: 0.75rem;
+}
+
+.about-bio summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #555;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.about-bio summary::before {
+  content: '\25B6';
+  font-size: 0.65em;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.about-bio[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.about-bio .about-item-body {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .about-page h1 {
+    font-size: 1.8rem;
+  }
+
+  .about-item h2 {
+    font-size: 1.4rem;
+  }
+}

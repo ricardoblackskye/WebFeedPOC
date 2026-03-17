@@ -1,14 +1,9 @@
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import { stripHtml, truncateWords } from '../utils/helpers'
 import './ProductCard.css'
 
-function ProductCard({ product, onAddToCart, onProductClick }) {
-  const handleCardClick = () => {
-    if (onProductClick) {
-      onProductClick(product)
-    }
-  }
-
+function ProductCard({ product, onAddToCart }) {
   const handleAddToCart = (e) => {
     e.stopPropagation() // Prevent card click when clicking "Add to Cart"
     e.preventDefault()
@@ -20,7 +15,7 @@ function ProductCard({ product, onAddToCart, onProductClick }) {
   const isTruncated = plainDescription.length > truncatedDescription.length
 
   return (
-    <article className="product-card" onClick={handleCardClick}>
+    <article className="product-card">
       <Link to={`/products/${product.slug}`} className="product-card-link">
         <div className="product-image">
           {product.image ? (
@@ -59,6 +54,24 @@ function ProductCard({ product, onAddToCart, onProductClick }) {
       </div>
     </article>
   )
+}
+
+ProductCard.propTypes = {
+  product: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    slug: PropTypes.string,
+    description: PropTypes.string,
+    price: PropTypes.number.isRequired,
+    image: PropTypes.string,
+    category: PropTypes.string,
+    stock: PropTypes.shape({
+      trackInventory: PropTypes.bool,
+      quantity: PropTypes.number,
+      inStock: PropTypes.bool,
+    }),
+  }).isRequired,
+  onAddToCart: PropTypes.func.isRequired,
 }
 
 export default ProductCard

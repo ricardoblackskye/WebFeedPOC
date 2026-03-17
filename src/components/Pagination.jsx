@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import './Pagination.css'
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
@@ -16,7 +17,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
     if (start > 1) {
       pages.push(1)
-      if (start > 2) pages.push('...')
+      if (start > 2) pages.push('ellipsis-start')
     }
 
     for (let i = start; i <= end; i++) {
@@ -24,7 +25,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     }
 
     if (end < totalPages) {
-      if (end < totalPages - 1) pages.push('...')
+      if (end < totalPages - 1) pages.push('ellipsis-end')
       pages.push(totalPages)
     }
 
@@ -42,9 +43,9 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       </button>
 
       <div className="pagination-pages">
-        {getPageNumbers().map((page, index) =>
-          page === '...' ? (
-            <span key={`ellipsis-${index}`} className="pagination-ellipsis">…</span>
+        {getPageNumbers().map((page) =>
+          typeof page === 'string' && page.startsWith('ellipsis') ? (
+            <span key={page} className="pagination-ellipsis">…</span>
           ) : (
             <button
               key={page}
@@ -66,6 +67,12 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       </button>
     </div>
   )
+}
+
+Pagination.propTypes = {
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
 }
 
 export default Pagination

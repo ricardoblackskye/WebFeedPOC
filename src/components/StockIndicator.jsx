@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import './StockIndicator.css'
 
 /**
@@ -47,6 +48,15 @@ function StockIndicator({ stock, className = '' }) {
       </span>
     </div>
   )
+}
+
+StockIndicator.propTypes = {
+  stock: PropTypes.shape({
+    trackInventory: PropTypes.bool,
+    quantity: PropTypes.number,
+    inStock: PropTypes.bool,
+  }),
+  className: PropTypes.string,
 }
 
 export default StockIndicator

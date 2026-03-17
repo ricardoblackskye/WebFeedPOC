@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useOutletContext, useParams, useNavigate, Link } from 'react-router-dom'
+import { useOutletContext, useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import ProductList from '../components/ProductList'
 import SortControls from '../components/SortControls'
@@ -11,7 +11,6 @@ const PRODUCTS_PER_PAGE = 12
 function CategoryPage() {
   const { categoryName } = useParams()
   const { products, loading, addToCart } = useOutletContext()
-  const navigate = useNavigate()
 
   const [sortBy, setSortBy] = useState('name-asc')
   const [searchTerm, setSearchTerm] = useState('')
@@ -26,7 +25,7 @@ function CategoryPage() {
       const term = searchTerm.toLowerCase()
       result = result.filter(p =>
         p.name.toLowerCase().includes(term) ||
-        (p.description && p.description.toLowerCase().includes(term))
+        p.description?.toLowerCase().includes(term)
       )
     }
     return result
@@ -54,10 +53,6 @@ function CategoryPage() {
   useEffect(() => {
     setCurrentPage(1)
   }, [decodedCategory, searchTerm, sortBy])
-
-  const handleProductClick = (product) => {
-    navigate(`/products/${product.slug}`)
-  }
 
   const handlePageChange = (page) => {
     setCurrentPage(page)
@@ -116,7 +111,6 @@ function CategoryPage() {
           <ProductList
             products={paginatedProducts}
             onAddToCart={addToCart}
-            onProductClick={handleProductClick}
           />
           <Pagination
             currentPage={currentPage}

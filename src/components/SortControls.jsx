@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import './SortControls.css'
 
 function SortControls({ sortBy, onSortChange, searchTerm, onSearchChange }) {
@@ -28,6 +29,13 @@ function SortControls({ sortBy, onSortChange, searchTerm, onSearchChange }) {
       </div>
     </div>
   )
+}
+
+SortControls.propTypes = {
+  sortBy: PropTypes.string.isRequired,
+  onSortChange: PropTypes.func.isRequired,
+  searchTerm: PropTypes.string.isRequired,
+  onSearchChange: PropTypes.func.isRequired,
 }
 
 export default SortControls

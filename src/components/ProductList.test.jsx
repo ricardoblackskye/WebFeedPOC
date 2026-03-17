@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import ProductList from '../components/ProductList'
 
@@ -26,11 +26,9 @@ describe('ProductList', () => {
   ]
 
   const mockAddToCart = vi.fn()
-  const mockProductClick = vi.fn()
 
   beforeEach(() => {
     mockAddToCart.mockClear()
-    mockProductClick.mockClear()
   })
 
   const renderList = (products = mockProducts) => {
@@ -39,7 +37,6 @@ describe('ProductList', () => {
         <ProductList
           products={products}
           onAddToCart={mockAddToCart}
-          onProductClick={mockProductClick}
         />
       </MemoryRouter>
     )

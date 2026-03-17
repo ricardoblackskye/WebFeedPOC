@@ -1,18 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useOutletContext, useSearchParams, useNavigate } from 'react-router-dom'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import ProductList from '../components/ProductList'
 import ProductModal from '../components/ProductModal'
 import CategoryFilter from '../components/CategoryFilter'
 import SortControls from '../components/SortControls'
 import Pagination from '../components/Pagination'
-import { generateItemListSchema, SITE_NAME } from '../utils/structuredData'
+import { generateItemListSchema } from '../utils/structuredData'
 
 const PRODUCTS_PER_PAGE = 12
 
 function HomePage() {
   const { products, loading, error, categories, productCounts, addToCart } = useOutletContext()
-  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -31,7 +30,7 @@ function HomePage() {
       const term = searchTerm.toLowerCase()
       result = result.filter(p =>
         p.name.toLowerCase().includes(term) ||
-        (p.description && p.description.toLowerCase().includes(term))
+        p.description?.toLowerCase().includes(term)
       )
     }
     return result
@@ -66,11 +65,6 @@ function HomePage() {
     setCurrentPage(1)
   }, [selectedCategory, searchTerm, sortBy])
 
-  const handleProductClick = (product) => {
-    // Navigate to product page for SEO, but also allow modal preview
-    navigate(`/products/${product.slug}`)
-  }
-
   const handleCloseModal = () => {
     setSelectedProduct(null)
   }
@@ -97,11 +91,10 @@ function HomePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const schemaProducts = selectedCategory === 'All' ? products : filteredProducts
+  const schemaCategory = selectedCategory === 'All' ? 'All Antiques' : selectedCategory
   const itemListSchema = products.length > 0
-    ? generateItemListSchema(
-        selectedCategory === 'All' ? products : filteredProducts,
-        selectedCategory === 'All' ? 'All Antiques' : selectedCategory
-      )
+    ? generateItemListSchema(schemaProducts, schemaCategory)
     : null
 
   return (
@@ -142,7 +135,6 @@ function HomePage() {
           <ProductList
             products={paginatedProducts}
             onAddToCart={addToCart}
-            onProductClick={handleProductClick}
           />
           <Pagination
             currentPage={currentPage}
