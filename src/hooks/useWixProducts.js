@@ -1,35 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { fetchWixProducts } from '../services/wixService'
 
 export function useWixProducts(initialProducts = null) {
-  const [products, setProducts] = useState(initialProducts || [])
-  const [loading, setLoading] = useState(!initialProducts)
-  const [error, setError] = useState(null)
+  const { data, isPending, isFetching, error } = useQuery({
+    queryKey: ['wix-products'],
+    queryFn: fetchWixProducts,
+    // Honour SSR/prerender path: skip network call if data was pre-loaded
+    initialData: initialProducts || undefined,
+    staleTime: 5 * 60 * 1000,
+  })
 
-  useEffect(() => {
-    // Skip fetch if pre-loaded data was provided (SSR/prerender)
-    if (initialProducts) return
-
-    async function loadProducts() {
-      try {
-        setLoading(true)
-        const data = await fetchWixProducts()
-        setProducts(data)
-        setError(null)
-      } catch (err) {
-        console.log('Wix API not available, using mock data:', err.message)
-        setError(err.message)
-        // Fallback to mock data if Wix API fails
-        setProducts(getMockProducts())
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadProducts()
-  }, [initialProducts])
-
-  return { products, loading, error }
+  return {
+    // Show [] during initial load; fall back to mock data only on error
+    products: isPending ? [] : (data ?? getMockProducts()),
+    loading: isPending,
+    refreshing: isFetching && !isPending,
+    error: error?.message ?? null,
+  }
 }
 
 // Mock data for development/testing

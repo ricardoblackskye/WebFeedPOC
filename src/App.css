@@ -111,6 +111,23 @@
   font-size: 0.9rem;
 }
 
+/* Background-refresh progress bar */
+.refresh-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--color-accent, #d4a853);
+  animation: refresh-sweep 1.4s ease-in-out infinite;
+  z-index: 9999;
+}
+
+@keyframes refresh-sweep {
+  0%   { width: 0%;   opacity: 1; }
+  60%  { width: 80%;  opacity: 1; }
+  100% { width: 100%; opacity: 0; }
+}
+
 /* Breadcrumbs (shared between pages) */
 .breadcrumb ol {
   list-style: none;

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useWixContent } from '../hooks/useWixContent'
+import { createQueryWrapper } from '../test-utils'
 
 describe('useWixContent', () => {
   beforeEach(() => {
@@ -10,7 +11,7 @@ describe('useWixContent', () => {
   it('returns loading state initially', () => {
     const fetchFn = vi.fn(() => new Promise(() => {})) // never resolves
 
-    const { result } = renderHook(() => useWixContent(fetchFn))
+    const { result } = renderHook(() => useWixContent(fetchFn), { wrapper: createQueryWrapper() })
 
     expect(result.current.loading).toBe(true)
     expect(result.current.data).toEqual([])
@@ -24,7 +25,7 @@ describe('useWixContent', () => {
     ]
     const fetchFn = vi.fn().mockResolvedValue(mockData)
 
-    const { result } = renderHook(() => useWixContent(fetchFn))
+    const { result } = renderHook(() => useWixContent(fetchFn), { wrapper: createQueryWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -37,7 +38,7 @@ describe('useWixContent', () => {
   it('sets loading to false after fetch completes', async () => {
     const fetchFn = vi.fn().mockResolvedValue([])
 
-    const { result } = renderHook(() => useWixContent(fetchFn))
+    const { result } = renderHook(() => useWixContent(fetchFn), { wrapper: createQueryWrapper() })
 
     expect(result.current.loading).toBe(true)
 
@@ -49,7 +50,7 @@ describe('useWixContent', () => {
   it('sets error and keeps data empty on fetch failure', async () => {
     const fetchFn = vi.fn().mockRejectedValue(new Error('API unavailable'))
 
-    const { result } = renderHook(() => useWixContent(fetchFn))
+    const { result } = renderHook(() => useWixContent(fetchFn), { wrapper: createQueryWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -62,7 +63,7 @@ describe('useWixContent', () => {
   it('calls fetchFn once on mount', async () => {
     const fetchFn = vi.fn().mockResolvedValue([])
 
-    renderHook(() => useWixContent(fetchFn))
+    renderHook(() => useWixContent(fetchFn), { wrapper: createQueryWrapper() })
 
     await waitFor(() => {
       expect(fetchFn).toHaveBeenCalledTimes(1)
@@ -72,7 +73,7 @@ describe('useWixContent', () => {
   it('returns empty data array when fetch resolves with empty array', async () => {
     const fetchFn = vi.fn().mockResolvedValue([])
 
-    const { result } = renderHook(() => useWixContent(fetchFn))
+    const { result } = renderHook(() => useWixContent(fetchFn), { wrapper: createQueryWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)

@@ -1,46 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 /**
  * Generic hook for fetching content from a Wix CMS collection.
+ * Results are cached by function name — navigating away and back within the
+ * stale window serves the cached result instantly without a network round-trip.
  *
- * @param {Function} fetchFn - Async function that returns an array of items
- * @returns {{ data: Object[], loading: boolean, error: string|null }}
+ * @param {Function} fetchFn - Named async function that returns an array of items
+ * @returns {{ data: Object[], loading: boolean, refreshing: boolean, error: string|null }}
  */
 export function useWixContent(fetchFn) {
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const { data, isPending, isFetching, error } = useQuery({
+    queryKey: ['wix-content', fetchFn.name],
+    queryFn: fetchFn,
+    staleTime: 10 * 60 * 1000,
+  })
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function loadContent() {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const result = await fetchFn()
-        if (!cancelled) {
-          setData(result)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.error('Failed to load CMS content:', err.message)
-          setError(err.message)
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadContent()
-
-    return () => {
-      cancelled = true
-    }
-  }, [fetchFn])
-
-  return { data, loading, error }
+  return {
+    data: data ?? [],
+    loading: isPending,
+    refreshing: isFetching && !isPending,
+    error: error?.message ?? null,
+  }
 }

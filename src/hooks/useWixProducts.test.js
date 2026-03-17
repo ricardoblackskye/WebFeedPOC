@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useWixProducts } from '../hooks/useWixProducts'
 import * as wixService from '../services/wixService'
+import { createQueryWrapper } from '../test-utils'
 
 vi.mock('../services/wixService')
 
@@ -15,7 +16,7 @@ describe('useWixProducts', () => {
       () => new Promise(() => {}) // Never resolves
     )
 
-    const { result } = renderHook(() => useWixProducts())
+    const { result } = renderHook(() => useWixProducts(), { wrapper: createQueryWrapper() })
 
     expect(result.current.loading).toBe(true)
     expect(result.current.products).toEqual([])
@@ -30,7 +31,7 @@ describe('useWixProducts', () => {
 
     vi.spyOn(wixService, 'fetchWixProducts').mockResolvedValue(mockProducts)
 
-    const { result } = renderHook(() => useWixProducts())
+    const { result } = renderHook(() => useWixProducts(), { wrapper: createQueryWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -45,7 +46,7 @@ describe('useWixProducts', () => {
       new Error('API Error')
     )
 
-    const { result } = renderHook(() => useWixProducts())
+    const { result } = renderHook(() => useWixProducts(), { wrapper: createQueryWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -60,7 +61,7 @@ describe('useWixProducts', () => {
       new Error('No API')
     )
 
-    const { result } = renderHook(() => useWixProducts())
+    const { result } = renderHook(() => useWixProducts(), { wrapper: createQueryWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -78,7 +79,7 @@ describe('useWixProducts', () => {
   it('sets loading to false after fetch completes', async () => {
     vi.spyOn(wixService, 'fetchWixProducts').mockResolvedValue([])
 
-    const { result } = renderHook(() => useWixProducts())
+    const { result } = renderHook(() => useWixProducts(), { wrapper: createQueryWrapper() })
 
     expect(result.current.loading).toBe(true)
 

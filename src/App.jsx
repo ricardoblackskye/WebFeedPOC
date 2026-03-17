@@ -9,7 +9,7 @@ import { generateOrganizationSchema, generateWebSiteSchema, SITE_NAME } from './
 import './App.css'
 
 function App({ initialProducts }) {
-  const { products, loading, error } = useWixProducts(initialProducts)
+  const { products, loading, error, refreshing } = useWixProducts(initialProducts)
   const { 
     cart, 
     loading: cartLoading, 
@@ -43,6 +43,9 @@ function App({ initialProducts }) {
 
   return (
     <div className="app">
+      {refreshing && (
+        <div className="refresh-bar" role="status" aria-label="Refreshing products" />
+      )}
       <Helmet>
         <title>{SITE_NAME} — Discover Unique Antiques &amp; Vintage Treasures</title>
         <meta name="description" content="Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more. Free delivery on selected items." />

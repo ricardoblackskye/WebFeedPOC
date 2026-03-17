@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.10.0",
+    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-query-devtools": "^5.91.3",
     "@wix/data": "^1.0.426",
     "@wix/ecom": "^1.0.1878",
     "@wix/redirects": "^1.0.112",

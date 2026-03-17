@@ -12,6 +12,14 @@
   letter-spacing: 0.3px;
 }
 
+.about-refreshing {
+  font-size: 0.75rem;
+  font-style: italic;
+  opacity: 0.55;
+  margin-left: 0.75rem;
+  vertical-align: middle;
+}
+
 /* Loading skeleton */
 .about-loading {
   display: flex;

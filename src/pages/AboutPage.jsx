@@ -9,7 +9,7 @@ import './AboutPage.css'
 const fetchAboutUsStable = fetchAboutUs
 
 function AboutPage() {
-  const { data: items, loading, error } = useWixContent(fetchAboutUsStable)
+  const { data: items, loading, error, refreshing } = useWixContent(fetchAboutUsStable)
 
   return (
     <div className="about-page">
@@ -19,7 +19,10 @@ function AboutPage() {
         <link rel="canonical" href="/about" />
       </Helmet>
 
-      <h2 className="about-heading">About Us</h2>
+      <h2 className="about-heading">
+        About Us
+        {refreshing && <span className="about-refreshing" aria-live="polite">Updating…</span>}
+      </h2>
 
       {loading && (
         <div className="about-loading" aria-label="Loading content">
