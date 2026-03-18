@@ -42,8 +42,12 @@ export async function fetchWixProducts() {
       allItems = allItems.concat(result.items)
     }
 
-    // Transform Wix product data to our format
-    return allItems.map(product => {
+    // Exclude products that have variants — adding them to cart requires a variantId
+    // which the current checkout flow does not support. Remove this filter when
+    // variant selection UI is implemented.
+    return allItems
+      .filter(product => !product.productOptions?.length)
+      .map(product => {
       // Use the first collection as the category, fallback to productType or Uncategorized
       let category = 'Uncategorized'
       if (product.collectionIds && product.collectionIds.length > 0) {
@@ -70,6 +74,8 @@ export async function fetchWixProducts() {
           quantity: product.stock?.quantity || 0,
           inStock: product.stock?.inStock !== false, // Default to true if not specified
         },
+        // Flag for future variant-selection UI — always false while filter above is active
+        hasVariants: (product.productOptions?.length ?? 0) > 0,
       }
     })
   } catch (error) {

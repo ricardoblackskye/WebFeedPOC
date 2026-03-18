@@ -99,7 +99,46 @@ describe('wixService', () => {
           quantity: 5,
           inStock: true,
         },
+        hasVariants: false,
       })
+    })
+
+    it('filters out products with productOptions (variants)', async () => {
+      mockFind.mockResolvedValueOnce({
+        items: [
+          {
+            _id: '1',
+            name: 'Simple Product',
+            description: '',
+            price: { price: 100 },
+            media: null,
+            productType: 'Furniture',
+            collectionIds: [],
+            sku: null,
+            stock: { trackInventory: false, quantity: 0, inStock: true },
+            productOptions: [],
+          },
+          {
+            _id: '2',
+            name: 'Variant Product',
+            description: '',
+            price: { price: 200 },
+            media: null,
+            productType: 'Furniture',
+            collectionIds: [],
+            sku: null,
+            stock: { trackInventory: false, quantity: 0, inStock: true },
+            productOptions: [{ name: 'Condition', optionType: 'DROP_DOWN' }],
+          },
+        ],
+        hasNext: () => false,
+      })
+
+      const products = await fetchWixProducts()
+
+      expect(products).toHaveLength(1)
+      expect(products[0].id).toBe('1')
+      expect(products[0].hasVariants).toBe(false)
     })
 
     it('handles missing image gracefully', async () => {
