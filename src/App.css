@@ -113,6 +113,7 @@
 
 /* Background-refresh progress bar */
 .refresh-bar {
+  display: block;
   position: fixed;
   top: 0;
   left: 0;

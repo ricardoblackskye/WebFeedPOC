@@ -44,7 +44,7 @@ function App({ initialProducts }) {
   return (
     <div className="app">
       {refreshing && (
-        <div className="refresh-bar" role="status" aria-label="Refreshing products" />
+        <output className="refresh-bar" aria-label="Refreshing products" />
       )}
       <Helmet>
         <title>{SITE_NAME} — Discover Unique Antiques &amp; Vintage Treasures</title>

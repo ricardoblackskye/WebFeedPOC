@@ -105,7 +105,7 @@ async function prerender() {
 
   // Step 6: Determine all routes
   const routes = ['/']
-  const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort()
+  const categories = [...new Set(products.map(p => p.category).filter(Boolean))].sort((a, b) => a.localeCompare(b))
   products.forEach(p => {
     if (p.slug) routes.push(`/products/${p.slug}`)
   })
@@ -149,7 +149,9 @@ async function prerender() {
   console.log(`\n✅ Prerendering complete — ${successCount}/${routes.length} pages rendered\n`)
 }
 
-prerender().catch(err => {
+try {
+  await prerender()
+} catch (err) {
   console.error('\n❌ Prerender failed:', err)
   process.exit(1)
-})
+}
