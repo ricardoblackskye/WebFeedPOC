@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import { readFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
 import ProductModal from '../components/ProductModal'
 
 // Mock Stripe
@@ -32,6 +35,31 @@ describe('ProductModal', () => {
 
   afterEach(() => {
     document.body.style.overflow = 'unset'
+  })
+
+  it('restores the previous body overflow style when closed', () => {
+    document.body.style.overflow = 'auto'
+
+    const { unmount } = render(
+      <ProductModal
+        product={mockProduct}
+        onClose={mockOnClose}
+        onAddToCart={mockOnAddToCart}
+      />
+    )
+
+    expect(document.body.style.overflow).toBe('hidden')
+    unmount()
+    expect(document.body.style.overflow).toBe('auto')
+  })
+
+  it('does not touch document body during server rendering', async () => {
+    const source = await readFile(
+      resolve(dirname(fileURLToPath(import.meta.url)), '../components/ProductModal.jsx'),
+      'utf8',
+    )
+
+    expect(source).toContain('typeof document')
   })
 
   it('renders product information correctly', () => {

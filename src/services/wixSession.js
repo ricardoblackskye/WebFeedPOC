@@ -19,8 +19,10 @@ class WixSessionManager {
    * Initialize session from localStorage if available
    */
   initializeSession() {
+    if (typeof window === 'undefined' || !window.localStorage) return
+
     try {
-      const stored = localStorage.getItem(SESSION_STORAGE_KEY)
+      const stored = window.localStorage.getItem(SESSION_STORAGE_KEY)
       if (stored) {
         const session = JSON.parse(stored)
         if (session.expiresAt > Date.now()) {
@@ -28,7 +30,7 @@ class WixSessionManager {
           this.expiresAt = session.expiresAt
         } else {
           // Session expired, clear it
-          localStorage.removeItem(SESSION_STORAGE_KEY)
+          window.localStorage.removeItem(SESSION_STORAGE_KEY)
         }
       }
     } catch (error) {
@@ -94,12 +96,14 @@ class WixSessionManager {
         this.tokens = data.tokens
         this.expiresAt = data.expiresAt
 
-        // Save to localStorage for persistence
+        // Save to localStorage for persistence in the browser only
         try {
-          localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
-            tokens: this.tokens,
-            expiresAt: this.expiresAt,
-          }))
+          if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+              tokens: this.tokens,
+              expiresAt: this.expiresAt,
+            }))
+          }
         } catch (error) {
           console.warn('Failed to save session to localStorage:', error)
         }
@@ -132,7 +136,9 @@ class WixSessionManager {
     this.tokens = null
     this.expiresAt = null
     try {
-      localStorage.removeItem(SESSION_STORAGE_KEY)
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(SESSION_STORAGE_KEY)
+      }
     } catch (error) {
       console.error('Failed to clear session:', error)
     }
