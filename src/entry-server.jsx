@@ -3,6 +3,7 @@ import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router'
 import { Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App.jsx'
 import HomePage from './pages/HomePage.jsx'
 import ProductPageWrapper from './pages/ProductPageWrapper.jsx'
@@ -20,19 +21,26 @@ export { fetchWixProducts } from './services/wixService.js'
  */
 export function render(url, data = {}) {
   const helmetContext = {}
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, staleTime: Infinity },
+    },
+  })
 
   const html = renderToString(
-    <HelmetProvider context={helmetContext}>
-      <StaticRouter location={url}>
+    <QueryClientProvider client={queryClient}>
+      <HelmetProvider context={helmetContext}>
+        <StaticRouter location={url}>
         <Routes>
           <Route path="/" element={<App initialProducts={data.products} />}>
             <Route index element={<HomePage />} />
             <Route path="products/:slug" element={<ProductPageWrapper />} />
             <Route path="category/:categoryName" element={<CategoryPage />} />
           </Route>
-        </Routes>
-      </StaticRouter>
-    </HelmetProvider>
+          </Routes>
+        </StaticRouter>
+      </HelmetProvider>
+    </QueryClientProvider>
   )
 
   return {

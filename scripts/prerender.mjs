@@ -147,7 +147,11 @@ async function prerender() {
   fs.rmSync(path.resolve(root, 'dist/server'), { recursive: true, force: true })
 
   console.log(`\n✅ Prerendering complete — ${successCount}/${routes.length} pages rendered\n`)
-}
+
+  if (successCount !== routes.length) {
+    throw new Error(`Prerender incomplete: ${successCount}/${routes.length} routes rendered`)
+  }
+ }
 
 try {
   await prerender()

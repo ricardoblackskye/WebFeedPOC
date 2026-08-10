@@ -28,15 +28,16 @@ describe('React Router SSR security boundary', () => {
   it('guards browser-only session access before the SSR bundle is evaluated', async () => {
     const { wixSession } = await readSources()
 
-    expect(wixSession).toContain('typeof window')
-    expect(wixSession).not.toContain('localStorage.getItem')
+    expect(wixSession).toMatch(/if \(typeof window === ['"]undefined['"] \|\| !window\.localStorage\) return/)
+    expect(wixSession).toContain('window.localStorage.getItem(SESSION_STORAGE_KEY)')
+    expect(wixSession).not.toMatch(/(?<!window\.)localStorage\.getItem\(/)
   })
 
   it('fails the prerender process when no route is rendered', async () => {
     const { prerender } = await readSources()
 
-    expect(prerender).toContain('successCount === 0')
-    expect(prerender).toContain('process.exitCode = 1')
+    expect(prerender).toContain('successCount !== routes.length')
+    expect(prerender).toContain('throw new Error(`Prerender incomplete:')
   })
 
   it('does not expose an arbitrary constructor hydration path in the SSR entry', async () => {
