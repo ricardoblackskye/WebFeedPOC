@@ -54,6 +54,17 @@ describe('stripHtml', () => {
     expect(stripHtml('  Multiple   spaces  ')).toBe('Multiple spaces')
     expect(stripHtml('<p>  Text  with  spaces  </p>')).toBe('Text with spaces')
   })
+
+  it('strips and decodes HTML without a browser document', () => {
+    const originalDocument = globalThis.document
+    try {
+      // @ts-expect-error test intentionally removes the browser global
+      delete globalThis.document
+      expect(stripHtml('<p>Hello&nbsp;&amp; goodbye</p>')).toBe('Hello & goodbye')
+    } finally {
+      globalThis.document = originalDocument
+    }
+  })
 })
 
 describe('truncateWords', () => {

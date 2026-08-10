@@ -32,10 +32,22 @@ export function stripHtml(html) {
   // Remove HTML tags
   let text = html.replaceAll(/<[^>]*>/g, '')
   
-  // Decode HTML entities using a temporary DOM element
-  const textarea = document.createElement('textarea')
-  textarea.innerHTML = text
-  text = textarea.value
+  // Decode entities without requiring a browser DOM so SSR/prerender can run in Node.
+  if (typeof document !== 'undefined') {
+    const textarea = document.createElement('textarea')
+    textarea.innerHTML = text
+    text = textarea.value
+  } else {
+    text = text
+      .replaceAll(/&nbsp;/gi, ' ')
+      .replaceAll(/&amp;/gi, '&')
+      .replaceAll(/&lt;/gi, '<')
+      .replaceAll(/&gt;/gi, '>')
+      .replaceAll(/&quot;/gi, '"')
+      .replaceAll(/&#39;|&apos;/gi, "'")
+      .replaceAll(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+      .replaceAll(/&#x([\da-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+  }
   
   // Clean up extra whitespace
   return text.replaceAll(/\s+/g, ' ').trim()

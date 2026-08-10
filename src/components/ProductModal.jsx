@@ -14,18 +14,22 @@ function ProductModal({ product, onClose, onAddToCart }) {
   }, [product?.id])
 
   useEffect(() => {
-    // Close modal on Escape key
+    // Close modal on Escape key and lock page scrolling in the browser only.
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose()
     }
     globalThis.addEventListener('keydown', handleEscape)
-    
-    // Prevent body scroll when modal is open
+
+    if (typeof document === 'undefined') {
+      return () => globalThis.removeEventListener('keydown', handleEscape)
+    }
+
+    const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    
+
     return () => {
       globalThis.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = previousOverflow
     }
   }, [onClose])
 
