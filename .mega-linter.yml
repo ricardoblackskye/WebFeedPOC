@@ -14,6 +14,9 @@ LOG_FILE: mega-linter.log
 ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
   - GITHUB_TOKEN
 
+# Keep Grype strict; allow the scanner to refresh its database on each run.
+REPOSITORY_GRYPE_TIMEOUT_SECONDS: 600
+
 # These directories are generated locally or by CI and should never be linted.
 ADDITIONAL_EXCLUDED_DIRECTORIES:
   - node_modules
