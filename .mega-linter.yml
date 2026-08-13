@@ -10,6 +10,10 @@ IGNORE_GITIGNORED_FILES: true
 REPORT_OUTPUT_FOLDER: megalinter-reports
 LOG_FILE: mega-linter.log
 
+# Allow zizmor to use the workflow token for its online ref-confusion audit.
+ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
+  - GITHUB_TOKEN
+
 # These directories are generated locally or by CI and should never be linted.
 ADDITIONAL_EXCLUDED_DIRECTORIES:
   - node_modules
