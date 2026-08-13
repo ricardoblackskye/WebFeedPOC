@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
           # MegaLinter compares the pull-request diff with the default branch.
@@ -32,7 +32,7 @@ jobs:
 
       - name: MegaLinter
         id: ml
-        uses: oxsecurity/megalinter@v10
+        uses: oxsecurity/megalinter@15e5b45552097e318c93de385779ce3b1084052c # v10
         env:
           VALIDATE_ALL_CODEBASE: >-
             ${{
@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload MegaLinter reports
         if: success() || failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: MegaLinter reports
           include-hidden-files: true
