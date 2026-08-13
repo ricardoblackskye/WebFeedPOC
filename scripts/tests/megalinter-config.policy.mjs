@@ -27,6 +27,15 @@ test('MegaLinter uses current pinned major actions without source write access',
   assert.doesNotMatch(workflow, /contents:\s*write/);
 });
 
+test('MegaLinter preserves authenticated git access for private-repository diff validation', () => {
+  const workflow = readRequired(workflowPath);
+  assert.match(
+    workflow,
+    /persist-credentials:\s*true/,
+    'private repositories need checkout credentials for MegaLinter git diff/fetch operations',
+  );
+});
+
 test('MegaLinter does not enable automatic fixes', () => {
   const workflow = readRequired(workflowPath);
   const config = readRequired(configPath);

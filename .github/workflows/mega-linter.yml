@@ -26,7 +26,9 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          persist-credentials: false
+          # MegaLinter compares the pull-request diff with the default branch.
+          # Keep checkout credentials available because this repository is private.
+          persist-credentials: true
 
       - name: MegaLinter
         id: ml
