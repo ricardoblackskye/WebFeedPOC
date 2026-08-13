@@ -1,0 +1,20 @@
+---
+# MegaLinter repository configuration
+# https://megalinter.io/latest/configuration/
+
+# Respect the repository's .gitignore so dependencies and generated files are
+# not sent to individual linters.
+IGNORE_GITIGNORED_FILES: true
+
+# Keep the report output stable for the GitHub Actions artifact step.
+REPORT_OUTPUT_FOLDER: megalinter-reports
+LOG_FILE: mega-linter.log
+
+# These directories are generated locally or by CI and should never be linted.
+ADDITIONAL_EXCLUDED_DIRECTORIES:
+  - node_modules
+  - dist
+  - dist-ssr
+  - coverage
+  - playwright-report
+  - test-results
