@@ -10,6 +10,10 @@ IGNORE_GITIGNORED_FILES: true
 REPORT_OUTPUT_FOLDER: megalinter-reports
 LOG_FILE: mega-linter.log
 
+# Allow zizmor to use the workflow token for its online ref-confusion audit.
+ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
+  - GITHUB_TOKEN
+
 # Keep Grype strict; allow the scanner to refresh its database on each run.
 REPOSITORY_GRYPE_TIMEOUT_SECONDS: 600
 
