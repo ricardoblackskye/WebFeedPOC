@@ -5,24 +5,23 @@
   margin: 0;
   border: none;
   padding: 2rem;
+
   /* Backdrop styles */
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+  background: rgb(0 0 0 / 85%);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  animation: fade-in 0.2s ease-out;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -36,15 +35,16 @@
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  animation: slideUp 0.3s ease-out;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slide-up 0.3s ease-out;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
 }
 
-@keyframes slideUp {
+@keyframes slide-up {
   from {
     transform: translateY(30px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -55,8 +55,8 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: rgb(255 255 255 / 10%);
+  border: 1px solid rgb(212 175 55 / 50%);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -125,11 +125,11 @@
   width: 70px;
   height: 70px;
   padding: 0;
-  border: 2px solid rgba(212, 175, 55, 0.3);
+  border: 2px solid rgb(212 175 55 / 30%);
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   transition: all 0.3s;
   text-transform: none;
   letter-spacing: normal;
@@ -143,7 +143,7 @@
 
 .thumbnail.active {
   border-color: var(--color-gold);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 0 2px rgb(212 175 55 / 30%);
 }
 
 .thumbnail img {
@@ -175,21 +175,21 @@
 }
 
 .modal-description {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgb(255 255 255 / 10%);
   padding-top: 1.5rem;
 }
 
 .modal-description h3 {
   font-size: 1.2rem;
-  margin: 0 0 0.75rem 0;
-  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 0.75rem;
+  color: rgb(255 255 255 / 90%);
   font-family: var(--font-primary);
   font-weight: 600;
 }
 
 .modal-description p {
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgb(255 255 255 / 80%);
   margin: 0;
 }
 
@@ -197,12 +197,12 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgb(255 255 255 / 5%);
+  color: rgb(255 255 255 / 80%);
 }
 
 .modal-info strong {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgb(255 255 255 / 60%);
   min-width: 100px;
 }
 
@@ -227,7 +227,11 @@
   background: var(--color-gold-hover);
   border-color: var(--color-gold-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 6px 20px rgb(212 175 55 / 40%);
+}
+
+.modal-add-to-cart:active {
+  transform: translateY(0);
 }
 
 .modal-add-to-cart.disabled,
@@ -248,31 +252,27 @@
   box-shadow: none;
 }
 
-.modal-add-to-cart:active {
-  transform: translateY(0);
-}
-
 /* Scrollbar styling */
 .modal-content::-webkit-scrollbar {
   width: 8px;
 }
 
 .modal-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 8px;
 }
 
 .modal-content::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.5);
+  background: rgb(212 175 55 / 50%);
   border-radius: 8px;
 }
 
 .modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.7);
+  background: rgb(212 175 55 / 70%);
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .modal-backdrop {
     padding: 0;
   }

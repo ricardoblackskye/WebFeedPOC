@@ -22,15 +22,15 @@
   font-weight: 600;
 }
 
+.pagination-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .pagination-btn:hover:not(:disabled) {
   background-color: var(--color-gold);
   color: #1a1a1a;
   border-color: var(--color-gold);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
 }
 
 .pagination-pages {
@@ -74,5 +74,5 @@
 .pagination-ellipsis {
   width: 36px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgb(255 255 255 / 40%);
 }

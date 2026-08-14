@@ -1,5 +1,5 @@
 .category-filter {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -7,8 +7,8 @@
 
 .category-filter-title {
   font-size: 1.25rem;
-  margin: 0 0 1rem 0;
-  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 1rem;
+  color: rgb(255 255 255 / 90%);
   font-family: var(--font-primary);
   font-weight: 600;
 }
@@ -22,9 +22,9 @@
 .category-btn {
   padding: 0.6rem 1rem;
   background: transparent;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1px solid rgb(212 175 55 / 40%);
   border-radius: 4px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgb(255 255 255 / 80%);
   cursor: pointer;
   transition: all 0.3s;
   font-size: 0.85rem;
@@ -50,7 +50,7 @@
 }
 
 .category-count {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 20%);
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -60,10 +60,10 @@
 }
 
 .category-btn.active .category-count {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgb(255 255 255 / 30%);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .category-filter {
     padding: 1rem;
   }

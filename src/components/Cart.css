@@ -1,5 +1,5 @@
 .cart {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 12px;
   padding: 1.5rem;
   position: sticky;
@@ -25,7 +25,7 @@
 
 .cart-item {
   padding: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
 }
 
 .cart-item:last-child {
@@ -90,7 +90,7 @@
 .remove-btn {
   padding: 0.4rem 0.8rem;
   font-size: 0.85rem;
-  background: rgba(255, 100, 100, 0.2);
+  background: rgb(255 100 100 / 20%);
   border: 1px solid #ff6464;
   color: #ff6464;
   border-radius: 4px;
@@ -99,12 +99,12 @@
 }
 
 .remove-btn:hover {
-  background: rgba(255, 100, 100, 0.3);
+  background: rgb(255 100 100 / 30%);
 }
 
 .cart-total {
   padding-top: 1rem;
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid rgb(255 255 255 / 10%);
 }
 
 .cart-total h3 {
@@ -134,12 +134,12 @@
   background: var(--color-gold-hover);
   border-color: var(--color-gold-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 6px 12px rgb(212 175 55 / 40%);
 }
 
 .checkout-btn:disabled {
-  background: rgba(212, 175, 55, 0.3);
-  border-color: rgba(212, 175, 55, 0.3);
+  background: rgb(212 175 55 / 30%);
+  border-color: rgb(212 175 55 / 30%);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -147,8 +147,8 @@
 }
 
 .checkout-btn:disabled:hover {
-  background: rgba(212, 175, 55, 0.3);
-  border-color: rgba(212, 175, 55, 0.3);
+  background: rgb(212 175 55 / 30%);
+  border-color: rgb(212 175 55 / 30%);
   transform: none;
   box-shadow: none;
 }
@@ -163,9 +163,9 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.75rem;
-  background: rgba(212, 175, 55, 0.15);
+  background: rgb(212 175 55 / 15%);
   color: var(--color-gold);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
   font-size: 0.75rem;
   font-family: var(--font-secondary);
@@ -178,7 +178,7 @@
 .cart-loading {
   padding: 1rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgb(255 255 255 / 60%);
   font-family: var(--font-secondary);
   font-size: 0.9rem;
 }
@@ -186,7 +186,7 @@
 .cart-loading-small {
   padding: 0.5rem;
   text-align: center;
-  color: rgba(212, 175, 55, 0.8);
+  color: rgb(212 175 55 / 80%);
   font-family: var(--font-secondary);
   font-size: 0.85rem;
   margin-bottom: 0.5rem;
@@ -196,8 +196,8 @@
 .cart-error {
   padding: 0.75rem;
   margin-bottom: 1rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgb(239 68 68 / 10%);
+  border: 1px solid rgb(239 68 68 / 30%);
   border-radius: 4px;
   color: #ef4444;
   font-size: 0.85rem;
@@ -207,8 +207,8 @@
 .cart-error-small {
   padding: 0.5rem;
   margin-bottom: 0.75rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgb(239 68 68 / 10%);
+  border: 1px solid rgb(239 68 68 / 30%);
   border-radius: 4px;
   color: #ef4444;
   font-size: 0.8rem;
@@ -224,7 +224,7 @@
   justify-content: space-between;
   padding: 0.5rem 0;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgb(255 255 255 / 80%);
   font-family: var(--font-secondary);
 }
 
@@ -242,7 +242,7 @@
   align-items: center;
   padding-top: 0.75rem;
   margin-top: 0.75rem;
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid rgb(255 255 255 / 10%);
 }
 
 .cart-total-line h3 {
@@ -256,8 +256,8 @@
 .cart-local-mode-notice {
   margin-top: 0.75rem;
   padding: 0.5rem;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgb(212 175 55 / 10%);
+  border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
   color: var(--color-gold);
   font-size: 0.75rem;

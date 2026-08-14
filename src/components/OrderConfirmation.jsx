@@ -171,13 +171,13 @@ export default function OrderConfirmation() {
           <div className="status-box">
             <div className="status-item">
               <span className="status-label">Payment Status:</span>
-              <span className={`status-badge status-${order.paymentStatus?.toLowerCase()}`}>
+              <span className={`status-badge status-${order.paymentStatus?.toLowerCase().replace(/_/g, '-')}`}>
                 {order.paymentStatus || 'Pending'}
               </span>
             </div>
             <div className="status-item">
               <span className="status-label">Fulfillment Status:</span>
-              <span className={`status-badge status-${order.fulfillmentStatus?.toLowerCase()}`}>
+              <span className={`status-badge status-${order.fulfillmentStatus?.toLowerCase().replace(/_/g, '-')}`}>
                 {order.fulfillmentStatus || 'Processing'}
               </span>
             </div>

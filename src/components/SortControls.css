@@ -14,9 +14,9 @@
 .search-input {
   width: 100%;
   padding: 0.6rem 1rem;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgb(255 255 255 / 5%);
   color: inherit;
   font-size: 0.95rem;
   outline: none;
@@ -25,12 +25,12 @@
 }
 
 .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgb(255 255 255 / 40%);
 }
 
 .search-input:focus {
   border-color: var(--color-gold);
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgb(255 255 255 / 8%);
 }
 
 .sort-box {
@@ -42,7 +42,7 @@
 
 .sort-label {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgb(255 255 255 / 70%);
   white-space: nowrap;
   font-family: var(--font-secondary);
   font-weight: 600;
@@ -52,9 +52,9 @@
 
 .sort-select {
   padding: 0.6rem 0.8rem;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgb(255 255 255 / 5%);
   color: inherit;
   font-size: 0.9rem;
   cursor: pointer;

@@ -178,7 +178,7 @@
 .about-debug pre {
   margin: 0;
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Collapsible bio section */
@@ -212,7 +212,7 @@
   margin-top: 0.75rem;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .about-page h1 {
     font-size: 1.8rem;
   }
