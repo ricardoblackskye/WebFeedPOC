@@ -15,16 +15,24 @@ const policy = readFileSync(
 test('scanner database reliability has an explicit pre-MegaLinter storage strategy', () => {
   assert.match(
     workflow,
-    /(?:actions\/cache(?:\/restore|\/save)?|free-disk-space|docker system prune|larger runner|larger-runner)/i,
+    /(?:actions\/cache(?:\/restore|\/save)?|free-disk-space|disk-space-reclaimer|docker system prune|larger runner|larger-runner)/i,
   );
 });
 
-test('cached scanner databases are isolated and versioned when a cache strategy is used', () => {
-  assert.match(workflow, /(?:trivy|grype).*\.cache|\.cache.*(?:trivy|grype)/is);
+test('the storage strategy is pinned and configured for scanner database headroom', () => {
+  assert.match(workflow, /insightsengineering\/disk-space-reclaimer@(?:[0-9a-f]{40})/i);
   assert.match(
     workflow,
-    /(?:trivy|grype).*(?:version|hashFiles|key)|(?:version|hashFiles|key).*(?:trivy|grype)/is,
+    /(?:android|dotnet|haskell|large-packages|docker-images|swap-storage|tools-cache):\s*true/is,
   );
+});
+
+test('the storage action runs before MegaLinter and preserves blocking scanner defaults', () => {
+  const storageIndex = workflow.indexOf('insightsengineering/disk-space-reclaimer@');
+  const megalinterIndex = workflow.indexOf('uses: oxsecurity/megalinter@');
+
+  assert.ok(storageIndex >= 0 && storageIndex < megalinterIndex);
+  assert.doesNotMatch(config, /REPOSITORY_(?:GRYPE|TRIVY)_IGNORE|REPOSITORY_(?:GRYPE|TRIVY)_DISABLE_ERRORS/);
 });
 
 test('scanner failures remain blocking and database bootstrap verification is documented', () => {

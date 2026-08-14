@@ -25,6 +25,21 @@ The tests require:
 - No `DISABLE_LINTERS`, `DISABLE_ERRORS_LINTERS`, scanner-specific non-blocking setting, or broad ignore used to hide database failures.
 - Documentation of how successful database initialization is distinguished from a vulnerability finding.
 
+## Selected implementation
+
+The workflow reclaims runner disk space before the Docker-based MegaLinter action
+using the maintained `insightsengineering/disk-space-reclaimer` action pinned to
+commit `dae9fabcb8febe09f6585471948acf9dc9a57489`. It removes disposable
+preinstalled SDKs, packages, Docker images, swap storage, and the runner tool
+cache. It does not cache scanner databases, so no partial database can be
+restored or saved under an unversioned key.
+
+Grype and Trivy remain enabled and blocking through MegaLinter's defaults. A
+successful database initialization is required before scanner output can be
+treated as vulnerability findings; messages such as `no space left on device`,
+`database or disk is full`, or `database does not exist` remain infrastructure
+failures and must fail CI rather than being suppressed.
+
 ## Acceptance criteria
 
 - Grype and Trivy initialize without disk/database bootstrap errors.
