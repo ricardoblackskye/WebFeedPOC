@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useWixCart } from './useWixCart'
 import * as wixCartService from '../services/wixCartService'
+import { createProductFixture, createWixCartFixture, createWixCartLineItemFixture } from '../test-utils/copyPasteHelpers'
 
 // Mock the wixCartService
 vi.mock('../services/wixCartService', () => ({
@@ -31,7 +32,7 @@ describe('useWixCart', () => {
 
   describe('initialization', () => {
     it('loads cart from localStorage when Wix cart unavailable', async () => {
-      const storedCart = [{ id: '1', name: 'Test Product', price: 100, quantity: 1 }]
+      const storedCart = [createProductFixture({ id: '1', quantity: 1 })]
       localStorageMock.getItem.mockReturnValue(JSON.stringify(storedCart))
       wixCartService.getCurrentCart.mockResolvedValue(null)
 
@@ -46,18 +47,13 @@ describe('useWixCart', () => {
     })
 
     it('loads cart from Wix when available', async () => {
-      const wixCart = {
-        lineItems: [
-          {
-            _id: 'line1',
-            catalogReference: { catalogItemId: '1' },
-            productName: { original: 'Test Product' },
-            price: { amount: 100 },
-            quantity: 1,
-          },
-        ],
-      }
-      const transformedCart = [{ id: '1', lineItemId: 'line1', name: 'Test Product', price: 100, quantity: 1 }]
+      const wixCart = createWixCartFixture({
+        lineItems: [createWixCartLineItemFixture({
+          _id: 'line1',
+          catalogReference: { catalogItemId: '1' },
+        })],
+      })
+      const transformedCart = [createProductFixture({ id: '1', lineItemId: 'line1', quantity: 1 })]
       
       wixCartService.getCurrentCart.mockResolvedValue(wixCart)
       wixCartService.transformWixCart.mockReturnValue(transformedCart)
@@ -114,7 +110,7 @@ describe('useWixCart', () => {
     })
 
     it('increments quantity for existing product', async () => {
-      const existingCart = [{ id: '1', name: 'Test Product', price: 100, quantity: 1 }]
+      const existingCart = [createProductFixture({ id: '1', quantity: 1 })]
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCart))
       wixCartService.getCurrentCart.mockResolvedValue(null)
 
@@ -135,19 +131,14 @@ describe('useWixCart', () => {
     })
 
     it('uses Wix cart API when backend available', async () => {
-      const wixCart = { lineItems: [] }
-      const updatedWixCart = {
-        lineItems: [
-          {
-            _id: 'line1',
-            catalogReference: { catalogItemId: '1' },
-            productName: { original: 'Test Product' },
-            price: { amount: 100 },
-            quantity: 1,
-          },
-        ],
-      }
-      const transformedCart = [{ id: '1', lineItemId: 'line1', name: 'Test Product', price: 100, quantity: 1 }]
+      const wixCart = createWixCartFixture()
+      const updatedWixCart = createWixCartFixture({
+        lineItems: [createWixCartLineItemFixture({
+          _id: 'line1',
+          catalogReference: { catalogItemId: '1' },
+        })],
+      })
+      const transformedCart = [createProductFixture({ id: '1', lineItemId: 'line1', quantity: 1 })]
 
       wixCartService.getCurrentCart.mockResolvedValue(wixCart)
       wixCartService.addToWixCart.mockResolvedValue(updatedWixCart)
@@ -174,7 +165,7 @@ describe('useWixCart', () => {
 
   describe('updateQuantity', () => {
     it('updates quantity in local cart', async () => {
-      const existingCart = [{ id: '1', name: 'Test Product', price: 100, quantity: 1 }]
+      const existingCart = [createProductFixture({ id: '1', quantity: 1 })]
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCart))
       wixCartService.getCurrentCart.mockResolvedValue(null)
 
@@ -192,7 +183,7 @@ describe('useWixCart', () => {
     })
 
     it('removes item when quantity is 0', async () => {
-      const existingCart = [{ id: '1', name: 'Test Product', price: 100, quantity: 1 }]
+      const existingCart = [createProductFixture({ id: '1', quantity: 1 })]
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCart))
       wixCartService.getCurrentCart.mockResolvedValue(null)
 
@@ -285,7 +276,7 @@ describe('useWixCart', () => {
 
   describe('clearCart', () => {
     it('clears cart and localStorage', async () => {
-      const existingCart = [{ id: '1', name: 'Test Product', price: 100, quantity: 1 }]
+      const existingCart = [createProductFixture({ id: '1', quantity: 1 })]
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCart))
       wixCartService.getCurrentCart.mockResolvedValue(null)
 

@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { useWixProducts } from '../hooks/useWixProducts'
 import * as wixService from '../services/wixService'
 import { createQueryWrapper } from '../test-utils'
+import { createProductFixture } from '../test-utils/copyPasteHelpers'
 
 vi.mock('../services/wixService')
 
@@ -25,8 +26,8 @@ describe('useWixProducts', () => {
 
   it('returns products on successful fetch', async () => {
     const mockProducts = [
-      { id: '1', name: 'Product 1', price: 100 },
-      { id: '2', name: 'Product 2', price: 200 },
+      createProductFixture({ id: '1', name: 'Product 1', price: 100 }),
+      createProductFixture({ id: '2', name: 'Product 2', price: 200 }),
     ]
 
     vi.spyOn(wixService, 'fetchWixProducts').mockResolvedValue(mockProducts)
