@@ -53,7 +53,7 @@ test('copy-paste detector ignores only generated Speckit scripts', () => {
   ]);
   assert.equal(config.threshold, 0);
   assert.equal(config.disable, undefined);
-  assert.equal(config.ignore.length, 21);
+  assert.equal(config.ignore.length, 20);
 });
 
 test('Wix hook duplication remediation is test-only and uses shared fixtures', () => {
