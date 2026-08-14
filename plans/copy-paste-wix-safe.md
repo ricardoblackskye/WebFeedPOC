@@ -55,8 +55,8 @@ The focused policy tests, full Vitest suite, production build, and fresh MegaLin
 - [x] No global copy-paste disablement or threshold relaxation is introduced.
 - [x] Wix test fixture extraction preserves existing assertions and behavior.
 - [x] Focused policy tests were RED before implementation and GREEN afterward.
-- [ ] Full Vitest suite and build pass on the implementation commit.
-- [ ] A fresh copy-paste report documents the remaining clones.
+- [x] Full Vitest suite and build pass on the implementation commit.
+- [x] A fresh copy-paste report documents 38 remaining clones; generated Speckit script clones are excluded.
 
 ## Verification commands
 
