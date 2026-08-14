@@ -41,7 +41,7 @@
 .order-history-error p,
 .order-history-empty p {
   color: var(--color-text-light, #666);
-  margin: 1rem 0 2rem 0;
+  margin: 1rem 0 2rem;
   font-size: 1.125rem;
 }
 
@@ -60,7 +60,7 @@
 }
 
 .order-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
 }
 
 .order-card-header {
@@ -75,7 +75,7 @@
 .order-card-header h3 {
   font-family: 'EB Garamond', serif;
   font-size: 1.5rem;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.25rem;
   color: var(--color-text, #333);
 }
 
@@ -154,7 +154,7 @@
 .order-item-mini-details .item-name {
   font-weight: 600;
   color: var(--color-text, #333);
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.25rem;
 }
 
 .order-item-mini-details .item-quantity {
@@ -194,7 +194,7 @@
 .btn-view-order {
   padding: 0.5rem 1.5rem;
   font-size: 0.875rem;
-  font-family: 'Lato', sans-serif;
+  font-family: Lato, sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -228,7 +228,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .order-history h1 {
     font-size: 2rem;
   }

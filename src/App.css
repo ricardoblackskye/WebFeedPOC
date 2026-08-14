@@ -47,8 +47,18 @@
   transition: opacity 0.2s;
 }
 
+.breadcrumb a {
+  color: var(--color-gold);
+  text-decoration: none;
+  font-family: var(--font-secondary);
+}
+
 .app-nav a:hover {
   opacity: 1;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
 }
 
 .app-main {
@@ -66,7 +76,7 @@
 
 .product-count {
   font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgb(255 255 255 / 60%);
   font-weight: 400;
 }
 
@@ -78,11 +88,11 @@
 }
 
 .loading {
-  background-color: rgba(100, 108, 255, 0.1);
+  background-color: rgb(100 108 255 / 10%);
 }
 
 .error {
-  background-color: rgba(255, 100, 100, 0.1);
+  background-color: rgb(255 100 100 / 10%);
 }
 
 @media (prefers-color-scheme: light) {
@@ -91,7 +101,7 @@
   }
 }
 
-@media (max-width: 968px) {
+@media (width <= 968px) {
   .app-main {
     grid-template-columns: 1fr;
   }
@@ -106,8 +116,8 @@
   text-align: center;
   padding: 2rem 0;
   margin-top: 3rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.5);
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  color: rgb(255 255 255 / 50%);
   font-size: 0.9rem;
 }
 
@@ -124,9 +134,20 @@
 }
 
 @keyframes refresh-sweep {
-  0%   { width: 0%;   opacity: 1; }
-  60%  { width: 80%;  opacity: 1; }
-  100% { width: 100%; opacity: 0; }
+  0% {
+    width: 0%;
+    opacity: 1;
+  }
+
+  60% {
+    width: 80%;
+    opacity: 1;
+  }
+
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
 }
 
 /* Breadcrumbs (shared between pages) */
@@ -135,26 +156,16 @@
   display: flex;
   gap: 0.5rem;
   padding: 0;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.5rem;
   font-size: 0.9rem;
 }
 
 .breadcrumb li:not(:last-child)::after {
   content: '›';
   margin-left: 0.5rem;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.breadcrumb a {
-  color: var(--color-gold);
-  text-decoration: none;
-  font-family: var(--font-secondary);
-}
-
-.breadcrumb a:hover {
-  text-decoration: underline;
+  color: rgb(255 255 255 / 40%);
 }
 
 .breadcrumb li[aria-current="page"] {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgb(255 255 255 / 60%);
 }
