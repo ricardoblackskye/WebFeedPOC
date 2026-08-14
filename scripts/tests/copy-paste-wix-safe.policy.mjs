@@ -29,10 +29,31 @@ test('copy-paste detector ignores only generated Speckit scripts', () => {
   assert.ok(existsSync(configPath), 'expected .jscpd.json configuration');
   const config = JSON.parse(readFileSync(configPath, 'utf8'));
 
-  assert.deepEqual(config.ignore, ['**/.specify/extensions/git/scripts/**']);
+  assert.deepEqual(config.ignore, [
+    '**/node_modules/**',
+    '**/.git/**',
+    '**/.rbenv/**',
+    '**/.venv/**',
+    '**/report/**',
+    '**/megalinter-reports/**',
+    '**/hardis-report/**',
+    '**/*cache*/**',
+    '**/*.json',
+    '**/*.yaml',
+    '**/*.yml',
+    '**/*.md',
+    '**/*.html',
+    '**/*.xml',
+    '**/*.jpg',
+    '**/*.png',
+    '**/*.svg',
+    '**/*.zip',
+    '**/*.bin',
+    '**/.specify/extensions/git/scripts/**',
+  ]);
   assert.equal(config.threshold, 0);
   assert.equal(config.disable, undefined);
-  assert.equal(config.ignore.length, 1);
+  assert.equal(config.ignore.length, 21);
 });
 
 test('Wix hook duplication remediation is test-only and uses shared fixtures', () => {

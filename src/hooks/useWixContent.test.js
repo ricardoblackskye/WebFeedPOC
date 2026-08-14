@@ -22,7 +22,7 @@ describe('useWixContent', () => {
   it('returns data on successful fetch', async () => {
     const mockData = [
       createContentFixture({ _id: '1' }),
-      createContentFixture({ _id: '2', title: 'Our Team', body: 'Meet the team.' }),
+      createContentFixture({ _id: '2', title: 'Our Team', body: 'Meet the team.' })
     ]
     const fetchFn = vi.fn().mockResolvedValue(mockData)
 

@@ -12,7 +12,7 @@ vi.mock('../services/wixCartService', () => ({
   removeFromWixCart: vi.fn(),
   clearWixCart: vi.fn(),
   transformWixCart: vi.fn(),
-  getCartTotals: vi.fn(),
+  getCartTotals: vi.fn()
 }))
 
 // Mock localStorage
@@ -20,7 +20,7 @@ const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
-  clear: vi.fn(),
+  clear: vi.fn()
 }
 global.localStorage = localStorageMock
 
@@ -50,11 +50,11 @@ describe('useWixCart', () => {
       const wixCart = createWixCartFixture({
         lineItems: [createWixCartLineItemFixture({
           _id: 'line1',
-          catalogReference: { catalogItemId: '1' },
-        })],
+          catalogReference: { catalogItemId: '1' }
+        })]
       })
       const transformedCart = [createProductFixture({ id: '1', lineItemId: 'line1', quantity: 1 })]
-      
+
       wixCartService.getCurrentCart.mockResolvedValue(wixCart)
       wixCartService.transformWixCart.mockReturnValue(transformedCart)
 
@@ -105,7 +105,7 @@ describe('useWixCart', () => {
         id: '1',
         name: 'Test Product',
         price: 100,
-        quantity: 1,
+        quantity: 1
       })
     })
 
@@ -135,8 +135,8 @@ describe('useWixCart', () => {
       const updatedWixCart = createWixCartFixture({
         lineItems: [createWixCartLineItemFixture({
           _id: 'line1',
-          catalogReference: { catalogItemId: '1' },
-        })],
+          catalogReference: { catalogItemId: '1' }
+        })]
       })
       const transformedCart = [createProductFixture({ id: '1', lineItemId: 'line1', quantity: 1 })]
 
@@ -205,7 +205,7 @@ describe('useWixCart', () => {
     it('removes product from local cart', async () => {
       const existingCart = [
         { id: '1', name: 'Product 1', price: 100, quantity: 1 },
-        { id: '2', name: 'Product 2', price: 200, quantity: 1 },
+        { id: '2', name: 'Product 2', price: 200, quantity: 1 }
       ]
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCart))
       wixCartService.getCurrentCart.mockResolvedValue(null)
@@ -229,7 +229,7 @@ describe('useWixCart', () => {
     it('calculates totals from local cart', async () => {
       const existingCart = [
         { id: '1', name: 'Product 1', price: 100, quantity: 2 },
-        { id: '2', name: 'Product 2', price: 50, quantity: 1 },
+        { id: '2', name: 'Product 2', price: 50, quantity: 1 }
       ]
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingCart))
       wixCartService.getCurrentCart.mockResolvedValue(null)
@@ -250,14 +250,14 @@ describe('useWixCart', () => {
         lineItems: [],
         subtotal: { amount: 250 },
         taxSummary: { totalTax: { amount: 25 } },
-        totals: { total: { amount: 275 } },
+        totals: { total: { amount: 275 } }
       }
       const wixTotals = {
         subtotal: 250,
         tax: 25,
         shipping: 0,
         discount: 0,
-        total: 275,
+        total: 275
       }
 
       wixCartService.getCurrentCart.mockResolvedValue(wixCart)
