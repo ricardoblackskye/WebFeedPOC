@@ -16,7 +16,7 @@ test('copy-paste plan protects Wix and all production source paths', () => {
   const plan = readFileSync(planPath, 'utf8');
 
   for (const term of [
-    'must not change',
+    'does not change',
     'src/hooks/useWixCart.js',
     'src/services/wixService.js',
     'all other non-test files under `src/`',
