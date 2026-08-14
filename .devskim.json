@@ -1,11 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/DevSkim/main aufs/DevSkim.CLI/Config/devskim.schema.json",
-  "suppressions": [
-    {
-      "ruleId": "DS173237",
-      "paths": [
-        ".specify/integrations/*.manifest.json"
-      ]
-    }
+  "Globs": [
+    "**/.specify/integrations/*.manifest.json"
   ]
 }
