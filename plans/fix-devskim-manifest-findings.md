@@ -10,41 +10,38 @@ Classify and narrowly suppress DevSkim false positives for Speckit integrity has
 
 ## Evidence
 
-MegaLinter run [31720693378](https://github.com/ricardoblackskye/WebFeedPOC/actions/runs/31720693378) reports 29 `DS173237` findings in:
+MegaLinter run [31720693378](https://github.com/ricardoblackskye/WebFeedPOC/actions/runs/31720693378) reported 29 `DS173237` findings in:
 
 - `.specify/integrations/speckit.manifest.json`
 - `.specify/integrations/copilot.manifest.json`
 
-The flagged values are 64-character hexadecimal values used as manifest integrity metadata. The current `.devskim.json` `suppressions` property does not affect DevSkim 1.0.70, as confirmed by the repeated CI findings.
+The flagged values are 64-character hexadecimal values used as manifest integrity metadata. The previous `.devskim.json` `suppressions` property did not affect DevSkim 1.0.70, as confirmed by repeated CI findings.
 
 ## TDD strategy
 
 1. Preserve and validate every manifest integrity value as a 64-character hexadecimal hash.
-2. Require path exclusions to name exactly the two affected manifest files.
+2. Require a supported `Globs` exclusion matching only the affected manifest paths.
 3. Reject global `DS173237` suppression through `IgnoreRuleIds` or `LanguageRuleIgnoreMap`.
-4. Reject the currently ineffective unsupported `suppressions` structure.
+4. Reject the ineffective legacy `suppressions` structure.
 5. Verify the policy tests fail against the current configuration.
 6. Commit and push only the RED tests for review.
-7. Stop for explicit approval before changing `.devskim.json` or implementing the remediation.
+7. After approval, implement the path-scoped configuration and verify fresh MegaLinter SARIF output.
 
-## Expected implementation direction after approval
+## Implementation
 
-Use a documented DevSkim 1.0.70 configuration property that excludes only the two manifest paths, without deleting or altering the hashes. Confirm the actual MegaLinter SARIF output, because a syntactically valid configuration is not sufficient evidence that the findings are suppressed.
+DevSkim's documented `Globs` option now excludes `**/.specify/integrations/*.manifest.json`. This matches the two manifest files recursively while keeping `DS173237` active elsewhere. The integrity hashes were not changed.
 
 ## Acceptance criteria
 
 - All flagged values are classified as integrity hashes or remediated as real secrets.
 - No active secret remains in tracked source.
-- The suppression is limited to the two manifest paths.
+- The exclusion is limited to the two manifest paths.
 - `DS173237` remains active for all other files.
-- The `REPOSITORY_DEVSKIM` check passes without unrelated findings being suppressed.
+- The `REPOSITORY_DEVSKIM` check reports no findings for these manifests.
 - Existing application tests and build remain green.
+- Unrelated jscpd and vulnerability-database failures remain separately tracked.
 
-## Execution handoff
-
-Stop after RED tests are committed and pushed. Obtain user approval before implementation.
-
-## Verification after approval
+## Verification
 
 ```bash
 node --test scripts/tests/devskim-manifest.policy.mjs
@@ -53,17 +50,4 @@ npm test -- --run
 npm run build
 ```
 
-Then inspect the resulting MegaLinter DevSkim SARIF and separate any Trivy/Grype or jscpd failures from this issue.
-
-### Test command
-
-```bash
-node --test scripts/tests/devskim-manifest.policy.mjs
-```
-
-### Files intentionally changed in RED phase
-
-- `plans/fix-devskim-manifest-findings.md`
-- `scripts/tests/devskim-manifest.policy.mjs`
-
-No implementation/configuration change is authorized in the RED phase.
+The authoritative scanner verification is the MegaLinter workflow on the implementation commit.

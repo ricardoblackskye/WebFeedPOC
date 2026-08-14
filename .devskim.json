@@ -1,7 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/DevSkim/main/DevSkim.CLI/Config/devskim.schema.json",
   "Globs": [
-    ".specify/integrations/speckit.manifest.json",
-    ".specify/integrations/copilot.manifest.json"
+    "**/.specify/integrations/*.manifest.json"
   ]
 }

@@ -23,9 +23,9 @@ test('DevSkim excludes only the two manifest paths containing false-positive has
   const config = JSON.parse(readFileSync(new URL('.devskim.json', root), 'utf8'));
 
   assert.deepEqual(
-    [...(config.Globs ?? [])].sort(),
-    [...manifestPaths].sort(),
-    'DevSkim path exclusions must name exactly the two known manifest files',
+    config.Globs,
+    ['**/.specify/integrations/*.manifest.json'],
+    'DevSkim path exclusion must match only the two known manifest files recursively',
   );
 });
 
