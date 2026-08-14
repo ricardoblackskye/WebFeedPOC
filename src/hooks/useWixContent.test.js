@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useWixContent } from '../hooks/useWixContent'
 import { createQueryWrapper } from '../test-utils'
+import { createContentFixture } from '../test-utils/copyPasteHelpers'
 
 describe('useWixContent', () => {
   beforeEach(() => {
@@ -20,8 +21,8 @@ describe('useWixContent', () => {
 
   it('returns data on successful fetch', async () => {
     const mockData = [
-      { _id: '1', title: 'Our Story', body: 'We love antiques.' },
-      { _id: '2', title: 'Our Team', body: 'Meet the team.' },
+      createContentFixture({ _id: '1' }),
+      createContentFixture({ _id: '2', title: 'Our Team', body: 'Meet the team.' })
     ]
     const fetchFn = vi.fn().mockResolvedValue(mockData)
 

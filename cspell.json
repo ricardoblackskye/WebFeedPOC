@@ -5,6 +5,8 @@
     "zizmor",
     "devskim",
     "speckit",
-    "SARIF"
+    "SARIF",
+    "venv",
+    "hardis"
   ]
 }
