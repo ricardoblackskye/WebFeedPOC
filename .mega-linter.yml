@@ -10,6 +10,9 @@ IGNORE_GITIGNORED_FILES: true
 REPORT_OUTPUT_FOLDER: megalinter-reports
 LOG_FILE: mega-linter.log
 
+# Exclude third-party vendor tooling (.specify) from all MegaLinter descriptors
+FILTER_REGEX_EXCLUDE: "(^|/)(\\.specify)/"
+
 # Allow zizmor to use the workflow token for its online ref-confusion audit.
 ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
   - GITHUB_TOKEN
@@ -17,8 +20,9 @@ ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
 # Keep Grype strict; allow the scanner to refresh its database on each run.
 REPOSITORY_GRYPE_TIMEOUT_SECONDS: 600
 
-# These directories are generated locally or by CI and should never be linted.
+# These directories are generated locally, by CI, or third-party vendor tools and should never be linted.
 ADDITIONAL_EXCLUDED_DIRECTORIES:
+  - .specify
   - node_modules
   - dist
   - dist-ssr

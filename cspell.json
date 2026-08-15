@@ -7,6 +7,9 @@
     "speckit",
     "SARIF",
     "venv",
-    "hardis"
+    "hardis",
+    "SHELLCHECK",
+    "SHFMT",
+    "shfmt"
   ]
 }
