@@ -29,7 +29,7 @@ These files represent external framework tooling and vendor integration glue cod
 3. **JavaScript Standard Style Configuration (`package.json`):**
    - Configure `"standard": { "ignore": ["api/wix-*.js", ".specify/**"] }` in `package.json` so Standard JS ignores third-party serverless integration files.
 4. **CSpell Dictionary Additions (`cspell.json`):**
-   - Add legitimate repository tooling terms (`SHELLCHECK`, `SHFMT`, `shfmt`) to `cspell.json`.
+   - Add legitimate repository tooling and package terms (`SHELLCHECK`, `SHFMT`, `shfmt`, `ecom`, `microsite`, `prerender`) to `cspell.json`.
 5. **Scope Protection:**
    - Ensure primary application code (`src/`), deployment scripts (`scripts/`), and GitHub Actions workflows (`.github/workflows/`) remain actively linted and tested without broad suppresses.
 
@@ -60,6 +60,6 @@ These files represent external framework tooling and vendor integration glue cod
 - [ ] `scripts/tests/third-party-exclusions.policy.mjs` passes GREEN after implementation.
 - [ ] `.specify/` is excluded from all MegaLinter descriptors.
 - [ ] `api/wix-*.js` is excluded from JS Standard and jscpd duplication checks.
-- [ ] `cspell.json` includes `SHELLCHECK`, `SHFMT`, and `shfmt`.
+- [ ] `cspell.json` includes `SHELLCHECK`, `SHFMT`, `shfmt`, `ecom`, `microsite`, `prerender`.
 - [ ] Core repository application code in `src/`, `scripts/`, and `.github/` remains fully guarded.
 - [ ] All existing regression tests (`npm test -- --run`) and build (`npm run build`) pass.

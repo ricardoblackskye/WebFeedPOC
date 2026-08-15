@@ -67,7 +67,7 @@ test('package.json configures Standard JS to ignore third-party and vendor asset
 test('cspell configuration includes repository-specific tooling terms', () => {
   const cspell = JSON.parse(readRequired(cspellPath));
   assert.ok(Array.isArray(cspell.words), 'cspell words must be an array');
-  for (const word of ['SHELLCHECK', 'SHFMT', 'shfmt']) {
+  for (const word of ['SHELLCHECK', 'SHFMT', 'shfmt', 'ecom', 'microsite', 'prerender']) {
     assert.ok(
       cspell.words.includes(word),
       `expected cspell.words to include "${word}"`,
