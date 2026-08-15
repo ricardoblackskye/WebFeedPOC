@@ -28,7 +28,9 @@ These files represent external framework tooling and vendor integration glue cod
    - Expand `.jscpd.json` `ignore` array to include `**/.specify/**` and `**/api/wix-*.js`, preserving `threshold: 0` for all application and test code.
 3. **JavaScript Standard Style Configuration (`package.json`):**
    - Configure `"standard": { "ignore": ["api/wix-*.js", ".specify/**"] }` in `package.json` so Standard JS ignores third-party serverless integration files.
-4. **Scope Protection:**
+4. **CSpell Dictionary Additions (`cspell.json`):**
+   - Add legitimate repository tooling terms (`SHELLCHECK`, `SHFMT`, `shfmt`) to `cspell.json`.
+5. **Scope Protection:**
    - Ensure primary application code (`src/`), deployment scripts (`scripts/`), and GitHub Actions workflows (`.github/workflows/`) remain actively linted and tested without broad suppresses.
 
 ## Testing Blueprint
@@ -37,6 +39,7 @@ These files represent external framework tooling and vendor integration glue cod
 - **MegaLinter Configuration Exclusions:** Assert `.mega-linter.yml` contains `.specify` in `ADDITIONAL_EXCLUDED_DIRECTORIES` and `FILTER_REGEX_EXCLUDE`.
 - **jscpd Duplication Configuration:** Assert `.jscpd.json` contains `**/.specify/**` and `**/api/wix-*.js` in `ignore`, and maintains `threshold: 0`.
 - **JavaScript Standard Linter Configuration:** Assert `package.json` specifies `"standard"` ignore rules for `api/wix-*.js` and `.specify/**`.
+- **CSpell Tooling Terms:** Assert `cspell.json` includes `SHELLCHECK`, `SHFMT`, and `shfmt`.
 - **Core Code Protection:** Assert that primary production paths (`src/`, `scripts/`, `.github/workflows/`) are NOT included in ignore patterns.
 
 ### Regression Suite
@@ -57,5 +60,6 @@ These files represent external framework tooling and vendor integration glue cod
 - [ ] `scripts/tests/third-party-exclusions.policy.mjs` passes GREEN after implementation.
 - [ ] `.specify/` is excluded from all MegaLinter descriptors.
 - [ ] `api/wix-*.js` is excluded from JS Standard and jscpd duplication checks.
+- [ ] `cspell.json` includes `SHELLCHECK`, `SHFMT`, and `shfmt`.
 - [ ] Core repository application code in `src/`, `scripts/`, and `.github/` remains fully guarded.
 - [ ] All existing regression tests (`npm test -- --run`) and build (`npm run build`) pass.

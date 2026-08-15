@@ -6,6 +6,7 @@ const root = new URL('../../', import.meta.url);
 const megaLinterConfigPath = new URL('.mega-linter.yml', root);
 const jscpdConfigPath = new URL('.jscpd.json', root);
 const packageJsonPath = new URL('package.json', root);
+const cspellPath = new URL('cspell.json', root);
 
 function readRequired(url) {
   assert.ok(existsSync(url), `expected ${url.pathname} to exist`);
@@ -61,6 +62,17 @@ test('package.json configures Standard JS to ignore third-party and vendor asset
     ignores.includes('.specify/**') || ignores.includes('.specify'),
     'expected standard to ignore .specify/**',
   );
+});
+
+test('cspell configuration includes repository-specific tooling terms', () => {
+  const cspell = JSON.parse(readRequired(cspellPath));
+  assert.ok(Array.isArray(cspell.words), 'cspell words must be an array');
+  for (const word of ['SHELLCHECK', 'SHFMT', 'shfmt']) {
+    assert.ok(
+      cspell.words.includes(word),
+      `expected cspell.words to include "${word}"`,
+    );
+  }
 });
 
 test('primary application source paths under src/ remain protected and monitored', () => {
