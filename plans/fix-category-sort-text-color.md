@@ -56,11 +56,11 @@ These hardcoded white/near-white values create severe contrast issues and unread
 
 ## Edge Cases & Risk Analysis
 
-| Scenario                        | Risk / Consideration                                           | Mitigation                                                                           |
-|---------------------------------|----------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| Active category button contrast | Active button uses gold background (`var(--color-gold)`).      | Ensure `.category-btn.active` keeps dark text (`#1a1a1a`) for high contrast on gold. |
-| Hover states                    | Hover states should provide clear visual feedback.             | Keep hover border and text colored with `var(--color-gold)`.                         |
-| Stylelint compliance            | Any CSS edit could introduce formatting or syntax violations.  | Run Stylelint policy test `scripts/tests/stylelint-css-compliance.policy.mjs`.       |
+| Scenario                        | Risk / Consideration                                          | Mitigation                                                                           |
+|---------------------------------|---------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| Active category button contrast | Active button uses gold background (`var(--color-gold)`).     | Ensure `.category-btn.active` keeps dark text (`#1a1a1a`) for high contrast on gold. |
+| Hover states                    | Hover states should provide clear visual feedback.            | Keep hover border and text colored with `var(--color-gold)`.                         |
+| Stylelint compliance            | Any CSS edit could introduce formatting or syntax violations. | Run Stylelint policy test `scripts/tests/stylelint-css-compliance.policy.mjs`.       |
 
 ## Acceptance Criteria
 
