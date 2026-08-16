@@ -1,0 +1,13 @@
+# Lychee ignore configuration
+# https://lychee.cli.rs/usage/ignore/
+
+# Private repository CI action runs and issue links that 404 for unauthenticated requests
+https://github.com/ricardoblackskye/WebFeedPOC/actions/
+https://github.com/ricardoblackskye/WebFeedPOC/issues/
+
+# Placeholder vendor and demonstration domains
+https://yoursite.wix.com/
+https://www.antiquesmarketplace.co.uk/
+
+# Root-relative HTML links in static template check
+/vite.svg
