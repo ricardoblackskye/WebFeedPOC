@@ -7,6 +7,12 @@
     "speckit",
     "SARIF",
     "venv",
-    "hardis"
+    "hardis",
+    "SHELLCHECK",
+    "SHFMT",
+    "shfmt",
+    "ecom",
+    "microsite",
+    "prerender"
   ]
 }
