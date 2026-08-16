@@ -11,6 +11,7 @@ import CategoryPage from './pages/CategoryPage.jsx'
 import OrderConfirmation from './components/OrderConfirmation.jsx'
 import OrderHistory from './pages/OrderHistory.jsx'
 import AboutPage from './pages/AboutPage.jsx'
+import ArchitecturePage from './pages/ArchitecturePage.jsx'
 import './index.css'
 
 const queryClient = new QueryClient({
@@ -35,6 +36,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="order-confirmation" element={<OrderConfirmation />} />
             <Route path="orders" element={<OrderHistory />} />
             <Route path="about" element={<AboutPage />} />
+            <Route path="architecture" element={<ArchitecturePage />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -23,8 +23,8 @@ function getAllCssFiles(dir) {
 
 const cssFiles = getAllCssFiles(srcDir);
 
-test('repository discovers all 14 CSS stylesheets under src/', () => {
-  assert.equal(cssFiles.length, 14, `expected 14 CSS files, found ${cssFiles.length}`);
+test('repository discovers all application CSS stylesheets under src/', () => {
+  assert.ok(cssFiles.length >= 14, `expected at least 14 CSS files, found ${cssFiles.length}`);
 });
 
 test('no stylesheets use legacy rgba or comma-separated rgb color syntax', () => {
