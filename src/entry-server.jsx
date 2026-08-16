@@ -8,6 +8,7 @@ import App from './App.jsx'
 import HomePage from './pages/HomePage.jsx'
 import ProductPageWrapper from './pages/ProductPageWrapper.jsx'
 import CategoryPage from './pages/CategoryPage.jsx'
+import ArchitecturePage from './pages/ArchitecturePage.jsx'
 
 // Re-export for the prerender script to use
 export { fetchWixProducts } from './services/wixService.js'
@@ -36,6 +37,7 @@ export function render(url, data = {}) {
             <Route index element={<HomePage />} />
             <Route path="products/:slug" element={<ProductPageWrapper />} />
             <Route path="category/:categoryName" element={<CategoryPage />} />
+            <Route path="architecture" element={<ArchitecturePage />} />
           </Route>
           </Routes>
         </StaticRouter>

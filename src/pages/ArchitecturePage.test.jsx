@@ -41,7 +41,7 @@ describe('ArchitecturePage', () => {
     expect(screen.getByText('Scope')).toBeInTheDocument()
     expect(screen.getByText('Mechanism')).toBeInTheDocument()
     expect(screen.getByText('What it holds')).toBeInTheDocument()
-    expect(screen.getByText('App-wide')).toBeInTheDocument()
+    expect(screen.getAllByText('App-wide').length).toBeGreaterThanOrEqual(1)
   })
 
   it('mounts chart containers for all 11 Mermaid diagrams in the document', async () => {
