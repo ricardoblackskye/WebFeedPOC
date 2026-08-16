@@ -104,33 +104,33 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  Root["&lt;HelmetProvider&gt;\n&lt;BrowserRouter&gt;"]
+  Root["HelmetProvider\nBrowserRouter"]
   Root --> Routes
 
   Routes --> AppRoute["Route path='/'"]
-  AppRoute --> AppComp["&lt;App&gt;\nheader · main · footer\nprovides Outlet context"]
+  AppRoute --> AppComp["App\nheader · main · footer\nprovides Outlet context"]
 
-  AppComp --> CartSidebar["&lt;Cart&gt;\nshown on all pages"]
+  AppComp --> CartSidebar["Cart\nshown on all pages"]
 
-  AppComp -->|index| HP["&lt;HomePage&gt;"]
-  AppComp -->|"products/:slug"| PPW["&lt;ProductPageWrapper&gt;\n→ &lt;ProductPage&gt;"]
-  AppComp -->|"category/:name"| CP["&lt;CategoryPage&gt;"]
-  AppComp -->|order-confirmation| OC["&lt;OrderConfirmation&gt;"]
-  AppComp -->|orders| OH["&lt;OrderHistory&gt;"]
+  AppComp -->|index| HP["HomePage"]
+  AppComp -->|"products/:slug"| PPW["ProductPageWrapper\n→ ProductPage"]
+  AppComp -->|"category/:name"| CP["CategoryPage"]
+  AppComp -->|order-confirmation| OC["OrderConfirmation"]
+  AppComp -->|orders| OH["OrderHistory"]
 
-  HP --> CF["&lt;CategoryFilter&gt;"]
-  HP --> SC1["&lt;SortControls&gt;"]
-  HP --> PL1["&lt;ProductList&gt;"]
-  HP --> PG1["&lt;Pagination&gt;"]
-  HP --> PM["&lt;ProductModal&gt; (optional)"]
+  HP --> CF["CategoryFilter"]
+  HP --> SC1["SortControls"]
+  HP --> PL1["ProductList"]
+  HP --> PG1["Pagination"]
+  HP --> PM["ProductModal (optional)"]
 
-  CP --> SC2["&lt;SortControls&gt;"]
-  CP --> PL2["&lt;ProductList&gt;"]
-  CP --> PG2["&lt;Pagination&gt;"]
+  CP --> SC2["SortControls"]
+  CP --> PL2["ProductList"]
+  CP --> PG2["Pagination"]
 
-  PL1 & PL2 --> PC["&lt;ProductCard&gt; ×N"]
-  PPW --> SI["&lt;StockIndicator&gt;"]
-  PM --> SI2["&lt;StockIndicator&gt;"]
+  PL1 & PL2 --> PC["ProductCard ×N"]
+  PPW --> SI["StockIndicator"]
+  PM --> SI2["StockIndicator"]
 ```
 
 ---

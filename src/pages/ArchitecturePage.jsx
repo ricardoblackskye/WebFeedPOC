@@ -159,9 +159,9 @@ export default function ArchitecturePage() {
           try {
             const id = `mermaid-svg-${index}-${Date.now()}`
             // Clean markdown HTML entities if any
-            const cleanedCode = block.code
-              .replaceAll('&lt;', '<')
-              .replaceAll('&gt;', '>')
+            let cleanedCode = block.code
+              .replaceAll('&lt;', '')
+              .replaceAll('&gt;', '')
               .replaceAll('&amp;', '&')
             const { svg } = await mermaid.render(id, cleanedCode)
             if (isMounted) {
