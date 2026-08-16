@@ -13,6 +13,7 @@ function readRequired(url) {
 }
 
 const EXPECTED_WORDS = [
+  'antiquesmarketplace',
   'Anytown',
   'apos',
   'artipacked',
@@ -30,6 +31,7 @@ const EXPECTED_WORDS = [
   'insightsengineering',
   'kubeconfig',
   'Lato',
+  'lycheeignore',
   'mindmap',
   'njsproj',
   'ntvs',
@@ -60,6 +62,7 @@ const EXPECTED_WORDS = [
   'vite',
   'vitest',
   'xyzzy',
+  'yoursite',
 ];
 
 test('cspell.json contains all repository, domain, technical, and template terms', () => {

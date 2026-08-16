@@ -11,6 +11,7 @@
     "*megalinter_file_names*.txt"
   ],
   "words": [
+    "antiquesmarketplace",
     "Anytown",
     "apos",
     "artipacked",
@@ -31,6 +32,7 @@
     "insightsengineering",
     "kubeconfig",
     "Lato",
+    "lycheeignore",
     "microsite",
     "mindmap",
     "njsproj",
@@ -70,6 +72,7 @@
     "vite",
     "vitest",
     "xyzzy",
+    "yoursite",
     "zizmor"
   ]
 }
