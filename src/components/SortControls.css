@@ -16,8 +16,8 @@
   padding: 0.6rem 1rem;
   border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
-  background-color: rgb(255 255 255 / 5%);
-  color: inherit;
+  background-color: rgb(0 0 0 / 2%);
+  color: #2c2416;
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.3s;
@@ -25,12 +25,12 @@
 }
 
 .search-input::placeholder {
-  color: rgb(255 255 255 / 40%);
+  color: rgb(44 36 22 / 50%);
 }
 
 .search-input:focus {
   border-color: var(--color-gold);
-  background-color: rgb(255 255 255 / 8%);
+  background-color: rgb(0 0 0 / 4%);
 }
 
 .sort-box {
@@ -42,7 +42,7 @@
 
 .sort-label {
   font-size: 0.9rem;
-  color: rgb(255 255 255 / 70%);
+  color: #2c2416;
   white-space: nowrap;
   font-family: var(--font-secondary);
   font-weight: 600;
@@ -54,8 +54,8 @@
   padding: 0.6rem 0.8rem;
   border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
-  background-color: rgb(255 255 255 / 5%);
-  color: inherit;
+  background-color: rgb(0 0 0 / 2%);
+  color: #2c2416;
   font-size: 0.9rem;
   cursor: pointer;
   outline: none;
@@ -68,6 +68,6 @@
 }
 
 .sort-select option {
-  background-color: #1a1a2e;
-  color: #fff;
+  background-color: #faf8f3;
+  color: #2c2416;
 }
