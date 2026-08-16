@@ -1,5 +1,5 @@
 .category-filter {
-  background: rgb(255 255 255 / 5%);
+  background: rgb(0 0 0 / 3%);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -8,7 +8,7 @@
 .category-filter-title {
   font-size: 1.25rem;
   margin: 0 0 1rem;
-  color: rgb(255 255 255 / 90%);
+  color: #2c2416;
   font-family: var(--font-primary);
   font-weight: 600;
 }
@@ -24,7 +24,7 @@
   background: transparent;
   border: 1px solid rgb(212 175 55 / 40%);
   border-radius: 4px;
-  color: rgb(255 255 255 / 80%);
+  color: #2c2416;
   cursor: pointer;
   transition: all 0.3s;
   font-size: 0.85rem;
@@ -50,7 +50,7 @@
 }
 
 .category-count {
-  background: rgb(255 255 255 / 20%);
+  background: rgb(0 0 0 / 8%);
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -60,7 +60,7 @@
 }
 
 .category-btn.active .category-count {
-  background: rgb(255 255 255 / 30%);
+  background: rgb(0 0 0 / 15%);
 }
 
 @media (width <= 768px) {
