@@ -145,3 +145,12 @@ test('Primary application paths under src/ remain monitored without CSpell or Ly
     );
   }
 });
+
+test('.mega-linter.yml configures SPELL_LYCHEE_ARGUMENTS with --root-dir so root-relative links resolve', () => {
+  const megaLinterConfig = readRequired(megaLinterConfigPath);
+  assert.match(
+    megaLinterConfig,
+    /SPELL_LYCHEE_ARGUMENTS:\s*.*--root-dir/,
+    'expected .mega-linter.yml to configure SPELL_LYCHEE_ARGUMENTS with --root-dir so lychee can resolve root-relative links',
+  );
+});
