@@ -3,7 +3,7 @@ import { waitForProducts, waitForLoadingToFinish } from './helpers.js'
 
 // Resolve to the first available product's URL so tests work with both
 // real Wix products and the mock fallback catalogue.
-async function getFirstProductUrl(page) {
+async function getFirstProductUrl (page) {
   await page.goto('/')
   await waitForLoadingToFinish(page)
   await waitForProducts(page)

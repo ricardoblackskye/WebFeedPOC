@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   ssr: {
     // Bundle these packages during SSR (they're ESM but detected as CJS)
-    noExternal: ['react-helmet-async', 'react-router-dom', 'react-router'],
+    noExternal: ['react-helmet-async', 'react-router-dom', 'react-router']
   },
   test: {
     globals: true,
@@ -13,7 +13,7 @@ export default defineConfig({
     setupFiles: './src/test-setup.js',
     exclude: [
       'e2e/**',
-      'node_modules/**',
+      'node_modules/**'
     ],
     coverage: {
       provider: 'v8',
@@ -23,8 +23,8 @@ export default defineConfig({
         'src/test-setup.js',
         '**/*.test.{js,jsx}',
         '**/*.config.js',
-        '**/main.jsx',
-      ],
-    },
-  },
+        '**/main.jsx'
+      ]
+    }
+  }
 })

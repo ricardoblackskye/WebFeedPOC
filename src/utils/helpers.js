@@ -1,17 +1,17 @@
 /**
  * Formats a price value to display format
  */
-export function formatPrice(price) {
+export function formatPrice (price) {
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
-    currency: 'GBP',
+    currency: 'GBP'
   }).format(price)
 }
 
 /**
  * Validates email format
  */
-export function isValidEmail(email) {
+export function isValidEmail (email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }
@@ -19,19 +19,19 @@ export function isValidEmail(email) {
 /**
  * Generates a unique ID
  */
-export function generateId() {
+export function generateId () {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
 }
 
 /**
  * Strips HTML tags from a string and decodes HTML entities, returning plain text
  */
-export function stripHtml(html) {
+export function stripHtml (html) {
   if (!html) return ''
-  
+
   // Remove HTML tags
   let text = html.replaceAll(/<[^>]*>/g, '')
-  
+
   // Decode entities without requiring a browser DOM so SSR/prerender can run in Node.
   if (typeof document !== 'undefined') {
     const textarea = document.createElement('textarea')
@@ -48,7 +48,7 @@ export function stripHtml(html) {
       .replaceAll(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
       .replaceAll(/&#x([\da-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
   }
-  
+
   // Clean up extra whitespace
   return text.replaceAll(/\s+/g, ' ').trim()
 }
@@ -56,7 +56,7 @@ export function stripHtml(html) {
 /**
  * Generates a URL-friendly slug from a string
  */
-export function generateSlug(text) {
+export function generateSlug (text) {
   if (!text) return ''
   return text
     .toLowerCase()
@@ -67,7 +67,7 @@ export function generateSlug(text) {
 /**
  * Truncates text to a specified number of words
  */
-export function truncateWords(text, maxWords = 50) {
+export function truncateWords (text, maxWords = 50) {
   if (!text) return ''
   const words = text.split(/\s+/)
   if (words.length <= maxWords) return text

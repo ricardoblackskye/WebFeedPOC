@@ -3,38 +3,38 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const packageJson = JSON.parse(
-  readFileSync(resolve(process.cwd(), 'package.json'), 'utf8'),
+  readFileSync(resolve(process.cwd(), 'package.json'), 'utf8')
 )
 const packageLock = JSON.parse(
-  readFileSync(resolve(process.cwd(), 'package-lock.json'), 'utf8'),
+  readFileSync(resolve(process.cwd(), 'package-lock.json'), 'utf8')
 )
 
 const AFFECTED_RANGES = {
   ghsa: { minimum: [7, 12, 0], maximumExclusive: [8, 3, 0] },
   aikidoCsrf: { minimum: [7, 12, 0], maximumExclusive: [7, 18, 0] },
-  aikidoDeserialization: { minimum: [7, 0, 0], maximumExclusive: [7, 18, 0] },
+  aikidoDeserialization: { minimum: [7, 0, 0], maximumExclusive: [7, 18, 0] }
 }
 
-function parseVersion(version) {
+function parseVersion (version) {
   const match = String(version).match(/^(\d+)\.(\d+)\.(\d+)/)
   if (!match) throw new Error(`Unsupported React Router version: ${version}`)
   return match.slice(1).map(Number)
 }
 
-function compareVersions(left, right) {
+function compareVersions (left, right) {
   for (let index = 0; index < left.length; index += 1) {
     if (left[index] !== right[index]) return left[index] - right[index]
   }
   return 0
 }
 
-function isAffected(version, range) {
+function isAffected (version, range) {
   const parsed = parseVersion(version)
-  return compareVersions(parsed, range.minimum) >= 0
-    && compareVersions(parsed, range.maximumExclusive) < 0
+  return compareVersions(parsed, range.minimum) >= 0 &&
+    compareVersions(parsed, range.maximumExclusive) < 0
 }
 
-function resolvedVersion(packageName) {
+function resolvedVersion (packageName) {
   return packageLock.packages[`node_modules/${packageName}`]?.version
 }
 
@@ -46,8 +46,8 @@ describe('React Router security baseline', () => {
     expect(declared).toBeDefined()
     expect(resolved).toBeDefined()
     const mainSource = readFileSync(resolve(process.cwd(), 'src/main.jsx'), 'utf8')
-    const usesFrameworkMode = mainSource.includes('createRequestHandler')
-      || mainSource.includes('createBrowserRouter')
+    const usesFrameworkMode = mainSource.includes('createRequestHandler') ||
+      mainSource.includes('createBrowserRouter')
 
     if (usesFrameworkMode) {
       expect(isAffected(resolved, AFFECTED_RANGES.ghsa)).toBe(false)
@@ -65,8 +65,8 @@ describe('React Router security baseline', () => {
     expect(domVersion).toBe(routerVersion)
 
     const mainSource = readFileSync(resolve(process.cwd(), 'src/main.jsx'), 'utf8')
-    const usesFrameworkMode = mainSource.includes('createRequestHandler')
-      || mainSource.includes('createBrowserRouter')
+    const usesFrameworkMode = mainSource.includes('createRequestHandler') ||
+      mainSource.includes('createBrowserRouter')
 
     if (usesFrameworkMode) {
       expect(Object.values(AFFECTED_RANGES).some((range) => isAffected(routerVersion, range))).toBe(false)

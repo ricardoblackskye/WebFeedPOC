@@ -11,7 +11,7 @@ const SITE_URL = 'https://www.antiquesmarketplace.co.uk' // Update with real dom
 /**
  * Generates Product structured data (JSON-LD)
  */
-export function generateProductSchema(product) {
+export function generateProductSchema (product) {
   if (!product) return null
 
   // Determine availability based on stock information
@@ -44,9 +44,9 @@ export function generateProductSchema(product) {
       '@type': 'Offer',
       price: product.price,
       priceCurrency: 'GBP',
-      availability: availability,
-      url: `${SITE_URL}/products/${product.slug}`,
-    },
+      availability,
+      url: `${SITE_URL}/products/${product.slug}`
+    }
   }
 
   return structuredClone(schema)
@@ -55,20 +55,20 @@ export function generateProductSchema(product) {
 /**
  * Generates Organization structured data for the site
  */
-export function generateOrganizationSchema() {
+export function generateOrganizationSchema () {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
     url: SITE_URL,
-    description: 'Discover unique antiques and vintage treasures. Curated collection of furniture, timepieces, decorative arts, and more.',
+    description: 'Discover unique antiques and vintage treasures. Curated collection of furniture, timepieces, decorative arts, and more.'
   }
 }
 
 /**
  * Generates WebSite structured data with search action
  */
-export function generateWebSiteSchema() {
+export function generateWebSiteSchema () {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -77,15 +77,15 @@ export function generateWebSiteSchema() {
     potentialAction: {
       '@type': 'SearchAction',
       target: `${SITE_URL}/?search={search_term_string}`,
-      'query-input': 'required name=search_term_string',
-    },
+      'query-input': 'required name=search_term_string'
+    }
   }
 }
 
 /**
  * Generates BreadcrumbList structured data
  */
-export function generateBreadcrumbSchema(items) {
+export function generateBreadcrumbSchema (items) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -93,15 +93,15 @@ export function generateBreadcrumbSchema(items) {
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.url ? `${SITE_URL}${item.url}` : undefined,
-    })),
+      item: item.url ? `${SITE_URL}${item.url}` : undefined
+    }))
   }
 }
 
 /**
  * Generates ItemList structured data for product listings
  */
-export function generateItemListSchema(products, listName = 'Products') {
+export function generateItemListSchema (products, listName = 'Products') {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -111,8 +111,8 @@ export function generateItemListSchema(products, listName = 'Products') {
       '@type': 'ListItem',
       position: index + 1,
       url: `${SITE_URL}/products/${product.slug}`,
-      name: product.name,
-    })),
+      name: product.name
+    }))
   }
 }
 

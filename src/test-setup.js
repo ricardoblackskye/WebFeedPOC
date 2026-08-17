@@ -21,17 +21,18 @@ Object.defineProperty(globalThis, 'matchMedia', {
     removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
+    dispatchEvent: vi.fn()
+  }))
 })
 
 // Mock IntersectionObserver
 globalThis.IntersectionObserver = class IntersectionObserver {
   // eslint-disable-next-line no-useless-constructor
-  disconnect() { /* mock */ }
-  observe() { /* mock */ }
-  takeRecords() {
+  disconnect () { /* mock */ }
+  observe () { /* mock */ }
+  takeRecords () {
     return []
   }
-  unobserve() { /* mock */ }
+
+  unobserve () { /* mock */ }
 }

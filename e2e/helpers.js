@@ -6,7 +6,7 @@
  */
 
 /** Wait until the product grid is visible and at least one card is rendered. */
-export async function waitForProducts(page) {
+export async function waitForProducts (page) {
   await page.waitForSelector('.product-card', { timeout: 15000 })
 }
 
@@ -14,7 +14,7 @@ export async function waitForProducts(page) {
  * Wait for the loading spinner to disappear before asserting anything
  * that depends on product data.
  */
-export async function waitForLoadingToFinish(page) {
+export async function waitForLoadingToFinish (page) {
   // The loading div is only present while products are being fetched
   const loading = page.locator('.loading')
   try {
