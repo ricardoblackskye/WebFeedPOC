@@ -29,3 +29,8 @@ ADDITIONAL_EXCLUDED_DIRECTORIES:
   - coverage
   - playwright-report
   - test-results
+
+# Provide a root directory so lychee can resolve root-relative links
+# (e.g. /vite.svg in index.html). The .lycheeignore file then handles
+# any exclusions.
+SPELL_LYCHEE_ARGUMENTS: --root-dir .
