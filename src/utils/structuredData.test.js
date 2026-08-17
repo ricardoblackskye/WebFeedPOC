@@ -6,7 +6,7 @@ import {
   generateBreadcrumbSchema,
   generateItemListSchema,
   SITE_NAME,
-  SITE_URL,
+  SITE_URL
 } from '../utils/structuredData'
 
 describe('structuredData', () => {
@@ -23,8 +23,8 @@ describe('structuredData', () => {
     stock: {
       trackInventory: true,
       quantity: 10,
-      inStock: true,
-    },
+      inStock: true
+    }
   }
 
   describe('generateProductSchema', () => {
@@ -39,7 +39,7 @@ describe('structuredData', () => {
       expect(schema.category).toBe('Furniture')
       expect(schema.image).toEqual([
         'https://example.com/chair1.jpg',
-        'https://example.com/chair2.jpg',
+        'https://example.com/chair2.jpg'
       ])
       expect(schema.url).toBe(`${SITE_URL}/products/victorian-chair`)
     })
@@ -79,8 +79,8 @@ describe('structuredData', () => {
         stock: {
           trackInventory: false,
           quantity: 0,
-          inStock: true,
-        },
+          inStock: true
+        }
       }
       const schema = generateProductSchema(product)
 
@@ -93,8 +93,8 @@ describe('structuredData', () => {
         stock: {
           trackInventory: true,
           quantity: 0,
-          inStock: false,
-        },
+          inStock: false
+        }
       }
       const schema = generateProductSchema(product)
 
@@ -107,8 +107,8 @@ describe('structuredData', () => {
         stock: {
           trackInventory: true,
           quantity: 3,
-          inStock: true,
-        },
+          inStock: true
+        }
       }
       const schema = generateProductSchema(product)
 
@@ -121,8 +121,8 @@ describe('structuredData', () => {
         stock: {
           trackInventory: true,
           quantity: 10,
-          inStock: true,
-        },
+          inStock: true
+        }
       }
       const schema = generateProductSchema(product)
 
@@ -173,7 +173,7 @@ describe('structuredData', () => {
       const items = [
         { name: 'Home', url: '/' },
         { name: 'Furniture', url: '/category/Furniture' },
-        { name: 'Victorian Chair' },
+        { name: 'Victorian Chair' }
       ]
 
       const schema = generateBreadcrumbSchema(items)
@@ -194,7 +194,7 @@ describe('structuredData', () => {
     it('generates valid ItemList', () => {
       const products = [
         { name: 'Product A', slug: 'product-a' },
-        { name: 'Product B', slug: 'product-b' },
+        { name: 'Product B', slug: 'product-b' }
       ]
 
       const schema = generateItemListSchema(products, 'Test List')
@@ -210,7 +210,7 @@ describe('structuredData', () => {
     it('limits to 50 items', () => {
       const products = Array.from({ length: 60 }, (_, i) => ({
         name: `Product ${i}`,
-        slug: `product-${i}`,
+        slug: `product-${i}`
       }))
 
       const schema = generateItemListSchema(products)
