@@ -16,19 +16,19 @@ const SITE_URL = 'https://www.antiquesmarketplace.co.uk'
 
 // ── helpers ──────────────────────────────────────────────────────
 
-function writeFile(filePath, content) {
+function writeFile (filePath, content) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   fs.writeFileSync(filePath, content, 'utf-8')
 }
 
-function injectHead(template, head) {
+function injectHead (template, head) {
   if (!head) return template
 
   const headTags = [
     head.title?.toString() || '',
     head.meta?.toString() || '',
     head.link?.toString() || '',
-    head.script?.toString() || '',
+    head.script?.toString() || ''
   ].filter(Boolean).join('\n    ')
 
   if (!headTags) return template
@@ -43,7 +43,7 @@ function injectHead(template, head) {
   return template.replace('</head>', `    ${headTags}\n  </head>`)
 }
 
-function generateSitemap(routes) {
+function generateSitemap (routes) {
   const today = new Date().toISOString().split('T')[0]
 
   const urls = routes.map(route => {
@@ -64,7 +64,7 @@ function generateSitemap(routes) {
 
 // ── main ─────────────────────────────────────────────────────────
 
-async function prerender() {
+async function prerender () {
   // Step 1: Build the client bundle
   console.log('\n🔨 Building client bundle…')
   await build({ root })
@@ -77,9 +77,9 @@ async function prerender() {
       ssr: path.resolve(root, 'src/entry-server.jsx'),
       outDir: 'dist/server',
       rollupOptions: {
-        output: { format: 'esm' },
-      },
-    },
+        output: { format: 'esm' }
+      }
+    }
   })
 
   // Step 3: Import the SSR bundle
@@ -151,7 +151,7 @@ async function prerender() {
   if (successCount !== routes.length) {
     throw new Error(`Prerender incomplete: ${successCount}/${routes.length} routes rendered`)
   }
- }
+}
 
 try {
   await prerender()
