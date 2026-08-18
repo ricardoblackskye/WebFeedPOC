@@ -29,3 +29,6 @@ ADDITIONAL_EXCLUDED_DIRECTORIES:
   - coverage
   - playwright-report
   - test-results
+
+# Exclude Wix-related files from JavaScript Standard linter
+JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: ".*wix.*\\.js$"
