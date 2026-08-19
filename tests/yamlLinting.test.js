@@ -17,7 +17,7 @@ describe('YAML linting should pass for configuration files', () => {
         execSync(`npx yaml-lint ${file}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
       } catch (error) {
         // If yaml-lint throws, it means there are errors
-        expect(error.status).toBe(0, `YAML linting failed for ${file}`)
+        throw new Error(`YAML linting failed for ${file}: ${error.message}`)
       }
     }
   })
