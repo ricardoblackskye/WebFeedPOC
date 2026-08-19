@@ -34,15 +34,12 @@ jobs:
       # Grype and Trivy bootstrap databases inside MegaLinter's Docker container.
       # Reclaim the runner's preinstalled images and SDKs before that bootstrap so
       # disk exhaustion is not mistaken for a clean vulnerability scan.
+      # NOTE: android/dotnet/haskell removal is omitted because it hangs on runners.
       - name: Reclaim runner disk space for scanner databases
         uses: insightsengineering/disk-space-reclaimer@dae9fabcb8febe09f6585471948acf9dc9a57489
         with:
-          android: true
-          dotnet: true
-          haskell: true
           large-packages: true
           docker-images: true
-          swap-storage: true
           tools-cache: true
 
       - name: MegaLinter
