@@ -159,7 +159,7 @@ test('.mega-linter.yml excludes package-lock.json from lychee via SPELL_LYCHEE_F
   const megaLinterConfig = readRequired(megaLinterConfigPath);
   assert.match(
     megaLinterConfig,
-    /SPELL_LYCHEE_FILTER_REGEX_EXCLUDE:\s*"\(package-lock\\.json\)"/,
+    /SPELL_LYCHEE_FILTER_REGEX_EXCLUDE:\s*'\(package-lock\\.json\)'/,
     'expected .mega-linter.yml to exclude package-lock.json from lychee scanning',
   );
 });
