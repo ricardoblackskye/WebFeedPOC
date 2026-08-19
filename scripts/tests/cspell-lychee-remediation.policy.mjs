@@ -154,3 +154,12 @@ test('.mega-linter.yml configures SPELL_LYCHEE_ARGUMENTS with --root-dir so root
     'expected .mega-linter.yml to configure SPELL_LYCHEE_ARGUMENTS with --root-dir so lychee can resolve root-relative links',
   );
 });
+
+test('.mega-linter.yml excludes package-lock.json from lychee via SPELL_LYCHEE_FILTER_REGEX_EXCLUDE', () => {
+  const megaLinterConfig = readRequired(megaLinterConfigPath);
+  assert.match(
+    megaLinterConfig,
+    /SPELL_LYCHEE_FILTER_REGEX_EXCLUDE:\s*"\(package-lock\\.json\)"/,
+    'expected .mega-linter.yml to exclude package-lock.json from lychee scanning',
+  );
+});
