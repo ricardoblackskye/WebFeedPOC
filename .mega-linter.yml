@@ -11,7 +11,7 @@ REPORT_OUTPUT_FOLDER: megalinter-reports
 LOG_FILE: mega-linter.log
 
 # Exclude third-party vendor tooling (.specify) from all MegaLinter descriptors
-FILTER_REGEX_EXCLUDE: "(^|/)(\\.specify)/"
+FILTER_REGEX_EXCLUDE: "(^|/)(\\\\.specify)/"
 
 # Allow zizmor to use the workflow token for its online ref-confusion audit.
 ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
@@ -32,3 +32,8 @@ ADDITIONAL_EXCLUDED_DIRECTORIES:
 
 # Exclude Wix-related files from JavaScript Standard linter
 JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: ".*wix.*\\.js$"
+
+# Provide a root directory so lychee can resolve root-relative links
+# (e.g. /vite.svg in index.html). The .lycheeignore file then handles
+# any exclusions.
+SPELL_LYCHEE_ARGUMENTS: --root-dir .

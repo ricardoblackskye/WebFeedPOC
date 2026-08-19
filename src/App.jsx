@@ -70,6 +70,7 @@ function App({ initialProducts }) {
         <nav className="app-nav" aria-label="Site navigation">
           <Link to="/">Shop</Link>
           <Link to="/about">About</Link>
+          <Link to="/architecture">Architecture</Link>
         </nav>
       </header>
 

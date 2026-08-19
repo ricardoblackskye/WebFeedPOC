@@ -19,6 +19,7 @@ const EXPECTED_WORDS = [
   'artipacked',
   'autom',
   'behaviour',
+  'browsable',
   'CHAND',
   'colours',
   'Customise',
@@ -59,6 +60,7 @@ const EXPECTED_WORDS = [
   'Underspecification',
   'underspecified',
   'vercel',
+  'viewports',
   'vite',
   'vitest',
   'xyzzy',
@@ -142,4 +144,13 @@ test('Primary application paths under src/ remain monitored without CSpell or Ly
       '.lycheeignore must not broadly ignore src/',
     );
   }
+});
+
+test('.mega-linter.yml configures SPELL_LYCHEE_ARGUMENTS with --root-dir so root-relative links resolve', () => {
+  const megaLinterConfig = readRequired(megaLinterConfigPath);
+  assert.match(
+    megaLinterConfig,
+    /SPELL_LYCHEE_ARGUMENTS:\s*.*--root-dir/,
+    'expected .mega-linter.yml to configure SPELL_LYCHEE_ARGUMENTS with --root-dir so lychee can resolve root-relative links',
+  );
 });

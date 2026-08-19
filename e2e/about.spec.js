@@ -5,7 +5,7 @@ import { waitForLoadingToFinish } from './helpers.js'
  * Wait for the about page to finish loading CMS content (or error/empty state).
  * The page shows a loading skeleton while fetching; we wait for it to disappear.
  */
-async function waitForAboutPageReady(page) {
+async function waitForAboutPageReady (page) {
   // Wait for the loading skeleton to be gone, or for content/error to appear
   await page.waitForFunction(
     () => !document.querySelector('[aria-label="Loading content"]'),
