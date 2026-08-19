@@ -12,7 +12,8 @@ for file in "${files[@]}"; do
         echo "File $file not found"
         exit 1
     fi
-    if ! head -1 "$file" | grep -q '^---$'; then
+    first_line=$(head -1 "$file")
+    if [ "$first_line" != "---" ]; then
         echo "File $file does not start with '---'"
         exit 1
     fi

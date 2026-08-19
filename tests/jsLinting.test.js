@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it } from 'vitest'
 import { execSync } from 'child_process'
 
 describe('JS Standard linting should pass for Wix and Stripe related files', () => {
@@ -13,5 +13,5 @@ describe('JS Standard linting should pass for Wix and Stripe related files', () 
   it('should have no linting errors', () => {
     // This will throw if there are linting errors
     execSync(`npx standard ${files.join(' ')}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
-  }, 60000) // 60 second timeout to account for CI environment
+  })
 })
