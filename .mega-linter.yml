@@ -34,3 +34,5 @@ ADDITIONAL_EXCLUDED_DIRECTORIES:
 # (e.g. /vite.svg in index.html). The .lycheeignore file then handles
 # any exclusions.
 SPELL_LYCHEE_ARGUMENTS: --root-dir .
+# Exclude Wix-related files from JavaScript Standard linter
+JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: ".*wix.*\\.js$"
