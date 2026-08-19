@@ -22,7 +22,7 @@ done
 # Check for duplicate key in .mega-linter.yml
 if [ -f ".mega-linter.yml" ]; then
     count=$(grep -c '^JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE:' .mega-linter.yml)
-    if [ $count -ne 1 ]; then
+    if [ "$count" -ne 1 ]; then
         echo "Expected exactly one JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE key in .mega-linter.yml, found $count"
         exit 1
     fi
