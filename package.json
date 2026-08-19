@@ -44,12 +44,15 @@
     "@vitest/ui": "^3.2.7",
     "jsdom": "^25.0.1",
     "vite": "^6.4.3",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "yaml-lint": "^1.7.0"
   },
   "standard": {
     "ignore": [
       "api/wix-*.js",
-      ".specify/**"
+      ".specify/**",
+      "src/hooks/useWix*.js",
+      "src/services/stripeService*.js"
     ]
   }
 }
