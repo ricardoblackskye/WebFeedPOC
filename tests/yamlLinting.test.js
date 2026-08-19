@@ -20,7 +20,7 @@ describe('YAML linting should pass for configuration files', () => {
         throw new Error(`YAML linting failed for ${file}: ${error.message}`)
       }
     }
-  }, 15000) // 15 second timeout to account for CI environment
+  }, 60000) // 60 second timeout to account for CI environment
 
   it('should not have duplicate keys in .mega-linter.yml', () => {
     const content = fs.readFileSync('.mega-linter.yml', 'utf8')

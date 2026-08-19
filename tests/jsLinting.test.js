@@ -13,5 +13,5 @@ describe('JS Standard linting should pass for Wix and Stripe related files', () 
   it('should have no linting errors', () => {
     // This will throw if there are linting errors
     execSync(`npx standard ${files.join(' ')}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
-  }, 15000) // 15 second timeout to account for CI environment
+  }, 60000) // 60 second timeout to account for CI environment
 })
