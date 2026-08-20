@@ -17,6 +17,12 @@ FILTER_REGEX_EXCLUDE: "(^|/)(\\\\.specify)/"
 ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
   - GITHUB_TOKEN
 
+# Disable TypeScript Standard because ts-standard is incompatible with
+# the TypeScript version used in this project. Type checking is handled
+# by tsc during build.
+DISABLE_LINTERS:
+  - TYPESCRIPT_STANDARD
+
 # Keep Grype strict; allow the scanner to refresh its database on each run.
 REPOSITORY_GRYPE_TIMEOUT_SECONDS: 600
 

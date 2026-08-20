@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
+import { execSync } from 'node:child_process'
 
 const root = new URL('../../', import.meta.url)
 const pkgPath = new URL('package.json', root)
@@ -34,4 +35,16 @@ test('typescript and @types/node are in devDependencies', () => {
   const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
   assert.ok(pkg.devDependencies?.typescript !== undefined, 'expected typescript in devDependencies')
   assert.ok(pkg.devDependencies?.['@types/node'] !== undefined, 'expected @types/node in devDependencies')
+})
+
+test('mega-linter.yml disables TYPESCRIPT_STANDARD (incompatible with TS version)', () => {
+  const mlPath = new URL('.mega-linter.yml', root)
+  assert.ok(existsSync(mlPath), 'expected .mega-linter.yml to exist')
+  const content = readFileSync(mlPath, 'utf8')
+  assert.match(content, /DISABLE_LINTERS/, 'expected DISABLE_LINTERS in .mega-linter.yml')
+  assert.match(content, /TYPESCRIPT_STANDARD/, 'expected TYPESCRIPT_STANDARD to be disabled')
+})
+
+test('vite build succeeds with TypeScript config', { timeout: 60000 }, () => {
+  execSync('npm run build', { cwd: root.pathname, stdio: 'pipe', encoding: 'utf8' })
 })
