@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 const root = new URL('../../', import.meta.url);
-const cspellConfigPath = new URL('cspell.json', root);
+const cspellConfigPath = new URL('.cspell.json', root);
 const lycheeIgnorePath = new URL('.lycheeignore', root);
 const megaLinterConfigPath = new URL('.mega-linter.yml', root);
 
@@ -22,7 +22,10 @@ const EXPECTED_WORDS = [
   'browsable',
   'CHAND',
   'colours',
+  'couldn',
   'Customise',
+  'DEVSKIM',
+  'Ecom',
   'exploitability',
   'ghsa',
   'GHSA',
@@ -33,11 +36,14 @@ const EXPECTED_WORDS = [
   'kubeconfig',
   'Lato',
   'lycheeignore',
+  'Microsite',
   'mindmap',
   'njsproj',
   'ntvs',
+  'opencollective',
   'packrat',
   'parallelizable',
+  'Prerender',
   'prerendering',
   'pycache',
   'qwww',
@@ -48,6 +54,9 @@ const EXPECTED_WORDS = [
   'rlib',
   'Rproj',
   'Ruserdata',
+  'speckit',
+  'SPECKIT',
+  'Speckit',
   'swiftpm',
   'tanstack',
   'taskstoissues',
@@ -65,6 +74,7 @@ const EXPECTED_WORDS = [
   'vitest',
   'xyzzy',
   'yoursite',
+  'ZIZMOR',
 ];
 
 test('cspell.json contains all repository, domain, technical, and template terms', () => {
