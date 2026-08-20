@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "baseUrl": ".",
     "paths": {
       "*": ["src/*"]
