@@ -62,3 +62,49 @@ test('e2e/fixtures.js exports deviceName fixture via test.extend', () => {
   assert.match(content, /export const test/, 'expected test export')
   assert.match(content, /export \{ expect \}/, 'expected expect export')
 })
+
+test('e2e/no-scrollbar.spec.js exists and covers all page types', () => {
+  const scrollbarPath = resolve(root, 'e2e', 'no-scrollbar.spec.js')
+  assert.ok(existsSync(scrollbarPath), `expected ${scrollbarPath} to exist`)
+  const content = readFileSync(scrollbarPath, 'utf8')
+  assert.match(content, /homepage/, 'expected homepage test')
+  assert.match(content, /about page/, 'expected about page test')
+  assert.match(content, /category page/, 'expected category page test')
+  assert.match(content, /product detail page/, 'expected product detail page test')
+  assert.match(content, /scrollWidth.*>.*clientWidth/, 'expected horizontal scroll detection')
+})
+
+test('all e2e spec files use consistent import from playwright/test', () => {
+  const specFiles = [
+    'home.spec.js', 'cart.spec.js', 'pagination.spec.js',
+    'search-sort.spec.js', 'about.spec.js', 'category-filter.spec.js',
+    'product-page.spec.js', 'accessibility.spec.js',
+  ]
+  const e2eDir = resolve(root, 'e2e')
+  for (const file of specFiles) {
+    const filePath = resolve(e2eDir, file)
+    assert.ok(existsSync(filePath), `expected ${filePath} to exist`)
+    const content = readFileSync(filePath, 'utf8')
+    assert.match(
+      content,
+      /from\s+['"]playwright\/test['"]/,
+      `expected ${file} to import from 'playwright/test'`,
+    )
+  }
+})
+
+test('.github/workflows/ci.yml runs e2e tests and uploads Playwright report', () => {
+  const ciPath = resolve(root, '.github', 'workflows', 'ci.yml')
+  assert.ok(existsSync(ciPath), `expected ${ciPath} to exist`)
+  const content = readFileSync(ciPath, 'utf8')
+  assert.match(
+    content,
+    /test:e2e|playwright/,
+    'expected CI to run Playwright e2e tests',
+  )
+  assert.match(
+    content,
+    /playwright-report/,
+    'expected CI to upload Playwright HTML report as artifact',
+  )
+})
