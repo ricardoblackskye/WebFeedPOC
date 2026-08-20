@@ -5,7 +5,7 @@ import { test as base } from 'playwright/test'
  * based on the Playwright project name.
  */
 export const test = base.extend({
-  deviceName: [async (unused, use, testInfo) => {
+  deviceName: [async ({}, use, testInfo) => {
     const name = testInfo.project.name
     const labels = {
       'chromium-mobile-android': 'Galaxy S24 (360×780)',
