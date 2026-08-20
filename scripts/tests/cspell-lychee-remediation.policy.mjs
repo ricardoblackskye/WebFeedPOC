@@ -75,6 +75,9 @@ const EXPECTED_WORDS = [
   'xyzzy',
   'yoursite',
   'ZIZMOR',
+  'foldables',
+  'networkidle',
+  'Standardise',
 ];
 
 test('cspell.json contains all repository, domain, technical, and template terms', () => {

@@ -4,7 +4,7 @@ const PAGES = [
   { path: '/', name: 'homepage' },
   { path: '/about', name: 'about page' },
   { path: '/category/Timepieces', name: 'category page' },
-  { path: '/products/1', name: 'product detail page' },
+  { path: '/products/1', name: 'product detail page' }
 ]
 
 test.describe('No horizontal scrollbar at any breakpoint', () => {

@@ -5,7 +5,7 @@ import { test as base } from 'playwright/test'
  * based on the Playwright project name.
  */
 export const test = base.extend({
-  deviceName: [async ({ }, use, testInfo) => {
+  deviceName: [async (unused, use, testInfo) => {
     const name = testInfo.project.name
     const labels = {
       'chromium-mobile-android': 'Galaxy S24 (360×780)',
@@ -16,10 +16,10 @@ export const test = base.extend({
       'chromium-tablet-android': 'Galaxy Tab S9 (800×1280)',
       'chromium-tablet-pro': 'iPad Pro 11" (834×1194)',
       'chromium-desktop': 'Desktop (1280×720)',
-      'chromium-desktop-hd': 'Desktop HD (1920×1080)',
+      'chromium-desktop-hd': 'Desktop HD (1920×1080)'
     }
     await use(labels[name] || name)
-  }, { auto: true }],
+  }, { auto: true }]
 })
 
 export { expect } from 'playwright/test'
