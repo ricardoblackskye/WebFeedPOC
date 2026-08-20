@@ -52,3 +52,13 @@ test('custom viewport projects use explicit viewport config, not devices[] prese
     )
   }
 })
+
+test('e2e/fixtures.js exports deviceName fixture via test.extend', () => {
+  const fixturesPath = resolve(root, 'e2e', 'fixtures.js')
+  assert.ok(existsSync(fixturesPath), `expected ${fixturesPath} to exist`)
+  const content = readFileSync(fixturesPath, 'utf8')
+  assert.match(content, /deviceName/, 'expected deviceName fixture in e2e/fixtures.js')
+  assert.match(content, /extend\(/, 'expected test.extend in e2e/fixtures.js')
+  assert.match(content, /export const test/, 'expected test export')
+  assert.match(content, /export \{ expect \}/, 'expected expect export')
+})
