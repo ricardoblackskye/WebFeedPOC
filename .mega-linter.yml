@@ -37,3 +37,7 @@ JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(?i).*(wix|stripe).*\\.js$"
 # (e.g. /vite.svg in index.html). The .lycheeignore file then handles
 # any exclusions.
 SPELL_LYCHEE_ARGUMENTS: --root-dir .
+# Exclude auto-generated package-lock.json; the opencollective.com URLs it
+# contains (npm package maintainer links) are unreachable by automated
+# checkers (403 Forbidden) and are not user-facing content.
+SPELL_LYCHEE_FILTER_REGEX_EXCLUDE: '(package-lock\.json)'
