@@ -137,4 +137,3 @@ src/
 ├── App.jsx         # Main app component
 └── main.jsx        # Entry point
 ```
-
