@@ -26,7 +26,7 @@ Convert all non-Wix, non-Stripe `.js` files (excluding `.jsx`) to TypeScript. Ea
 
 ## Execution order
 
-1. **Phase 1** (can be parallelised after infra is up):
+1. **Phase 1** (can be parallelized after infra is up):
    - #123 Project infra (must be first — sets up TS toolchain)
    - #124 Utils
    - #125 Test infra
