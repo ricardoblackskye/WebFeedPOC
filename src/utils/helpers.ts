@@ -1,7 +1,7 @@
 /**
  * Formats a price value to display format
  */
-export function formatPrice (price) {
+export function formatPrice (price: number): string {
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP'
@@ -11,7 +11,7 @@ export function formatPrice (price) {
 /**
  * Validates email format
  */
-export function isValidEmail (email) {
+export function isValidEmail (email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }
@@ -19,14 +19,14 @@ export function isValidEmail (email) {
 /**
  * Generates a unique ID
  */
-export function generateId () {
+export function generateId (): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
 }
 
 /**
  * Strips HTML tags from a string and decodes HTML entities, returning plain text
  */
-export function stripHtml (html) {
+export function stripHtml (html: string | null | undefined): string {
   if (!html) return ''
 
   // Remove HTML tags
@@ -56,7 +56,7 @@ export function stripHtml (html) {
 /**
  * Generates a URL-friendly slug from a string
  */
-export function generateSlug (text) {
+export function generateSlug (text: string | null | undefined): string {
   if (!text) return ''
   return text
     .toLowerCase()
@@ -67,7 +67,7 @@ export function generateSlug (text) {
 /**
  * Truncates text to a specified number of words
  */
-export function truncateWords (text, maxWords = 50) {
+export function truncateWords (text: string | null | undefined, maxWords: number = 50): string {
   if (!text) return ''
   const words = text.split(/\s+/)
   if (words.length <= maxWords) return text

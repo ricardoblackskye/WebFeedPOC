@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatPrice, isValidEmail, generateId, stripHtml, truncateWords } from '../utils/helpers'
+import { formatPrice, isValidEmail, generateId, stripHtml, truncateWords } from './helpers'
 
 describe('formatPrice', () => {
   it('formats price correctly', () => {
@@ -58,8 +58,8 @@ describe('stripHtml', () => {
   it('strips and decodes HTML without a browser document', () => {
     const originalDocument = globalThis.document
     try {
-      // @ts-expect-error test intentionally removes the browser global
-      delete globalThis.document
+      // test intentionally removes the browser global to exercise Node path
+      delete (globalThis as Partial<typeof globalThis>).document
       expect(stripHtml('<p>Hello&nbsp;&amp; goodbye</p>')).toBe('Hello & goodbye')
     } finally {
       globalThis.document = originalDocument
@@ -73,9 +73,8 @@ describe('truncateWords', () => {
     expect(truncateWords(text, 5)).toBe('one two three four five...')
   })
 
-  it('does not truncate if text is shorter than limit', () => {
-    const text = 'short text'
-    expect(truncateWords(text, 50)).toBe('short text')
+  it('handles short text', () => {
+    expect(truncateWords('short text', 5)).toBe('short text')
   })
 
   it('handles empty or null input', () => {

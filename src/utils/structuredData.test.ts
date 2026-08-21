@@ -7,7 +7,8 @@ import {
   generateItemListSchema,
   SITE_NAME,
   SITE_URL
-} from '../utils/structuredData'
+} from './structuredData'
+import type { Product } from './structuredData'
 
 describe('structuredData', () => {
   const mockProduct = {
@@ -31,21 +32,21 @@ describe('structuredData', () => {
     it('generates valid Product schema', () => {
       const schema = generateProductSchema(mockProduct)
 
-      expect(schema['@context']).toBe('https://schema.org')
-      expect(schema['@type']).toBe('Product')
-      expect(schema.name).toBe('Victorian Chair')
-      expect(schema.description).toBe('A beautiful Victorian chair')
-      expect(schema.sku).toBe('VC-001')
-      expect(schema.category).toBe('Furniture')
-      expect(schema.image).toEqual([
+      expect(schema!['@context']).toBe('https://schema.org')
+      expect(schema!['@type']).toBe('Product')
+      expect(schema!.name).toBe('Victorian Chair')
+      expect(schema!.description).toBe('A beautiful Victorian chair')
+      expect(schema!.sku).toBe('VC-001')
+      expect(schema!.category).toBe('Furniture')
+      expect(schema!.image).toEqual([
         'https://example.com/chair1.jpg',
         'https://example.com/chair2.jpg'
       ])
-      expect(schema.url).toBe(`${SITE_URL}/products/victorian-chair`)
+      expect(schema!.url).toBe(`${SITE_URL}/products/victorian-chair`)
     })
 
     it('includes correct offers', () => {
-      const schema = generateProductSchema(mockProduct)
+      const schema = generateProductSchema(mockProduct)!
 
       expect(schema.offers['@type']).toBe('Offer')
       expect(schema.offers.price).toBe(250)
@@ -61,16 +62,22 @@ describe('structuredData', () => {
       const product = { ...mockProduct, images: [] }
       const schema = generateProductSchema(product)
 
-      expect(schema.image).toEqual(['https://example.com/chair.jpg'])
+      expect(schema!.image).toEqual(['https://example.com/chair.jpg'])
     })
 
     it('omits undefined fields', () => {
-      const product = { ...mockProduct, sku: null, category: null, images: [], image: null }
+      const product = {
+        ...mockProduct,
+        sku: null,
+        category: null,
+        images: [],
+        image: null
+      } as unknown as typeof mockProduct
       const schema = generateProductSchema(product)
 
-      expect(schema.sku).toBeUndefined()
-      expect(schema.category).toBeUndefined()
-      expect(schema.image).toBeUndefined()
+      expect(schema!.sku).toBeUndefined()
+      expect(schema!.category).toBeUndefined()
+      expect(schema!.image).toBeUndefined()
     })
 
     it('shows InStock for products without inventory tracking', () => {
@@ -84,7 +91,7 @@ describe('structuredData', () => {
       }
       const schema = generateProductSchema(product)
 
-      expect(schema.offers.availability).toBe('https://schema.org/InStock')
+      expect(schema!.offers.availability).toBe('https://schema.org/InStock')
     })
 
     it('shows OutOfStock for products with zero quantity', () => {
@@ -98,10 +105,10 @@ describe('structuredData', () => {
       }
       const schema = generateProductSchema(product)
 
-      expect(schema.offers.availability).toBe('https://schema.org/OutOfStock')
+      expect(schema!.offers.availability).toBe('https://schema.org/OutOfStock')
     })
 
-    it('shows LimitedAvailability for products with low stock (<=5)', () => {
+    it('shows LimitedAvailability for products with low stock', () => {
       const product = {
         ...mockProduct,
         stock: {
@@ -112,7 +119,7 @@ describe('structuredData', () => {
       }
       const schema = generateProductSchema(product)
 
-      expect(schema.offers.availability).toBe('https://schema.org/LimitedAvailability')
+      expect(schema!.offers.availability).toBe('https://schema.org/LimitedAvailability')
     })
 
     it('shows InStock for products with sufficient stock', () => {
@@ -126,15 +133,15 @@ describe('structuredData', () => {
       }
       const schema = generateProductSchema(product)
 
-      expect(schema.offers.availability).toBe('https://schema.org/InStock')
+      expect(schema!.offers.availability).toBe('https://schema.org/InStock')
     })
 
     it('defaults to InStock when stock data is missing', () => {
-      const product = { ...mockProduct }
+      const product = { ...mockProduct } as unknown as Product
       delete product.stock
       const schema = generateProductSchema(product)
 
-      expect(schema.offers.availability).toBe('https://schema.org/InStock')
+      expect(schema!.offers.availability).toBe('https://schema.org/InStock')
     })
   })
 
