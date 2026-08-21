@@ -13,7 +13,7 @@ const CORE_FILES = [
   'e2e/helpers.js',
   'e2e/product-page.spec.js',
   'src/security/reactRouterSecurity.test.js',
-  'src/test-setup.js',
+  'src/test-setup.ts',
   'src/utils/helpers.js',
   'src/utils/structuredData.js',
   'src/utils/structuredData.test.js',

@@ -14,7 +14,7 @@ test('copy-paste triage documents intentional and actionable clone groups', () =
 });
 
 test('copy-paste remediation extracts a shared test helper', () => {
-  const url = new URL('src/test-utils/copyPasteHelpers.js', root);
+  const url = new URL('src/test-utils/copyPasteHelpers.ts', root);
   assert.ok(existsSync(url), 'expected shared test helper');
   assert.match(readFileSync(url, 'utf8'), /export/);
 });

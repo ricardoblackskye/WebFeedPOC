@@ -13,7 +13,7 @@ afterEach(() => {
 // Mock window.matchMedia
 Object.defineProperty(globalThis, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -25,14 +25,20 @@ Object.defineProperty(globalThis, 'matchMedia', {
   }))
 })
 
-// Mock IntersectionObserver
-globalThis.IntersectionObserver = class IntersectionObserver {
-  // eslint-disable-next-line no-useless-constructor
-  disconnect () { /* mock */ }
-  observe () { /* mock */ }
-  takeRecords () {
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root: Element | Document | null = null
+  readonly rootMargin: string = ''
+  readonly thresholds: ReadonlyArray<number> = []
+
+  disconnect (): void { /* mock */ }
+  observe (): void { /* mock */ }
+  takeRecords (): IntersectionObserverEntry[] {
     return []
   }
 
-  unobserve () { /* mock */ }
+  unobserve (): void { /* mock */ }
 }
+
+// Mock IntersectionObserver
+globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver
