@@ -16,15 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*",
-    "tests/**/*",
-    "e2e/**/*",
-    "vite.config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "coverage"
-  ]
+  "include": ["src/**/*", "tests/**/*", "e2e/**/*", "vite.config.ts"],
+  "exclude": ["node_modules", "dist", "coverage"]
 }

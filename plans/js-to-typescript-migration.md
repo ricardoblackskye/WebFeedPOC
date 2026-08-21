@@ -16,7 +16,7 @@ Convert all non-Wix, non-Stripe `.js` files (excluding `.jsx`) to TypeScript. Ea
 ## Sub-issues (ordered by dependency)
 
 | # | Issue | Area | Files | Depends on |
-|---|-------|------|-------|-----------|
+| --- | --- | --- | --- | --- |
 | 1 | [#123](https://github.com/ricardoblackskye/WebFeedPOC/issues/123) | **Project infra** | `tsconfig.json`, `vite.config.ts`, `package.json`, `.mega-linter.yml` | — |
 | 2 | [#124](https://github.com/ricardoblackskye/WebFeedPOC/issues/124) | **Utils** | `helpers.ts`, `structuredData.ts`, tests | 1 |
 | 3 | [#125](https://github.com/ricardoblackskye/WebFeedPOC/issues/125) | **Test infra** | `test-setup.ts`, `copyPasteHelpers.ts`, new test | 1 |
