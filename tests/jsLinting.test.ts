@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest'
-import { execSync } from 'child_process'
+import { execSync, type ExecSyncOptions } from 'node:child_process'
 
 describe('JS Standard linting should pass for Wix and Stripe related files', () => {
   const files = [
@@ -11,7 +11,8 @@ describe('JS Standard linting should pass for Wix and Stripe related files', () 
   ]
 
   it('should have no linting errors', { timeout: 30000 }, () => {
+    const opts: ExecSyncOptions = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
     // This will throw if there are linting errors
-    execSync(`npx standard ${files.join(' ')}`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
+    execSync(`npx standard ${files.join(' ')}`, opts)
   })
 })
