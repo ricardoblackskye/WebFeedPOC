@@ -2,45 +2,65 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-const packageJson = JSON.parse(
+interface PackageLockPackages {
+  [packagePath: string]: {
+    version?: string
+  }
+}
+
+interface PackageLock {
+  packages: PackageLockPackages
+}
+
+interface VersionRange {
+  minimum: number[]
+  maximumExclusive: number[]
+}
+
+interface AffectedRanges {
+  [key: string]: VersionRange
+}
+
+const packageJson: Record<string, unknown> = JSON.parse(
   readFileSync(resolve(process.cwd(), 'package.json'), 'utf8')
 )
-const packageLock = JSON.parse(
+const packageLock: PackageLock = JSON.parse(
   readFileSync(resolve(process.cwd(), 'package-lock.json'), 'utf8')
 )
 
-const AFFECTED_RANGES = {
+const AFFECTED_RANGES: AffectedRanges = {
   ghsa: { minimum: [7, 12, 0], maximumExclusive: [8, 3, 0] },
   aikidoCsrf: { minimum: [7, 12, 0], maximumExclusive: [7, 18, 0] },
   aikidoDeserialization: { minimum: [7, 0, 0], maximumExclusive: [7, 18, 0] }
 }
 
-function parseVersion (version) {
+function parseVersion (version: string): number[] {
   const match = String(version).match(/^(\d+)\.(\d+)\.(\d+)/)
   if (!match) throw new Error(`Unsupported React Router version: ${version}`)
   return match.slice(1).map(Number)
 }
 
-function compareVersions (left, right) {
+function compareVersions (left: number[], right: number[]): number {
   for (let index = 0; index < left.length; index += 1) {
     if (left[index] !== right[index]) return left[index] - right[index]
   }
   return 0
 }
 
-function isAffected (version, range) {
+function isAffected (version: string, range: VersionRange): boolean {
   const parsed = parseVersion(version)
   return compareVersions(parsed, range.minimum) >= 0 &&
     compareVersions(parsed, range.maximumExclusive) < 0
 }
 
-function resolvedVersion (packageName) {
+function resolvedVersion (packageName: string): string | undefined {
   return packageLock.packages[`node_modules/${packageName}`]?.version
 }
 
 describe('React Router security baseline', () => {
   it('declares a React Router version outside the GHSA affected range', () => {
-    const declared = packageJson.dependencies['react-router-dom']
+    const deps = packageJson.dependencies as Record<string, string | undefined> | undefined
+    const declared = deps?.['react-router-dom']
     const resolved = resolvedVersion('react-router-dom')
 
     expect(declared).toBeDefined()
@@ -50,10 +70,10 @@ describe('React Router security baseline', () => {
       mainSource.includes('createBrowserRouter')
 
     if (usesFrameworkMode) {
-      expect(isAffected(resolved, AFFECTED_RANGES.ghsa)).toBe(false)
+      expect(isAffected(resolved!, AFFECTED_RANGES.ghsa)).toBe(false)
     } else {
-      expect(isAffected(resolved, AFFECTED_RANGES.aikidoCsrf)).toBe(false)
-      expect(isAffected(resolved, AFFECTED_RANGES.aikidoDeserialization)).toBe(false)
+      expect(isAffected(resolved!, AFFECTED_RANGES.aikidoCsrf)).toBe(false)
+      expect(isAffected(resolved!, AFFECTED_RANGES.aikidoDeserialization)).toBe(false)
     }
   })
 
@@ -69,10 +89,10 @@ describe('React Router security baseline', () => {
       mainSource.includes('createBrowserRouter')
 
     if (usesFrameworkMode) {
-      expect(Object.values(AFFECTED_RANGES).some((range) => isAffected(routerVersion, range))).toBe(false)
+      expect(Object.values(AFFECTED_RANGES).some((range) => isAffected(routerVersion!, range))).toBe(false)
     } else {
-      expect(isAffected(routerVersion, AFFECTED_RANGES.aikidoCsrf)).toBe(false)
-      expect(isAffected(routerVersion, AFFECTED_RANGES.aikidoDeserialization)).toBe(false)
+      expect(isAffected(routerVersion!, AFFECTED_RANGES.aikidoCsrf)).toBe(false)
+      expect(isAffected(routerVersion!, AFFECTED_RANGES.aikidoDeserialization)).toBe(false)
     }
   })
 
