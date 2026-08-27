@@ -1,0 +1,19 @@
+/* ReleasenotesPage.css */
+.releasenotes-page {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.releasenotes-content h1 {
+  color: #2c2416;
+  margin-bottom: 1.5rem;
+}
+
+.releasenotes-content pre {
+  background: #f8f6f3;
+  padding: 1.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  border: 1px solid #e8e5dc;
+}
