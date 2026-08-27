@@ -12,6 +12,7 @@ import OrderConfirmation from './components/OrderConfirmation.jsx'
 import OrderHistory from './pages/OrderHistory.jsx'
 import AboutPage from './pages/AboutPage.jsx'
 import ArchitecturePage from './pages/ArchitecturePage.jsx'
+import ReleasenotesPage from './pages/ReleasenotesPage.jsx'
 import './index.css'
 
 const queryClient = new QueryClient({
@@ -37,6 +38,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="orders" element={<OrderHistory />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="architecture" element={<ArchitecturePage />} />
+            <Route path="releasenotes" element={<ReleasenotesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
