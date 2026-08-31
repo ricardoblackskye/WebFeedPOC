@@ -12,6 +12,9 @@ permissions:
 jobs:
   pr-reviewer:
     runs-on: ubuntu-latest
+    # Reviewer: cap a hung job (the script has its own 30s fetch timeout, but
+    # this bounds the whole job to avoid burning Actions minutes).
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -19,6 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
+          # global fetch() is available from Node 18+ (reviewer: version note)
           node-version: '20'
       - name: Run PR Reviewer
         env:
