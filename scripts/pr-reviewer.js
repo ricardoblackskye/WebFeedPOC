@@ -84,20 +84,37 @@ try {
   review = generateFallbackReview(prNumber, repoOwner, repoName, prDiff);
 }
 
-// Generate the AI review by calling OpenRouter, with one retry to ride through
-// transient 200-with-malformed-body or 5xx/429 responses. Returns a string
-// (the AI review, or the fallback review if the model is unavailable).
+// Generate the AI review by calling OpenRouter. Performs up to two attempts:
+// a normal one, then (on failure or a low-quality/refusal response) a stricter
+// prompt. Returns a string (the AI review, or the fallback review if the model
+// is unavailable or never returns a usable review).
 async function generateAiReview(number, owner, repo, diff, sanitizedDiff) {
   if (!process.env.OPENROUTER_API_KEY) {
     console.warn("OPENROUTER_API_KEY is not set; using fallback review.");
     return generateFallbackReview(number, owner, repo, diff);
   }
 
-  const systemPrompt =
-    "You are a senior software engineer reviewing this code diff. Look for architectural anti-patterns, security risks, and off-by-one errors. You MUST reference the exact line numbers from the diff headers (@@ -x,y +a,b @@) in your feedback.";
   const userPrompt = `Please review the following diff and provide your feedback with specific line number citations:\n\n\`\`\`diff\n${sanitizedDiff}\n\`\`\``;
 
-  const attempt = async () => {
+  const SYSTEM_NORMAL =
+    "You are a senior software engineer reviewing this code diff. Look for architectural anti-patterns, security risks, and off-by-one errors. You MUST reference the exact line numbers from the diff headers (@@ -x,y +a,b @@) in your feedback.";
+  const SYSTEM_STRICT =
+    "You are a senior software engineer performing a CODE REVIEW of a diff provided below inside a fenced ```diff block. " +
+    "Output a markdown code review with concrete findings (architectural anti-patterns, security risks, bugs). " +
+    "Cite exact line numbers from the diff headers (@@ -x,y +a,b @@). " +
+    "Do NOT say you need the diff or ask for more context — the diff is already given above. " +
+    "If the diff looks fine, say so and list only minor suggestions.";
+
+  // Reject degenerate/refusal responses that don't actually review the code.
+  const looksLikeReview = (text) => {
+    if (text.trim().length < 150) return false;
+    return /review|issue|risk|suggest|concern|bug|improv|line|@@|```|anti-pattern|security|refactor|\btodo\b/i.test(
+      text,
+    );
+  };
+
+  // Returns { ok:true, content } for a usable review, or { ok:false }.
+  const attempt = async (systemPrompt) => {
     let openrouterResponse;
     try {
       openrouterResponse = await fetch(
@@ -115,7 +132,7 @@ async function generateAiReview(number, owner, repo, diff, sanitizedDiff) {
               { role: "user", content: userPrompt },
             ],
             temperature: 0.2,
-            max_tokens: 1500,
+            max_tokens: 2500,
           }),
         },
       );
@@ -152,13 +169,19 @@ async function generateAiReview(number, owner, repo, diff, sanitizedDiff) {
       );
       return { ok: false };
     }
+    if (!looksLikeReview(content)) {
+      console.warn(
+        `OpenRouter returned a low-quality/non-review response (len ${content.length}); will retry with stricter prompt. Head: ${content.slice(0, 200)}`,
+      );
+      return { ok: false };
+    }
     return { ok: true, content };
   };
 
-  let result = await attempt();
+  let result = await attempt(SYSTEM_NORMAL);
   if (!result.ok) {
-    console.warn("Retrying OpenRouter call once...");
-    result = await attempt();
+    console.warn("Retrying OpenRouter call with stricter prompt...");
+    result = await attempt(SYSTEM_STRICT);
   }
   if (!result.ok) {
     console.warn("OpenRouter review unavailable after retry, using fallback review.");
