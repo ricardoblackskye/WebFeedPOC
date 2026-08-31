@@ -1,9 +1,9 @@
-import { test, expect } from 'playwright/test'
-import { waitForProducts, waitForLoadingToFinish } from './helpers.js'
+import { test, expect, type Page } from 'playwright/test'
+import { waitForProducts, waitForLoadingToFinish } from './helpers'
 
 // Resolve to the first available product's URL so tests work with both
 // real Wix products and the mock fallback catalogue.
-async function getFirstProductUrl (page) {
+async function getFirstProductUrl (page: Page): Promise<string | null> {
   await page.goto('/')
   await waitForLoadingToFinish(page)
   await waitForProducts(page)
@@ -14,7 +14,7 @@ async function getFirstProductUrl (page) {
 test.describe('Product detail page', () => {
   test('navigating to a product URL renders the product name', async ({ page }) => {
     const url = await getFirstProductUrl(page)
-    await page.goto(url)
+    await page.goto(url ?? '/')
     await expect(page.locator('h1').first()).toBeVisible()
     const name = await page.locator('h1').first().innerText()
     expect(name.length).toBeGreaterThan(0)
@@ -22,19 +22,19 @@ test.describe('Product detail page', () => {
 
   test('product page shows price', async ({ page }) => {
     const url = await getFirstProductUrl(page)
-    await page.goto(url)
+    await page.goto(url ?? '/')
     await expect(page.locator('body')).toContainText('£')
   })
 
   test('product page shows Add to Cart button', async ({ page }) => {
     const url = await getFirstProductUrl(page)
-    await page.goto(url)
+    await page.goto(url ?? '/')
     await expect(page.locator('button').filter({ hasText: /Add to Cart/i })).toBeVisible()
   })
 
   test('clicking Add to Cart on product page adds item to cart', async ({ page }) => {
     const url = await getFirstProductUrl(page)
-    await page.goto(url)
+    await page.goto(url ?? '/')
     await page.locator('button').filter({ hasText: /Add to Cart/i }).first().click()
     await expect(page.locator('.cart-item')).toBeVisible()
   })
@@ -54,7 +54,7 @@ test.describe('Product detail page', () => {
 
   test('product page shows product description', async ({ page }) => {
     const url = await getFirstProductUrl(page)
-    await page.goto(url)
+    await page.goto(url ?? '/')
     await expect(page.locator('.product-page-description')).toBeVisible()
   })
 })

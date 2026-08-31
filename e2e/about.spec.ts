@@ -1,11 +1,11 @@
-import { test, expect } from 'playwright/test'
-import { waitForLoadingToFinish } from './helpers.js'
+import { test, expect, type Page } from 'playwright/test'
+import { waitForLoadingToFinish } from './helpers'
 
 /**
  * Wait for the about page to finish loading CMS content (or error/empty state).
  * The page shows a loading skeleton while fetching; we wait for it to disappear.
  */
-async function waitForAboutPageReady (page) {
+async function waitForAboutPageReady (page: Page): Promise<void> {
   // Wait for the loading skeleton to be gone, or for content/error to appear
   await page.waitForFunction(
     () => !document.querySelector('[aria-label="Loading content"]'),
