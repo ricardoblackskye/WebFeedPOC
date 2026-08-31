@@ -147,11 +147,21 @@ async function generateAiReview(number, owner, repo, diff, sanitizedDiff) {
     "If the diff looks fine, say so and list only minor suggestions.";
 
   // Reject degenerate/refusal responses that don't actually review the code.
+  // A real review cites diff headers (@@ -x,y +a,b @@) or uses structured findings
+  // (headings / bullet lists). Bare "I need the diff" refusals must be rejected even
+  // though they contain words like "review".
   const looksLikeReview = (text) => {
-    if (text.trim().length < 150) return false;
-    return /review|issue|risk|suggest|concern|bug|improv|line|@@|```|anti-pattern|security|refactor|\btodo\b/i.test(
-      text,
-    );
+    const t = text.trim();
+    if (t.length < 200) return false;
+    // Explicit refusal / "need the diff" patterns -> not a review
+    if (/we need (the )?diff|need(s)? (the )?diff|need(s)? more (context|information)|provide( the)? diff|share( the)? diff|i (can'?t|cannot) (review|see|access) (the )?diff|no diff (provided|found|available)|please (send|share|provide) (me )?(the )?diff|as an ai (language )?model/i.test(t)) {
+      return false;
+    }
+    // Require evidence of actual analysis: diff-header citations or structured findings
+    const hasCitation = /@@ -/.test(t);
+    const hasStructure =
+      (t.match(/^\s*[-*]\s/gm) || []).length >= 2 || /^#{1,6}\s/m.test(t);
+    return hasCitation || hasStructure;
   };
 
   // Returns { ok:true, content } for a usable review, or { ok:false }.
