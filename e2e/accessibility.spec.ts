@@ -1,4 +1,4 @@
-import { test, expect } from 'playwright/test'
+import { test, expect, type Page } from 'playwright/test'
 
 test.describe('Accessibility basics', () => {
   test('homepage has a single h1 element', async ({ page }) => {

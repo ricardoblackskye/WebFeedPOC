@@ -1,5 +1,5 @@
-import { test, expect } from 'playwright/test'
-import { waitForProducts, waitForLoadingToFinish } from './helpers.js'
+import { test, expect, type Page } from 'playwright/test'
+import { waitForProducts, waitForLoadingToFinish } from './helpers'
 
 test.describe('Pagination', () => {
   test.beforeEach(async ({ page }) => {
