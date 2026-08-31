@@ -154,7 +154,7 @@ async function generateAiReview(number, owner, repo, diff, sanitizedDiff) {
     const t = text.trim();
     if (t.length < 200) return false;
     // Explicit refusal / "need the diff" patterns -> not a review
-    if (/we need (the )?diff|need(s)? (the )?diff|need(s)? more (context|information)|provide( the)? diff|share( the)? diff|i (can'?t|cannot) (review|see|access) (the )?diff|no diff (provided|found|available)|please (send|share|provide) (me )?(the )?diff|as an ai (language )?model/i.test(t)) {
+    if (/we need (the )?diff|we need to review the diff|need(s)? (the )?diff|need(s)? to (review|see|analyze|access|examine) (the )?diff|need(s)? more (context|information)|provide( the)? diff|share( the)? diff|i (can'?t|cannot) (review|see|access) (the )?diff|no diff (provided|found|available)|please (send|share|provide) (me )?(the )?diff|as an ai (language )?model/i.test(t)) {
       return false;
     }
     // Require evidence of actual analysis: diff-header citations or structured findings
