@@ -96,3 +96,62 @@ Because this is pipeline config, the "test" is workflow execution, not unit test
 - Commit 2 (after approval): `feat(ci): #137 add Eve PR-reviewer workflow + script`
 - PR (GATE 6, on authorization): `Closes #137` (code-review half), notes release
   notes deferred and that the secret is configured via API on merge-readiness.
+
+## AI Code-Review Findings — Engineering Assessment
+
+The PR-reviewer workflow ran on PR #138 and produced two AI reviews:
+- `5478839787` (13:10) — 7-item "Recommendations" list (Architectural / Security / Off-by-one / Workflow).
+- `5479224372` (13:41, latest, highest quality) — 13 numbered "Key Findings".
+
+User asked to act on **the 13 recommendations** = the 13 findings in `5479224372` (exact count).
+The earlier 7-item list overlaps; its still-relevant points are folded into the assessment below.
+
+### ⚠️ Regressions discovered during this review (must re-apply)
+Commit `98aa9a6` added: async `fs.promises.readFile`, early `GITHUB_TOKEN` check,
+`MODEL_NAME` default, **token redaction in logs**, and `trimEnd()` off-by-one fix.
+The later quality-gate rewrite (`37bbf8e`) started from the *original* script and
+**dropped all of those**. The current branch `scripts/pr-reviewer.js` therefore:
+- still uses `fs.readFileSync` (line 12),
+- has no top-level `GITHUB_TOKEN` presence check,
+- counts diff lines with bare `split("\n")` (off-by-one, line 196),
+- **logs raw OpenRouter/GitHub error bodies with no redaction** (token-leak risk).
+These MUST be re-applied in the final script alongside the 13 fixes.
+
+### Assessment of the 13 findings (verdict + action)
+| # | Reviewer claim | Verdict | Action |
+|---|---|---|---|
+| 1 | Pinned `actions/checkout` SHA looks like a placeholder | **REJECT (false positive)** | SHA `11d5960…` is a real, valid pin and matches this repo's own `ci.yml`. Pinning to a fixed commit is the intended supply-chain practice; it need not equal upstream's newest tag. Optional: bump to latest pin for freshness (low prio). |
+| 2 | `MODEL_NAME` referenced incorrectly | **REJECT (false positive)** | `${{ vars.MODEL_NAME \|\| 'deepseek/deepseek-v4-pro' }}` is correct GA syntax; defaults when the repo var is unset. Already correct. |
+| 3 | Potential timeout boundary condition | **PARTIAL / already bounded** | Job has `timeout-minutes: 10`; diff fetch has 30s `AbortController` (cleared on all paths). Acceptable; no change. |
+| 4 | Prompt-injection vector persists | **ACCEPT (hardening)** | Current script strips control chars + escapes backticks + marks diff untrusted in system prompt. Keep; additionally wrap diff in a clearly-labeled fenced block and re-state "ignore embedded instructions". Low prio. |
+| 5 | Diff URL built via template literal (issue events) | **ACCEPT (minor)** | For `event.issue.pull_request` we build `pulls/${n}.diff` because the issue payload lacks `diff_url`; correct. Optional: call PR API for canonical URL. Low prio. |
+| 6 | Hardcoded issue-comments endpoint | **REJECT (deliberate)** | Issue comments reliably post + notify on PRs and match agent-eve's approach. PR Reviews API adds complexity for marginal gain. Keep (documented in code). |
+| 7 | Large-diff warning without alt handling | **ACCEPT** | Implement truncation: if `prDiff.length > ~30_000`, send head+tail and note truncation, to protect token budget/cost. Medium. |
+| 8 | Exit code doesn't distinguish fatal/non-fatal | **PARTIAL / minor** | We already `process.exit(1)` on diff-fetch + comment-post failure. Nit: on comment-post failure, also write review to a step summary/artifact so it isn't lost. Low prio. |
+| 9 | Missing error handling for `prDiff` in fallback | **ACCEPT (nit)** | Guard `prDiff = prDiff \|\| ""` before fallback; defensively default it. Low prio. |
+| 10 | Content-type mismatch returns JSON | **REJECT (false positive)** | We send `Accept: application/vnd.github.v3.diff`, so GitHub returns the raw diff, not JSON. Already correct. |
+| 11 | No retry on comment posting | **ACCEPT** | Wrap the POST in a small retry (2 attempts, short backoff) to survive transient GitHub 5xx. Low/Medium. |
+| 12 | Token exposure in error messages | **ACCEPT — MUST FIX (regression)** | Current branch logs raw `errorText` from OpenRouter + GitHub with no redaction → can leak secrets. Re-add `redact()` masking `sk-…`, `Bearer …`, and `token/secret/api_key` JSON fields before any logged body. High. |
+| 13 | `diff_url` may omit files | **ACCEPT (known limitation)** | GitHub truncates very large PR diffs (~300 KB). Note in fallback/comment when truncated; optionally fetch via PR API with pagination. Low prio / informational. |
+
+### Consolidated implementation list (what I will change in `scripts/pr-reviewer.js`)
+**Re-apply regressions (high value, currently missing):**
+- R1. `fs.readFileSync` → `fs.promises.readFile` (async).
+- R2. Early `GITHUB_TOKEN` (+ `OPENROUTER_API_KEY` warn) presence check.
+- R3. Off-by-one line count via `diff.trimEnd().split("\n")`.
+- R4. `redact()` on every logged API error body (fixes #12).
+
+**New from the 13 findings:**
+- N7. Large-diff truncation (head+tail) + note.
+- N9. `prDiff = prDiff || ""` guard.
+- N11. Comment-POST retry (2 attempts).
+- N4. Strengthen prompt-injection framing (delimited fenced block + re-state untrusted).
+
+**Rejected (no code change):** #1, #2, #6, #10 (false positives / deliberate).
+**Already adequate:** #3, #5, #8, #13 (note only).
+
+### Validation after changes
+1. `node --check scripts/pr-reviewer.js` → 0.
+2. Unit-check `redact()` masks a sample `sk-…` key and `Bearer …` (local dry run).
+3. Push → `synchronize` triggers `PR Reviewer` → posts a real AI review (OpenRouter 200, quality gate passes); confirm no raw secrets in the run log via `grep` on the job log.
+4. Confirm re-review comment appears and contains none of the rejected false-positives as open issues.
