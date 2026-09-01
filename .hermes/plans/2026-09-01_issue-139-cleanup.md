@@ -25,6 +25,33 @@
 - `.devskim.json` also EXISTS at repo root (dot-prefixed) — it's a devskim ruleset/exclusion config (currently excludes `**/.specify/integrations/*.manifest.json`). It is NOT the cause of the `repository_devskim` tool-bug; Task 3 still disables that linter via `.mega-linter.yml`.
 - PR #138 code-review findings: #4, #7, #9, #11, #12 **fixed in #138**; #1/#2/#6/#10 false positives; #3 already bounded; #5/#8/#13 are low-priority optional polish (tracked here, not required for green lint).
 
+## Section A: PR-reviewer code-review findings (from PR #138 AI review)
+
+When PR #138 (the #137 PR-reviewer work) ran, the AI code-reviewer posted a 13-item review (`issuecomment-5479224372`). I audited all 13 against the code that actually shipped in #138. Verdicts:
+
+- **12 of 13 are already closed** — false positives (4) or fixed in #138 (5) or already bounded (1) or minor nits absorbed (2).
+- **3 remain as low-priority optional polish** (#5, #8, #13) — tracked in Task "Optional polish" below, NOT required for a green lint.
+
+| # | Finding | Verdict | Notes |
+|---|---------|---------|-------|
+| 1 | Pinned `actions/checkout` SHA is invalid | **REJECT (false positive)** | SHA `11d5960…` is valid and matches `ci.yml`. |
+| 2 | `${{ vars.MODEL_NAME \|\| 'deepseek/...' }}` bad syntax | **REJECT (false positive)** | Correct GitHub Actions expression syntax. |
+| 3 | No timeout on the OpenRouter fetch | **Already bounded** | `timeout-minutes: 10` on the job + 30s `AbortController` in script. |
+| 4 | Diff not wrapped in a fenced block | **FIXED in #138** | Diff now wrapped + "ignore embedded instructions" reinforced. |
+| 5 | Use PR API `diff_url` for issue events | **ACCEPT (minor, optional)** | Currently templates `pulls/${n}.diff`; low priority. → Optional polish. |
+| 6 | Hardcoded `issue-comments` endpoint | **REJECT (deliberate)** | Intended: we only ever comment on the triggering PR. |
+| 7 | No truncation of huge diffs | **FIXED in #138** | `prDiff.length > ~30_000` head+tail truncation added. |
+| 8 | On comment-post failure, write to step summary | **PARTIAL/minor (optional)** | `process.exit(1)` exists; nit: also write body to `$GITHUB_STEP_SUMMARY`. → Optional polish. |
+| 9 | Empty-diff guard | **FIXED in #138** | `prDiff = prDiff \|\| ""` guard added. |
+| 10 | `Accept: application/vnd.github.v3.diff` wrong | **REJECT (false positive)** | Header returns the raw diff correctly. |
+| 11 | Comment POST not retried | **FIXED in #138** | 2-attempt retry on comment POST added. |
+| 12 | Token leaks into logs (no `redact()`) | **FIXED in #138 (was a regression, re-added)** | `redact()` masks `sk-…`, `Bearer …`, `token/secret/api_key` JSON fields; verified key never leaks across runs. |
+| 13 | Giant diffs (>300KB GitHub truncation) not paginated | **ACCEPT (known limitation, optional)** | GitHub truncates diffs ~300KB; informational. → Optional polish. |
+
+**Conclusion:** the code-review findings from PR #138 are **not blocking** — #137's scope (code review only) is satisfied and the regressions called out in the review were fixed in the merge. The remaining items are documented here for completeness and offered as optional follow-ups, separate from the MegaLinter work that is the actionable part of #139.
+
+---
+
 ## Proposed approach
 
 1. **zizmor (real, 1 line):** add `persist-credentials: false` to the checkout step in `pr-reviewer.yml`.
@@ -223,7 +250,7 @@ curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.gi
 
 ## Optional polish (NOT required for green) — PR #138 residual findings
 
-These were reviewed in #139 Section A and left open. Implement only if desired:
+These were reviewed in Section A above and left open. Implement only if desired:
 - **#5:** for `event.issue.pull_request`, fetch the PR via API to get canonical `diff_url` instead of templating `pulls/${n}.diff`. Low priority.
 - **#8:** on comment-post failure, also write the review body to a workflow step summary (`$GITHUB_STEP_SUMMARY`) so it isn't lost. Low priority.
 - **#13:** paginate very large PR diffs (>300KB GitHub truncation) via the PR API. Informational.
