@@ -147,8 +147,8 @@ async function generateAiReview(number, owner, repo, diff, sanitizedDiff) {
     return generateFallbackReview(number, owner, repo, diff);
   }
 
-  // ── 4) Model default: deepseek for both the normal and strict attempts ──
-  const model = process.env.MODEL_NAME || "deepseek/deepseek-v4-pro";
+  // ── 4) Model default: openai/gpt-4o-mini (verified reliable; deepseek refused) ──
+  const model = process.env.MODEL_NAME || "openai/gpt-4o-mini";
 
   const userPrompt = `Please review the following diff and provide your feedback with specific line number citations:\n\n\`\`\`diff\n${truncDiffForPrompt(sanitizedDiff)}\n\`\`\``;
 
