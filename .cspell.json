@@ -96,6 +96,11 @@
     "openrouter",
     "OPENROUTER",
     "pousr",
-    "webfeed"
+    "webfeed",
+    "isinstance",
+    "issuecomment",
+    "prio",
+    "SDLC",
+    "tweetsodium"
   ]
 }
