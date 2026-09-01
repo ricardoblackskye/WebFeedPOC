@@ -20,23 +20,25 @@
   - `javascript_standard`: ~60 style errors on `scripts/pr-reviewer.js` — wants single-quotes + no semicolons (`quotes`, `semi`, `space-before-function-paren`, `comma-dangle`). Our file intentionally uses double-quotes + semis (copied from agent-eve).
   - `spell_cspell`: 35 unknown words across repo, incl. `OPENROUTER`, `openrouter`, `deepseek`, `webfeed`, `SDLC`, `prio`, `tweetsodium`, `pousr`. **No `cspell.json` exists** → MegaLinter uses built-in English dict.
   - `repository_devskim`: 1 error that is a **tool bug** (`Failed to parse Data ... as a XML document`), not a code defect. Background noise.
-- No `.megalinter.yml`, no `.standardignore`, no `cspell.json`, no `.github/linters/` exist in the repo — MegaLinter uses all built-in defaults.
+- **`.mega-linter.yml` EXISTS at repo root** (dot-prefixed) — this is the real config (NOT a new file). It already contains `DISABLE_LINTERS: [TYPESCRIPT_STANDARD]`, `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(?i).*(wix|stripe).*\\.js$"`, `ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES: [GITHUB_TOKEN]`, `FILTER_REGEX_EXCLUDE`, etc. Plan MUST modify this existing file, not create a new one.
+- No `cspell.json` exists → still need to create it (the spell linter uses built-in English dict, hence 35 unknowns).
+- Note: `.github/workflows/mega-linter.yml` is the *workflow that runs* MegaLinter — do not confuse it with the `.mega-linter.yml` config. Leave the workflow untouched.
 - PR #138 code-review findings: #4, #7, #9, #11, #12 **fixed in #138**; #1/#2/#6/#10 false positives; #3 already bounded; #5/#8/#13 are low-priority optional polish (tracked here, not required for green lint).
 
 ## Proposed approach
 
 1. **zizmor (real, 1 line):** add `persist-credentials: false` to the checkout step in `pr-reviewer.yml`.
 2. **cspell (config, new file):** create `cspell.json` with the project word list so the 35 spell errors clear.
-3. **devskim (noise):** disable `REPOSITORY_DEVSKIM` via a new `.megalinter.yml` (since it's a parse bug, not our code).
-4. **javascript_standard (decision):** rather than reformat `pr-reviewer.js` away from the agent-eve copy's proven style, **ignore it** for Standard Style via `.megalinter.yml` (`JAVASCRIPT_STANDARD_DISABLE_ERRORS: true` or `DISABLED` for that descriptor) — keeps the file faithful to upstream and clears the largest error count. (Alternative: run `standard --fix` — noted as a branch in Task 4.)
+3. **devskim (noise):** disable `REPOSITORY_DEVSKIM` by appending it to the existing `DISABLE_LINTERS` list in `.mega-linter.yml` (since it's a parse bug, not our code). The file already exists at repo root.
+4. **javascript_standard (decision):** rather than reformat `pr-reviewer.js` away from the agent-eve copy's proven style, **merge `pr-reviewer` into the existing `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE`** in `.mega-linter.yml` (currently `(?i).*(wix|stripe).*\.js$`) — keeps the file faithful to upstream and clears the largest error count. (Alternative: run `standard --fix` — noted as a branch in Task 4.)
 5. **Track residual PR-review polish** (#5/#8/#13) as optional TODOs in this plan; implement only if desired (not required for green).
 
 ## Files likely to change
 
 - Modify: `.github/workflows/pr-reviewer.yml` (add `persist-credentials: false`)
 - Create: `cspell.json` (project dictionary)
-- Create: `.megalinter.yml` (disable devskim; ignore `pr-reviewer.js` for standard)
-- Optionally modify: `scripts/pr-reviewer.js` (only if we choose the `standard --fix` route instead of ignoring)
+- Modify: `.mega-linter.yml` (append `REPOSITORY_DEVSKIM` to `DISABLE_LINTERS`; merge `pr-reviewer` into `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE`)
+- Optionally modify: `scripts/pr-reviewer.js` (only if we choose the `standard --fix` route instead of excluding)
 
 ---
 
@@ -128,60 +130,70 @@ git commit -m "ci: add cspell.json project dictionary (clears spell linter)"
 
 ---
 
-## Task 3: Create `.megalinter.yml` to disable devskim noise (devskim)
+## Task 3: Modify `.mega-linter.yml` to disable devskim noise (devskim)
 
-**Objective:** Stop the `repository_devskim` tool-bug error (not a code defect) from failing the check.
+**Objective:** Stop the `repository_devskim` tool-bug error (not a code defect) from failing the check, by appending it to the existing `DISABLE_LINTERS` list.
 
 **Files:**
-- Create: `.megalinter.yml` (repo root)
+- Modify: `.mega-linter.yml` (root) — append to the existing `DISABLE_LINTERS:` block.
 
-**Step 1: Write `.megalinter.yml`**
+**Step 1: Edit the `DISABLE_LINTERS` section**
 
+The file currently has:
 ```yaml
-# MegaLinter config — WebFeedPOC
-# Disable linters that are noise for this repo / tool-version-incompatible.
-REPOSITORY_DEVSKIM: "disabled"
-# Ignore the agent-eve-style PR reviewer script from Standard Style (intentional
-# double-quote + semicolon style); reformat instead if you prefer standard --fix.
-JAVASCRIPT_STANDARD_DISABLED: false
-JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(scripts/pr-reviewer\\.js)"
+DISABLE_LINTERS:
+  - TYPESCRIPT_STANDARD
 ```
-> If `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE` does not exclude it cleanly, switch to `JAVASCRIPT_STANDARD: "disabled"` (Task 4 alternative).
+Change to (append, do NOT remove TYPESCRIPT_STANDARD):
+```yaml
+DISABLE_LINTERS:
+  - TYPESCRIPT_STANDARD
+  - REPOSITORY_DEVSKIM
+```
 
 **Step 2: Verify YAML**
-Run: `python -c "import yaml; yaml.safe_load(open('.megalinter.yml')); print('YAML OK')"`
-Expected: `YAML OK`
+Run: `python -c "import yaml; d=yaml.safe_load(open('.mega-linter.yml')); assert 'REPOSITORY_DEVSKIM' in d['DISABLE_LINTERS']; print('YAML OK', d['DISABLE_LINTERS'])"`
+Expected: `YAML OK ['TYPESCRIPT_STANDARD', 'REPOSITORY_DEVSKIM']`
 
 **Step 3: Commit**
 ```bash
-git add .megalinter.yml
-git commit -m "ci: disable devskim noise + exclude pr-reviewer.js from standard"
+git add .mega-linter.yml
+git commit -m "ci: disable REPOSITORY_DEVSKIM in mega-linter (tool-parse bug, not a code defect)"
 ```
 
 ---
 
-## Task 4: Resolve `javascript_standard` (two options — pick ONE)
+## Task 4: Exclude `pr-reviewer.js` from Standard Style (javascript_standard)
 
-**Objective:** Clear the ~60 Standard Style errors on `scripts/pr-reviewer.js`.
+**Objective:** Clear the ~60 Standard Style errors on `scripts/pr-reviewer.js` by merging `pr-reviewer` into the **existing** `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE` (which already excludes `wix`/`stripe` `.js` files). Preserves the agent-eve copy's intentional double-quote + semicolon style.
 
-### Option A (recommended — preserve agent-eve style): already handled in Task 3
-`JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(scripts/pr-reviewer\\.js)"` excludes the file. No script edit. Skip to validation.
+**Files:**
+- Modify: `.mega-linter.yml` (root) — update the existing `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE`.
 
-### Option B (reformat to Standard Style): run `standard --fix`
-**Only if the user prefers the file to follow Standard Style.**
-```bash
-npx standard --fix scripts/pr-reviewer.js
+**Step 1: Edit the exclude regex**
+
+The file currently has:
+```yaml
+JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(?i).*(wix|stripe).*\\.js$"
 ```
-Then `npx standard scripts/pr-reviewer.js` → expect 0 errors. Commit:
-```bash
-git add scripts/pr-reviewer.js
-git commit -m "style: reformat pr-reviewer.js to Standard Style"
+Change to (add `pr-reviewer` as an alternation; keep `(?i)` and the `\.js$` anchor):
+```yaml
+JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(?i).*(wix|stripe|pr-reviewer).*\\.js$"
 ```
-> Caveat: this diverges the file from the upstream agent-eve copy; do NOT also apply Task 3's exclude if you pick this.
+> Regex note: this matches any path containing `wix`, `stripe`, or `pr-reviewer` and ending in `.js`. `scripts/pr-reviewer.js` matches `pr-reviewer`. Do NOT drop the existing `wix|stripe` alternation.
 
-**Validation (either option):**
-- Task 3 exclude path: confirm `JAVASCRIPT_STANDARD` no longer reports `pr-reviewer.js`.
-- Task 4B path: `npx standard scripts/pr-reviewer.js` → 0 errors.
+**Step 2: Verify YAML + regex**
+Run: `python -c "import yaml,re; d=yaml.safe_load(open('.mega-linter.yml')); rx=re.compile(d['JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE']); assert rx.search('scripts/pr-reviewer.js'); assert rx.search('src/services/wixService.js'); print('regex matches pr-reviewer + wix')"`
+Expected: `regex matches pr-reviewer + wix`
+
+**Step 3: Commit**
+```bash
+git add .mega-linter.yml
+git commit -m "ci: exclude pr-reviewer.js from JavaScript Standard Style (preserve agent-eve style)"
+```
+
+**Alternative (Option B — reformat instead of exclude):** if the team prefers uniform Standard Style, skip the regex edit and instead run `npx standard --fix scripts/pr-reviewer.js`, then `npx standard scripts/pr-reviewer.js` → 0 errors, and commit. This diverges the file from upstream agent-eve.
+
 
 ---
 
