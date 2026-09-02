@@ -4,7 +4,13 @@
   padding: 2rem;
 }
 
-@media (max-width: 768px) {
+/* Breakpoint reference (px = CSS px, DR = device-resolution independent):
+   phone 479↓ | tablet 480–768 | small-desktop 769–1024 | desktop 1025↑
+   NOTE: CSS custom properties are not valid inside @media conditions, so the
+   px values are duplicated here and in ProductList.css on purpose — these four
+   numbers are the single source of truth for the page shell. The hamburger
+   breakpoint is 640px (below) so tablets at 768px keep the inline nav per #108. */
+@media (width <= 768px) {
   .app {
     padding: 1rem;
   }
@@ -83,7 +89,9 @@
   outline-offset: 2px;
 }
 
-@media (max-width: 640px) {
+/* Hamburger breakpoint = 640px (documented above). At 641–768px the nav stays
+   inline; below 640px it collapses behind the toggle button (#108 decision). */
+@media (width <= 640px) {
   .app-nav {
     display: none;
   }

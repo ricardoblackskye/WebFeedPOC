@@ -64,6 +64,44 @@ test.describe('Tablet shell (768px)', () => {
   })
 })
 
+// ---- Boundary correctness (no off-by-one between tiers) ----
+// Reviewer flagged a possible off-by-one at 480px between the phone (≤479)
+// and tablet (480–768) tiers, and at 640px for the hamburger. These tests pin
+// the behaviour at the exact boundaries.
+test.describe('Breakpoint boundaries', () => {
+  test('exactly 480px → 2-column grid (not phone 1-col)', async ({ page }) => {
+    await page.setViewportSize({ width: 480, height: 800 })
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+    expect(
+      await productGridTracks(page),
+      'at the 480px boundary the tablet tier (2-col) must win'
+    ).toBe(2)
+  })
+
+  test('hamburger is inclusive at 640px; inline nav resumes at 641px', async ({ page }) => {
+    // Boundary check: `width <= 640px` is inclusive, so 640px is collapsed
+    // (hamburger visible, inline nav hidden) and 641px is inline. This proves
+    // the breakpoint is contiguous with no off-by-one gap.
+    await page.setViewportSize({ width: 640, height: 800 })
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+    await expect(
+      page.locator('.nav-toggle'),
+      'at exactly 640px (inclusive) the hamburger is shown'
+    ).toBeVisible()
+    await expect(page.locator('#primary-nav'), 'at 640px the inline nav is hidden').toBeHidden()
+
+    await page.setViewportSize({ width: 641, height: 800 })
+    await page.waitForLoadState('networkidle')
+    await expect(
+      page.locator('#primary-nav'),
+      'at 641px the inline nav resumes'
+    ).toBeVisible()
+    await expect(page.locator('.nav-toggle'), 'at 641px the hamburger is hidden').toBeHidden()
+  })
+})
+
 // ---- Desktop 1280px (preserved) ----
 test.describe('Desktop shell (1280px)', () => {
   test.use({ viewport: { width: 1280, height: 720 } })
