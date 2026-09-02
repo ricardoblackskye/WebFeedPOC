@@ -1,4 +1,4 @@
-import { test as base } from 'playwright/test'
+import { test as base } from '@playwright/test'
 
 /**
  * Extended test object that provides a human-readable deviceName
@@ -27,4 +27,4 @@ export const test = base.extend({
   }, { auto: true }]
 })
 
-export { expect } from 'playwright/test'
+export { expect } from '@playwright/test'
