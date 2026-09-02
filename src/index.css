@@ -10,6 +10,22 @@
   --color-gold-hover: #B8941F;
   --color-gold-light: #E5C861;
   
+  /* Responsive breakpoint scale (px). NOTE: CSS custom properties are NOT valid
+     inside @media conditions, so these are documentation only — the numeric
+     values are duplicated in the component CSS media queries as the single
+     source of truth. Keeping them here makes the intended scale discoverable.
+       --bp-phone-max: 479px     (phones: 1-col grids)
+       --bp-hamburger-max: 640px (nav collapses below this)
+       --bp-tablet-max: 768px    (tablets: 2-col grids, inline nav)
+       --bp-sm-desktop-max: 1024px
+     Hamburger is set below the tablet breakpoint on purpose: at 641–768px
+     tablets keep the inline nav (per #108). The tiers are contiguous and
+     gap-free (phone ≤479, tablet 480–768) — no off-by-one at 480px. */
+  --bp-phone-max: 479px;
+  --bp-hamburger-max: 640px;
+  --bp-tablet-max: 768px;
+  --bp-sm-desktop-max: 1024px;
+  
   /* Base colors */
   font-family: var(--font-primary);
   line-height: 1.6;

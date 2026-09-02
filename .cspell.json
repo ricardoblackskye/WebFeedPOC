@@ -101,6 +101,7 @@
     "issuecomment",
     "prio",
     "SDLC",
-    "tweetsodium"
+    "tweetsodium",
+    "minmax"
   ]
 }

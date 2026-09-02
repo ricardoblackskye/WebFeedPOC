@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PropTypes from 'prop-types'
@@ -20,6 +20,8 @@ function App({ initialProducts }) {
     updateQuantity,
     totals,
   } = useWixCart()
+
+  const [navOpen, setNavOpen] = useState(false)
 
   // Extract unique categories from products
   const categories = useMemo(() => {
@@ -67,7 +69,17 @@ function App({ initialProducts }) {
           <h1>Antiques Marketplace</h1>
           <p>Discover unique treasures from the past</p>
         </Link>
-        <nav className="app-nav" aria-label="Site navigation">
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-expanded={navOpen}
+          aria-controls="primary-nav"
+          aria-label="Toggle navigation menu"
+          onClick={() => setNavOpen((open) => !open)}
+        >
+          &#9776;
+        </button>
+        <nav id="primary-nav" className="app-nav" data-open={navOpen} aria-label="Site navigation">
           <Link to="/">Shop</Link>
           <Link to="/about">About</Link>
           <Link to="/architecture">Architecture</Link>

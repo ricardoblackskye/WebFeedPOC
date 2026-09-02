@@ -4,8 +4,17 @@
   gap: 1.5rem;
 }
 
-@media (width <= 768px) {
+/* phones: single column (≤479px) */
+@media (width <= 479px) {
   .product-list {
     grid-template-columns: 1fr;
+  }
+}
+
+/* tablets: two columns (480–768px). Contiguous with the phone tier above
+   (no gap, no overlap): at exactly 480px the 2-col rule applies. */
+@media (width >= 480px) and (width <= 768px) {
+  .product-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
