@@ -1,4 +1,4 @@
-import { test, expect, type Page } from 'playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { waitForProducts, waitForLoadingToFinish } from './helpers'
 
 // Resolve to the first available product's URL so tests work with both

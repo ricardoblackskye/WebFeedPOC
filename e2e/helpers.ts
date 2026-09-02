@@ -5,7 +5,7 @@
  * configured, so all tests run against the built-in demo catalogue.
  */
 
-import { type Page } from 'playwright/test'
+import { type Page } from '@playwright/test'
 
 /** Wait until the product grid is visible and at least one card is rendered. */
 export async function waitForProducts (page: Page): Promise<void> {
