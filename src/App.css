@@ -4,6 +4,12 @@
   padding: 2rem;
 }
 
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
+}
+
 .app-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -15,7 +21,7 @@
 }
 
 .app-header h1 {
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 8vw, 3.5rem);
   margin-bottom: 0.5rem;
   font-family: var(--font-primary);
   font-weight: 500;
@@ -51,10 +57,47 @@
   color: var(--color-gold);
   text-decoration: none;
   font-family: var(--font-secondary);
+  overflow-wrap: anywhere;
 }
 
 .app-nav a:hover {
   opacity: 1;
+}
+
+.nav-toggle {
+  display: none;
+  margin: 0 auto 0.5rem;
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-toggle:focus,
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--color-gold-light);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .app-nav {
+    display: none;
+  }
+
+  .app-nav[data-open='true'] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .nav-toggle {
+    display: inline-block;
+  }
 }
 
 .breadcrumb a:hover {
@@ -114,11 +157,12 @@
 /* Footer */
 .app-footer {
   text-align: center;
-  padding: 2rem 0;
+  padding: 2rem 1rem;
   margin-top: 3rem;
   border-top: 1px solid rgb(255 255 255 / 10%);
   color: rgb(255 255 255 / 50%);
   font-size: 0.9rem;
+  overflow-wrap: break-word;
 }
 
 /* Background-refresh progress bar */
@@ -154,10 +198,15 @@
 .breadcrumb ol {
   list-style: none;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0;
   margin: 0 0 1.5rem;
   font-size: 0.9rem;
+}
+
+.breadcrumb li {
+  min-width: 0;
 }
 
 .breadcrumb li:not(:last-child)::after {

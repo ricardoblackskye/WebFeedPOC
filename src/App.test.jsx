@@ -250,4 +250,19 @@ describe('App Integration Tests', () => {
 
     expect(screen.getByText(/All rights reserved/)).toBeDefined()
   })
+
+  it('nav-toggle collapses and expands the primary nav', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const toggle = screen.getByRole('button', { name: /toggle navigation menu/i })
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(toggle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+  })
 })

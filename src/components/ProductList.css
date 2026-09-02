@@ -4,8 +4,16 @@
   gap: 1.5rem;
 }
 
-@media (width <= 768px) {
+/* phones: single column */
+@media (max-width: 479px) {
   .product-list {
     grid-template-columns: 1fr;
+  }
+}
+
+/* tablets: two columns */
+@media (min-width: 480px) and (max-width: 768px) {
+  .product-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
