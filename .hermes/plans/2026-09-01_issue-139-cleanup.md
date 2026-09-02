@@ -1,0 +1,278 @@
+# #139 Tech-debt Cleanup (PR-reviewer findings + MegaLinter) — Implementation Plan
+
+> **For Hermes:** Use subagent-driven-development skill to implement this plan task-by-task.
+
+**Goal:** Clear the `MegaLinter` check (currently red on every PR) and document the residual PR-reviewer code-review findings so the repo's lint gate is green and the #138 review backlog is tracked.
+
+**Architecture:** Four independent, low-risk config/style fixes driven by the findings in issue #139. Three are one-or-few-line config changes; one is a style decision on `scripts/pr-reviewer.js`. No application/build logic changes — the Vite build (`npm run build:prerender`) is unaffected.
+
+**Tech Stack:** GitHub Actions, MegaLinter v10 (`oxsecurity/megalinter`), cspell, JavaScript Standard Style, zizmor.
+
+**Branch naming rule (repo convention):** branches and plan filenames must NOT contain `#`. Use `issue-139` not `issue-139`.
+
+---
+
+## Current context / facts (verified)
+
+- PR #138 merged → `main` at `151721a`. Closes #137.
+- MegaLinter run `33498803338` (on merge commit) failed these linters:
+  - `action_zizmor`: 1 real finding `warning[artipacked]` on `.github/workflows/pr-reviewer.yml:19` — `actions/checkout` missing `persist-credentials: false`. (5 duplicate/suppressed; only 1 counts.) Confidence Low, has auto-fix.
+  - `javascript_standard`: ~60 style errors on `scripts/pr-reviewer.js` — wants single-quotes + no semicolons (`quotes`, `semi`, `space-before-function-paren`, `comma-dangle`). Our file intentionally uses double-quotes + semis (copied from agent-eve).
+  - `spell_cspell`: 35 unknown words across repo, incl. `OPENROUTER`, `openrouter`, `deepseek`, `webfeed`, `SDLC`, `prio`, `tweetsodium`, `pousr`. **`.cspell.json` ALREADY EXISTS** at repo root (dot-prefixed) with a `words` array that already covers many project terms (`zizmor`, `artipacked`, `ricardoblackskye`, `vercel`, `vite`, `devskim`, `releasenotes`, …). Task 2 appends the *still-missing* words to it — it does NOT create a new file.
+  - `repository_devskim`: 1 error that is a **tool bug** (`Failed to parse Data ... as a XML document`), not a code defect. Background noise.
+- **`.mega-linter.yml` EXISTS at repo root** (dot-prefixed) — this is the real config (NOT a new file). It already contains `DISABLE_LINTERS: [TYPESCRIPT_STANDARD]`, `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(?i).*(wix|stripe).*\\.js$"`, `ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES: [GITHUB_TOKEN]`, `FILTER_REGEX_EXCLUDE`, etc. Plan MUST modify this existing file, not create a new one.
+- Note: `.github/workflows/mega-linter.yml` is the *workflow that runs* MegaLinter — do not confuse it with the `.mega-linter.yml` config. Leave the workflow untouched.
+- `.devskim.json` also EXISTS at repo root (dot-prefixed) — it's a devskim ruleset/exclusion config (currently excludes `**/.specify/integrations/*.manifest.json`). It is NOT the cause of the `repository_devskim` tool-bug; Task 3 still disables that linter via `.mega-linter.yml`.
+- PR #138 code-review findings: #4, #7, #9, #11, #12 **fixed in #138**; #1/#2/#6/#10 false positives; #3 already bounded; #5/#8/#13 are low-priority optional polish (tracked here, not required for green lint).
+
+## Section A: PR-reviewer code-review findings (from PR #138 AI review)
+
+When PR #138 (the #137 PR-reviewer work) ran, the AI code-reviewer posted a 13-item review (`issuecomment-5479224372`). I audited all 13 against the code that actually shipped in #138. Verdicts:
+
+- **12 of 13 are already closed** — false positives (4) or fixed in #138 (5) or already bounded (1) or minor nits absorbed (2).
+- **3 remain as low-priority optional polish** (#5, #8, #13) — tracked in Task "Optional polish" below, NOT required for a green lint.
+
+| # | Finding | Verdict | Notes |
+|---|---------|---------|-------|
+| 1 | Pinned `actions/checkout` SHA is invalid | **REJECT (false positive)** | SHA `11d5960…` is valid and matches `ci.yml`. |
+| 2 | `${{ vars.MODEL_NAME \|\| 'deepseek/...' }}` bad syntax | **REJECT (false positive)** | Correct GitHub Actions expression syntax. |
+| 3 | No timeout on the OpenRouter fetch | **Already bounded** | `timeout-minutes: 10` on the job + 30s `AbortController` in script. |
+| 4 | Diff not wrapped in a fenced block | **FIXED in #138** | Diff now wrapped + "ignore embedded instructions" reinforced. |
+| 5 | Use PR API `diff_url` for issue events | **ACCEPT (minor, optional)** | Currently templates `pulls/${n}.diff`; low priority. → Optional polish. |
+| 6 | Hardcoded `issue-comments` endpoint | **REJECT (deliberate)** | Intended: we only ever comment on the triggering PR. |
+| 7 | No truncation of huge diffs | **FIXED in #138** | `prDiff.length > ~30_000` head+tail truncation added. |
+| 8 | On comment-post failure, write to step summary | **PARTIAL/minor (optional)** | `process.exit(1)` exists; nit: also write body to `$GITHUB_STEP_SUMMARY`. → Optional polish. |
+| 9 | Empty-diff guard | **FIXED in #138** | `prDiff = prDiff \|\| ""` guard added. |
+| 10 | `Accept: application/vnd.github.v3.diff` wrong | **REJECT (false positive)** | Header returns the raw diff correctly. |
+| 11 | Comment POST not retried | **FIXED in #138** | 2-attempt retry on comment POST added. |
+| 12 | Token leaks into logs (no `redact()`) | **FIXED in #138 (was a regression, re-added)** | `redact()` masks `sk-…`, `Bearer …`, `token/secret/api_key` JSON fields; verified key never leaks across runs. |
+| 13 | Giant diffs (>300KB GitHub truncation) not paginated | **ACCEPT (known limitation, optional)** | GitHub truncates diffs ~300KB; informational. → Optional polish. |
+
+**Conclusion:** the code-review findings from PR #138 are **not blocking** — #137's scope (code review only) is satisfied and the regressions called out in the review were fixed in the merge. The remaining items are documented here for completeness and offered as optional follow-ups, separate from the MegaLinter work that is the actionable part of #139.
+
+---
+
+## Proposed approach
+
+1. **zizmor (real, 1 line):** add `persist-credentials: false` to the checkout step in `pr-reviewer.yml`.
+2. **cspell (config, existing file):** append the still-missing words to `.cspell.json` (it already exists at repo root with many project terms) so the 35 spell errors clear.
+3. **devskim (noise):** disable `REPOSITORY_DEVSKIM` by appending it to the existing `DISABLE_LINTERS` list in `.mega-linter.yml` (since it's a parse bug, not our code). The file already exists at repo root.
+4. **javascript_standard (decision):** rather than reformat `pr-reviewer.js` away from the agent-eve copy's proven style, **merge `pr-reviewer` into the existing `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE`** in `.mega-linter.yml` (currently `(?i).*(wix|stripe).*\.js$`) — keeps the file faithful to upstream and clears the largest error count. (Alternative: run `standard --fix` — noted as a branch in Task 4.)
+5. **Track residual PR-review polish** (#5/#8/#13) as optional TODOs in this plan; implement only if desired (not required for green).
+
+## Files likely to change
+
+- Modify: `.github/workflows/pr-reviewer.yml` (add `persist-credentials: false`)
+- Modify: `.cspell.json` (append missing words to existing `words` array)
+- Modify: `.mega-linter.yml` (append `REPOSITORY_DEVSKIM` to `DISABLE_LINTERS`; merge `pr-reviewer` into `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE`)
+- Optionally modify: `scripts/pr-reviewer.js` (only if we choose the `standard --fix` route instead of excluding)
+
+---
+
+## Task 1: Add `persist-credentials: false` to checkout (zizmor)
+
+**Objective:** Clear the only real zizmor `artipacked` medium finding.
+
+**Files:**
+- Modify: `.github/workflows/pr-reviewer.yml:19-21`
+
+**Step 1: Edit the checkout step**
+
+Change:
+```yaml
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0 # Fetch all history for diff
+```
+to:
+```yaml
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0 # Fetch all history for diff
+          persist-credentials: false # zizmor: avoid credential persistence via artifacts
+```
+
+**Step 2: Verify syntax**
+Run: `node --check` is N/A (YAML). Instead validate YAML quickly:
+`python -c "import yaml,sys; yaml.safe_load(open('.github/workflows/pr-reviewer.yml')); print('YAML OK')"`
+Expected: `YAML OK`
+
+**Step 3: Commit**
+```bash
+git add .github/workflows/pr-reviewer.yml
+git commit -m "ci: pr-reviewer.yml set persist-credentials: false (zizmor artipacked)"
+```
+
+---
+
+## Task 2: Append missing words to `.cspell.json` (cspell)
+
+**Objective:** Clear the 35 `cspell` unknown-word errors.
+
+**Files:**
+- Modify: `.cspell.json` (repo root, dot-prefixed) — **already exists** with a `words` array. Append the still-missing words; do NOT overwrite the file.
+
+**Step 1: Inspect the existing `.cspell.json`**
+
+The file currently has `version`, `language`, `ignorePaths`, and a `words` array (~80 terms including `zizmor`, `artipacked`, `ricardoblackskye`, `vercel`, `vite`, `devskim`, `DEVSKIM`, `releasenotes`, `Prerender`, `microsite`, `Wix`, `Vite`, `OpenRouter`, `megalinter`, `cspell`, …). Many of the 35 flagged unknowns are already covered.
+
+**Step 2: Determine the genuinely-missing words**
+
+The 35 flagged unknowns reported by the merge run `33498803338` were (examples): `OPENROUTER`, `openrouter`, `deepseek`, `webfeed`, `SDLC`, `prio`, `tweetsodium`, `pousr`, and ~27 more across `ARCHITECTURE.md`, `README.md`, `releasenotes.md`, `scripts/pr-reviewer.js`, etc.
+
+To find exactly which are NOT already in `.cspell.json`, run cspell locally OR read the new MegaLinter run's cspell report:
+```bash
+npx cspell "**/*.{md,js,ts,json,yml}" 2>&1 | grep -i "Unknown word" | sort -u
+```
+Then compute the set difference against the existing `words` list. Only append the missing ones.
+
+**Step 3: Append to the `words` array**
+
+Keep the existing entries; add the missing words (alphabetical-ish, matching the file's style). Example additions (confirm against Step 2 output — do NOT blindly add words already present):
+```json
+    "deepseek",
+    "openrouter",
+    "OPENROUTER",
+    "pousr",
+    "prio",
+    "SDLC",
+    "tweetsodium",
+    "webfeed"
+```
+> Note: `zizmor`, `artipacked`, `ricardoblackskye`, `vercel`, `vite`, `devskim`, `releasenotes`, `microsite`, `Wix`, `Vite`, `OpenRouter`, `megalinter`, `cspell` are ALREADY in the file — do not duplicate them.
+
+**Step 4: Verify JSON**
+Run: `python -c "import json; d=json.load(open('.cspell.json')); assert isinstance(d.get('words'), list); print('JSON OK', len(d['words']), 'words')"`
+Expected: `JSON OK <N> words`
+
+**Step 5: Commit**
+```bash
+git add .cspell.json
+git commit -m "ci: add missing project words to .cspell.json (clears spell linter)"
+```
+
+> Follow-up: after the first push, if the new MegaLinter run still lists cspell unknowns, append those specific words to `.cspell.json` and push again (Task 5 Step 3).
+
+---
+
+## Task 3: Modify `.mega-linter.yml` to disable devskim noise (devskim)
+
+**Objective:** Stop the `repository_devskim` tool-bug error (not a code defect) from failing the check, by appending it to the existing `DISABLE_LINTERS` list.
+
+**Files:**
+- Modify: `.mega-linter.yml` (root) — append to the existing `DISABLE_LINTERS:` block.
+
+**Step 1: Edit the `DISABLE_LINTERS` section**
+
+The file currently has:
+```yaml
+DISABLE_LINTERS:
+  - TYPESCRIPT_STANDARD
+```
+Change to (append, do NOT remove TYPESCRIPT_STANDARD):
+```yaml
+DISABLE_LINTERS:
+  - TYPESCRIPT_STANDARD
+  - REPOSITORY_DEVSKIM
+```
+
+**Step 2: Verify YAML**
+Run: `python -c "import yaml; d=yaml.safe_load(open('.mega-linter.yml')); assert 'REPOSITORY_DEVSKIM' in d['DISABLE_LINTERS']; print('YAML OK', d['DISABLE_LINTERS'])"`
+Expected: `YAML OK ['TYPESCRIPT_STANDARD', 'REPOSITORY_DEVSKIM']`
+
+**Step 3: Commit**
+```bash
+git add .mega-linter.yml
+git commit -m "ci: disable REPOSITORY_DEVSKIM in mega-linter (tool-parse bug, not a code defect)"
+```
+
+---
+
+## Task 4: Exclude `pr-reviewer.js` from Standard Style (javascript_standard)
+
+**Objective:** Clear the ~60 Standard Style errors on `scripts/pr-reviewer.js` by merging `pr-reviewer` into the **existing** `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE` (which already excludes `wix`/`stripe` `.js` files). Preserves the agent-eve copy's intentional double-quote + semicolon style.
+
+**Files:**
+- Modify: `.mega-linter.yml` (root) — update the existing `JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE`.
+
+**Step 1: Edit the exclude regex**
+
+The file currently has:
+```yaml
+JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(?i).*(wix|stripe).*\\.js$"
+```
+Change to (add `pr-reviewer` as an alternation; keep `(?i)` and the `\.js$` anchor):
+```yaml
+JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE: "(?i).*(wix|stripe|pr-reviewer).*\\.js$"
+```
+> Regex note: this matches any path containing `wix`, `stripe`, or `pr-reviewer` and ending in `.js`. `scripts/pr-reviewer.js` matches `pr-reviewer`. Do NOT drop the existing `wix|stripe` alternation.
+
+**Step 2: Verify YAML + regex**
+Run: `python -c "import yaml,re; d=yaml.safe_load(open('.mega-linter.yml')); rx=re.compile(d['JAVASCRIPT_STANDARD_FILTER_REGEX_EXCLUDE']); assert rx.search('scripts/pr-reviewer.js'); assert rx.search('src/services/wixService.js'); print('regex matches pr-reviewer + wix')"`
+Expected: `regex matches pr-reviewer + wix`
+
+**Step 3: Commit**
+```bash
+git add .mega-linter.yml
+git commit -m "ci: exclude pr-reviewer.js from JavaScript Standard Style (preserve agent-eve style)"
+```
+
+**Alternative (Option B — reformat instead of exclude):** if the team prefers uniform Standard Style, skip the regex edit and instead run `npx standard --fix scripts/pr-reviewer.js`, then `npx standard scripts/pr-reviewer.js` → 0 errors, and commit. This diverges the file from upstream agent-eve.
+
+
+---
+
+## Task 5: Push branch + open PR, verify MegaLinter goes green
+
+**Objective:** Land the fixes and confirm the `MegaLinter` check passes.
+
+**Step 1: Push the `issue-139` branch**
+```bash
+git push -u origin issue-139
+```
+> Note: from this Windows host `git push` to github.com often stalls at pack-upload. If a foreground push times out, use a background retry loop:
+> `for i in 1 2 3 4 5 6; do git push -u origin issue-139 2>&1 | tail -2 && break; sleep 15; done`
+
+**Step 2: Open PR against `main`**
+Use the GitHub REST API (PAT in `~/.git-credentials`, no `gh` CLI):
+```bash
+TOKEN=$(sed -n 's#https://ricardoblackskye:\([^@]*\)@github.com#\1#p' "$HOME/.git-credentials" | head -1)
+curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/ricardoblackskye/WebFeedPOC/pulls \
+  -d '{"title":"ci: #139 clear MegaLinter (zizmor/cspell/devskim/standard)","body":"Closes #139","head":"issue-139","base":"main"}'
+```
+
+**Step 3: Wait for MegaLinter run, confirm green**
+- Fetch the new `MegaLinter` run on the PR head; confirm `conclusion: success`.
+- If `cspell` still lists unknowns, append them to `.cspell.json` (`words`) and push again (Task 2 follow-up).
+
+---
+
+## Optional polish (NOT required for green) — PR #138 residual findings
+
+These were reviewed in Section A above and left open. Implement only if desired:
+- **#5:** for `event.issue.pull_request`, fetch the PR via API to get canonical `diff_url` instead of templating `pulls/${n}.diff`. Low priority.
+- **#8:** on comment-post failure, also write the review body to a workflow step summary (`$GITHUB_STEP_SUMMARY`) so it isn't lost. Low priority.
+- **#13:** paginate very large PR diffs (>300KB GitHub truncation) via the PR API. Informational.
+
+---
+
+## Tests / validation (summary)
+
+- `node --check` / YAML parse on every edited workflow/config file.
+- `npx standard scripts/pr-reviewer.js` → 0 errors (only if Option B).
+- Final gate: a fresh PR's `MegaLinter` check reports `success` (no `artipacked`, no cspell unknowns, devskim disabled, standard ignores/excludes the script).
+
+## Risks / tradeoffs
+
+- `persist-credentials: false` is safe here (the script uses `GITHUB_TOKEN` injected by the step env, not the checkout-created credential) — but confirm the token still works after this change (it's provided via `secrets.GITHUB_TOKEN`, independent of checkout persistence).
+- Disabling devskim removes a (currently broken) secret scanner from CI — acceptable since it's a tool-parse bug, not a real finding; can be re-enabled after a MegaLinter version bump.
+- Excluding `pr-reviewer.js` from Standard Style keeps it faithful to the agent-eve upstream copy; if the team wants uniform Standard Style, use Option B instead.
+
+## Acceptance (from issue #139)
+
+- [ ] `pr-reviewer.yml` passes `zizmor` (no `artipacked`)
+- [ ] `cspell` passes (dictionary updated)
+- [ ] `javascript_standard` passes or is intentionally disabled for `pr-reviewer.js`
+- [ ] `devskim` noise resolved/disabled
+- [ ] `MegaLinter` check green on a fresh PR
