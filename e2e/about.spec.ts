@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForLoadingToFinish } from './helpers'
+import { waitForLoadingToFinish, revealPrimaryNav } from './helpers'
 
 /**
  * Wait for the about page to finish loading CMS content (or error/empty state).
@@ -25,6 +25,9 @@ test.describe('About page', () => {
 
   test('renders the site header with nav links', async ({ page }) => {
     await expect(page.locator('header h1')).toContainText('Antiques Marketplace')
+    // The nav is collapsed behind a hamburger on mobile (<=640px); reveal it
+    // first so this assertion holds at every breakpoint (#108 responsive nav).
+    await revealPrimaryNav(page)
     await expect(page.locator('.app-nav')).toBeVisible()
     await expect(page.locator('.app-nav a[href="/about"]')).toBeVisible()
     await expect(page.locator('.app-nav a[href="/about"]')).toContainText('About')
@@ -46,15 +49,18 @@ test.describe('About page', () => {
   test('About nav link is present on the homepage too', async ({ page }) => {
     await page.goto('/')
     await waitForLoadingToFinish(page)
+    await revealPrimaryNav(page)
     await expect(page.locator('.app-nav a[href="/about"]')).toBeVisible()
   })
 
   test('navigates back to shop via nav link', async ({ page }) => {
+    await revealPrimaryNav(page)
     await page.locator('.app-nav a[href="/"]').click()
     await expect(page).toHaveURL('/')
   })
 
   test('Shop nav link navigates to product listing', async ({ page }) => {
+    await revealPrimaryNav(page)
     await page.locator('.app-nav a[href="/"]').click()
     await waitForLoadingToFinish(page)
     // Should be on home page showing products
@@ -104,6 +110,11 @@ test.describe('About page — accessibility', () => {
   })
 
   test('nav has accessible aria-label', async ({ page }) => {
-    await expect(page.locator('nav[aria-label="Site navigation"]')).toBeVisible()
+    // On mobile (<=640px) the primary nav is collapsed behind the hamburger and
+    // is display:none, so assert the labelled nav *exists in the DOM* (a11y) at
+    // every breakpoint rather than that it is always visible (#108 responsive nav).
+    const nav = page.locator('nav[aria-label="Site navigation"]')
+    await expect(nav).toHaveCount(1)
+    await expect(nav).toHaveAttribute('aria-label', 'Site navigation')
   })
 })

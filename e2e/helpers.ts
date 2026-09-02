@@ -25,3 +25,18 @@ export async function waitForLoadingToFinish (page: Page): Promise<void> {
     // Already gone – that's fine
   }
 }
+
+/**
+ * On mobile (<=640px) the primary nav is collapsed behind a hamburger toggle
+ * and is `display:none` until revealed. On tablet/desktop the nav is already
+ * visible and the toggle is hidden, so this is a no-op there. Call this before
+ * asserting the nav is visible or clicking a nav link, so tests work at every
+ * breakpoint (see #108 responsive changes in src/App.css).
+ */
+export async function revealPrimaryNav (page: Page): Promise<void> {
+  const toggle = page.locator('.nav-toggle')
+  if (await toggle.isVisible()) {
+    await toggle.click()
+    await page.locator('#primary-nav').waitFor({ state: 'visible' })
+  }
+}

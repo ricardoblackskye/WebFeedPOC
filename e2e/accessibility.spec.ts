@@ -32,8 +32,12 @@ test.describe('Accessibility basics', () => {
     await page.goto('/')
     await page.locator('.product-card').first().waitFor({ timeout: 15000 })
 
+    // On mobile (<=640px) the primary nav is collapsed behind the hamburger and
+    // is display:none, so assert the labelled nav *exists in the DOM* (a11y) at
+    // every breakpoint rather than that it is always visible (#108 responsive nav).
     const nav = page.locator('nav[aria-label]').first()
-    await expect(nav).toBeVisible()
+    await expect(nav).toHaveCount(1)
+    await expect(nav).toHaveAttribute('aria-label')
   })
 
   test('page title is set', async ({ page }) => {
