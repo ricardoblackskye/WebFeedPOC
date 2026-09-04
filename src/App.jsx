@@ -22,6 +22,7 @@ function App({ initialProducts }) {
   } = useWixCart()
 
   const [navOpen, setNavOpen] = useState(false)
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false)
 
   // Extract unique categories from products
   const categories = useMemo(() => {
@@ -42,6 +43,9 @@ function App({ initialProducts }) {
 
   const orgSchema = generateOrganizationSchema()
   const webSiteSchema = generateWebSiteSchema()
+
+  // Total item count (sum of line-item quantities) for the header cart badge.
+  const totalCartItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0)
 
   return (
     <div className="app">
@@ -79,6 +83,17 @@ function App({ initialProducts }) {
         >
           &#9776;
         </button>
+        <button
+          type="button"
+          className="cart-btn"
+          aria-expanded={cartDrawerOpen}
+          aria-controls="cart-drawer"
+          aria-label={`Cart, ${totalCartItems} item${totalCartItems === 1 ? '' : 's'}`}
+          onClick={() => setCartDrawerOpen((open) => !open)}
+        >
+          <span aria-hidden="true">&#128722;</span>
+          <span className="cart-badge" aria-hidden="true">{totalCartItems}</span>
+        </button>
         <nav id="primary-nav" className="app-nav" data-open={navOpen} aria-label="Site navigation">
           <Link to="/">Shop</Link>
           <Link to="/about">About</Link>
@@ -91,7 +106,7 @@ function App({ initialProducts }) {
           <Outlet context={{ products, loading, error, categories, productCounts, addToCart }} />
         </section>
 
-        <aside className="cart-section">
+        <aside className="cart-section" id="cart-drawer" data-drawer-open={cartDrawerOpen}>
           <Cart
             items={cart}
             onUpdateQuantity={updateQuantity}
@@ -101,6 +116,8 @@ function App({ initialProducts }) {
             error={cartError}
             useWixBackend={useWixBackend}
             totals={totals}
+            isDrawerOpen={cartDrawerOpen}
+            onCloseDrawer={() => setCartDrawerOpen(false)}
           />
         </aside>
       </main>

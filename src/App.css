@@ -162,7 +162,56 @@
   }
 }
 
-/* Footer */
+/* Cart toggle button + item-count badge — visible only on mobile (<=768px),
+   where the cart becomes a slide-over drawer. On desktop the sticky sidebar is
+   the cart UI, so the header button is hidden (see width <= 768px block below). */
+.cart-btn {
+  display: none;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cart-btn:focus,
+.cart-btn:focus-visible {
+  outline: 2px solid var(--color-gold-light);
+  outline-offset: 2px;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gold);
+  color: #1a1a1a;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-family: var(--font-secondary);
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (width <= 768px) {
+  .cart-btn {
+    display: inline-flex;
+  }
+}
+
 .app-footer {
   text-align: center;
   padding: 2rem 1rem;
