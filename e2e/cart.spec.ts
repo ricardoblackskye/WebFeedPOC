@@ -75,3 +75,32 @@ test.describe('Shopping cart', () => {
     await expect(page.locator('.checkout-btn')).toBeEnabled()
   })
 })
+
+// ---- Mobile: cart is a slide-over drawer (issue #109) ----
+test.describe('Cart drawer on mobile (375px)', () => {
+  test.use({ viewport: { width: 375, height: 667 }, hasTouch: true })
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/')
+    await waitForLoadingToFinish(page)
+    await waitForProducts(page)
+  })
+
+  test('cart is a hidden off-canvas drawer until the header button opens it', async ({ page }) => {
+    await expect(page.locator('.cart-btn')).toBeVisible()
+    // Closed drawer is off-screen AND visibility:hidden -> not visible to user/AT
+    await expect(page.locator('#cart-drawer')).toBeHidden()
+    await expect(page.locator('.cart-backdrop')).toBeHidden()
+
+    await page.locator('.cart-btn').click()
+    await expect(page.locator('#cart-drawer')).toBeVisible()
+    await expect(page.locator('.cart-backdrop')).toBeVisible()
+    // aria-expanded reflects the open state
+    await expect(page.locator('.cart-btn')).toHaveAttribute('aria-expanded', 'true')
+
+    // Dismiss via backdrop
+    await page.locator('.cart-backdrop').click()
+    await expect(page.locator('#cart-drawer')).toBeHidden()
+    await expect(page.locator('.cart-btn')).toHaveAttribute('aria-expanded', 'false')
+  })
+})

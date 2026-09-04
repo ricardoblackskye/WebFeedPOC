@@ -187,6 +187,11 @@
   outline-offset: 2px;
 }
 
+/* Backdrop overlay shown behind the drawer when open (click to dismiss). */
+.cart-backdrop {
+  display: none;
+}
+
 .cart-badge {
   position: absolute;
   top: -8px;
@@ -209,6 +214,42 @@
 @media (width <= 768px) {
   .cart-btn {
     display: inline-flex;
+  }
+
+  /* Cart becomes a slide-over drawer from the right edge. The sidebar's sticky
+     behaviour (from .cart in Cart.css) is overridden here: the aside is taken
+     out of flow and parked off-screen, sliding in when data-drawer-open=true.
+     `visibility: hidden` when closed keeps it out of the tab order and the
+     accessibility tree (and makes the playwright toBeHidden() assertion true),
+     while a transition on transform gives the slide animation. */
+  .cart-section {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100dvh;
+    width: min(85vw, 360px);
+    z-index: 1000;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s;
+    overflow-y: auto;
+    box-shadow: -8px 0 24px rgb(0 0 0 / 30%);
+  }
+
+  .cart-section[data-drawer-open='true'] {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s;
+  }
+
+  /* Backdrop only renders (in JSX) and shows when the drawer is open. */
+  .cart-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgb(0 0 0 / 50%);
+    opacity: 1;
   }
 }
 

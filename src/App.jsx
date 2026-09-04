@@ -119,6 +119,13 @@ function App({ initialProducts }) {
         </section>
 
         <aside className="cart-section" id="cart-drawer" data-drawer-open={cartDrawerOpen}>
+          {cartDrawerOpen && (
+            <div
+              className="cart-backdrop"
+              aria-hidden="true"
+              onClick={() => setCartDrawerOpen(false)}
+            />
+          )}
           <Cart
             items={cart}
             onUpdateQuantity={updateQuantity}
