@@ -119,13 +119,6 @@ function App({ initialProducts }) {
         </section>
 
         <aside className="cart-section" id="cart-drawer" data-drawer-open={cartDrawerOpen}>
-          {cartDrawerOpen && (
-            <div
-              className="cart-backdrop"
-              aria-hidden="true"
-              onClick={() => setCartDrawerOpen(false)}
-            />
-          )}
           <Cart
             items={cart}
             onUpdateQuantity={updateQuantity}
@@ -139,6 +132,19 @@ function App({ initialProducts }) {
             onCloseDrawer={() => setCartDrawerOpen(false)}
           />
         </aside>
+
+        {/* Backdrop is a SIBLING of .cart-section (not a child) so it lives in
+            the root stacking context. With z-index: 999 < the open drawer's
+            z-index: 1000, the panel sits above the backdrop and its controls
+            stay clickable, while the backdrop still covers the page and closes
+            the drawer on click. */}
+        {cartDrawerOpen && (
+          <div
+            className="cart-backdrop"
+            aria-hidden="true"
+            onClick={() => setCartDrawerOpen(false)}
+          />
+        )}
       </main>
 
       <footer className="app-footer">

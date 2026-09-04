@@ -240,6 +240,10 @@
     transform: translateX(0);
     visibility: visible;
     transition: transform 0.3s ease, visibility 0s;
+    /* Must sit ABOVE the backdrop (z-index: 999) so its controls remain
+       clickable. The aside is rendered before .cart-backdrop in the DOM, so
+       without this the backdrop would intercept pointer events over the panel. */
+    z-index: 1001;
   }
 
   /* Backdrop only renders (in JSX) and shows when the drawer is open. */
