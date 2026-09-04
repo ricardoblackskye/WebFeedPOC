@@ -10,10 +10,12 @@ vi.mock('../services/wixCheckoutService', () => ({
 describe('Cart', () => {
   const mockUpdateQuantity = vi.fn()
   const mockRemoveItem = vi.fn()
+  const mockOnCloseDrawer = vi.fn()
 
   beforeEach(() => {
     mockUpdateQuantity.mockClear()
     mockRemoveItem.mockClear()
+    mockOnCloseDrawer.mockClear()
   })
 
   it('displays empty cart message when no items', () => {
@@ -125,5 +127,47 @@ describe('Cart', () => {
     )
 
     expect(screen.getByText('Proceed to Checkout')).toBeDefined()
+  })
+
+  it('renders a close button in drawer mode that calls onCloseDrawer', () => {
+    const items = [
+      { id: '1', name: 'Item 1', price: 100, quantity: 1 },
+    ]
+
+    render(
+      <Cart
+        items={items}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemoveItem={mockRemoveItem}
+        totalPrice={100}
+        isDrawerOpen
+        onCloseDrawer={mockOnCloseDrawer}
+      />
+    )
+
+    const closeButton = screen.getByRole('button', { name: /close cart/i })
+    expect(closeButton).toBeDefined()
+    fireEvent.click(closeButton)
+    expect(mockOnCloseDrawer).toHaveBeenCalledTimes(1)
+  })
+
+  it('exposes dialog semantics (role=dialog, aria-modal) when in drawer mode', () => {
+    const items = [
+      { id: '1', name: 'Item 1', price: 100, quantity: 1 },
+    ]
+
+    render(
+      <Cart
+        items={items}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemoveItem={mockRemoveItem}
+        totalPrice={100}
+        isDrawerOpen
+      />
+    )
+
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveAttribute('aria-modal', 'true')
+    expect(dialog).toHaveAttribute('aria-label', 'Shopping cart')
   })
 })
