@@ -103,4 +103,37 @@ test.describe('Cart drawer on mobile (375px)', () => {
     await expect(page.locator('#cart-drawer')).toBeHidden()
     await expect(page.locator('.cart-btn')).toHaveAttribute('aria-expanded', 'false')
   })
+
+  test('swipe left on the open drawer dismisses it (touch)', async ({ page }) => {
+    await page.locator('.cart-btn').click()
+    await expect(page.locator('#cart-drawer')).toBeVisible()
+
+    const box = await page.locator('[role="dialog"]').boundingBox()
+    const y = box.y + box.height / 2
+    const startX = box.x + box.width - 20
+    const endX = box.x - 60
+
+    // Dispatch real touch events on the drawer surface (role=dialog). The swipe
+    // handler is attached to that element (the inner .cart dialog), not the
+    // #cart-drawer aside wrapper, so we target role=dialog here.
+    await page.evaluate(
+      ({ selector, startX, endX, y }) => {
+        const el = document.querySelector(selector)
+        const makeTouch = (clientX) =>
+          new Touch({ identifier: 0, target: el, clientX, clientY: y, pageX: clientX, pageY: y })
+        const startTouch = makeTouch(startX)
+        const endTouch = makeTouch(endX)
+        el.dispatchEvent(
+          new TouchEvent('touchstart', { touches: [startTouch], changedTouches: [startTouch], bubbles: true, cancelable: true })
+        )
+        el.dispatchEvent(
+          new TouchEvent('touchend', { touches: [], changedTouches: [endTouch], bubbles: true, cancelable: true })
+        )
+      },
+      { selector: '[role="dialog"]', startX, endX, y }
+    )
+
+    await expect(page.locator('#cart-drawer')).toBeHidden()
+    await expect(page.locator('.cart-btn')).toHaveAttribute('aria-expanded', 'false')
+  })
 })

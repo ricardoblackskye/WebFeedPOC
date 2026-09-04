@@ -19,6 +19,7 @@ function Cart({
   const [checkoutError, setCheckoutError] = useState(null)
   const dialogRef = useRef(null)
   const previouslyFocused = useRef(null)
+  const touchStartX = useRef(null)
 
   const handleCheckout = async () => {
     if (items.length === 0) return
@@ -93,6 +94,41 @@ function Cart({
       }
     }
   }, [isDrawerOpen])
+
+  // Swipe-to-dismiss on touch devices: track a horizontal swipe starting on the
+  // drawer and dismiss when it ends at least 50px to the left. Native listeners
+  // (not React synthetic) so they fire reliably from dispatched/browser touch
+  // events on all devices.
+  useEffect(() => {
+    if (!isDrawerOpen) return
+    const node = dialogRef.current
+    if (!node || !onCloseDrawer) return
+
+    const onTouchStart = (event) => {
+      if (event.touches && event.touches.length > 0) {
+        touchStartX.current = event.touches[0].clientX
+      }
+    }
+    const onTouchEnd = (event) => {
+      if (touchStartX.current === null) return
+      const endX =
+        event.changedTouches && event.changedTouches.length > 0
+          ? event.changedTouches[0].clientX
+          : touchStartX.current
+      const deltaX = endX - touchStartX.current
+      if (deltaX < -50) {
+        onCloseDrawer()
+      }
+      touchStartX.current = null
+    }
+
+    node.addEventListener('touchstart', onTouchStart)
+    node.addEventListener('touchend', onTouchEnd)
+    return () => {
+      node.removeEventListener('touchstart', onTouchStart)
+      node.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [isDrawerOpen, onCloseDrawer])
 
   // Shared dialog props applied to the cart root when rendered as a drawer.
   const drawerProps = isDrawerOpen
