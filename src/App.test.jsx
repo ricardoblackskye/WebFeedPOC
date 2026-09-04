@@ -300,4 +300,40 @@ describe('Cart drawer controls', () => {
       expect(badge.textContent).toBe('2')
     })
   })
+
+  it('toggles the cart drawer open and closed via the header button', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const cartToggle = screen.getByRole('button', { name: /^cart/i })
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+
+    fireEvent.click(cartToggle)
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('true')
+
+    fireEvent.click(cartToggle)
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('closes the cart drawer when Escape is pressed', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const cartToggle = screen.getByRole('button', { name: /^cart/i })
+    fireEvent.click(cartToggle)
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('true')
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
 })

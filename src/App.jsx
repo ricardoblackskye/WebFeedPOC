@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import PropTypes from 'prop-types'
@@ -23,6 +23,18 @@ function App({ initialProducts }) {
 
   const [navOpen, setNavOpen] = useState(false)
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false)
+
+  // Close the cart drawer with the Escape key when it is open (a11y requirement).
+  useEffect(() => {
+    if (!cartDrawerOpen) return
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setCartDrawerOpen(false)
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [cartDrawerOpen])
 
   // Extract unique categories from products
   const categories = useMemo(() => {
