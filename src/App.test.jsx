@@ -266,3 +266,74 @@ describe('App Integration Tests', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('true')
   })
 })
+
+describe('Cart drawer controls', () => {
+  it('renders a cart toggle button collapsed (aria-expanded false) by default', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const cartToggle = screen.getByRole('button', { name: /^cart/i })
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('cart badge reflects the number of items in the cart', async () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+    localStorage.setItem(
+      'antiques_cart',
+      JSON.stringify([{ id: '1', name: 'A', price: 10, quantity: 2, category: 'x' }])
+    )
+
+    renderApp()
+
+    await waitFor(() => {
+      const badge = document.querySelector('.cart-badge')
+      expect(badge).not.toBeNull()
+      expect(badge.textContent).toBe('2')
+    })
+  })
+
+  it('toggles the cart drawer open and closed via the header button', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const cartToggle = screen.getByRole('button', { name: /^cart/i })
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+
+    fireEvent.click(cartToggle)
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('true')
+
+    fireEvent.click(cartToggle)
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('closes the cart drawer when Escape is pressed', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const cartToggle = screen.getByRole('button', { name: /^cart/i })
+    fireEvent.click(cartToggle)
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('true')
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
+})

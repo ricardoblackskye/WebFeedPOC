@@ -40,3 +40,20 @@ export async function revealPrimaryNav (page: Page): Promise<void> {
     await page.locator('#primary-nav').waitFor({ state: 'visible' })
   }
 }
+
+/**
+ * On mobile/tablet (<=768px) the cart is a slide-over drawer that is
+ * `visibility:hidden` while closed, so its contents are not visible/clickable
+ * until the header cart button opens the drawer. On desktop the cart is a
+ * visible sticky sidebar and the button is hidden, so this is a no-op there.
+ * Call this before asserting cart contents or clicking cart controls, so the
+ * `Shopping cart` suite works at every breakpoint (see #109 drawer changes in
+ * src/App.css / src/App.jsx).
+ */
+export async function revealCartDrawer (page: Page): Promise<void> {
+  const btn = page.locator('.cart-btn')
+  if (await btn.isVisible()) {
+    await btn.click()
+    await page.locator('#cart-drawer').waitFor({ state: 'visible' })
+  }
+}

@@ -13,6 +13,39 @@
   font-weight: 600;
 }
 
+/* Drawer header: title + close button (close button only rendered in drawer mode) */
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cart-header .cart-close-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cart-header .cart-close-btn:hover {
+  background: var(--color-gold);
+  color: #1a1a1a;
+}
+
+.cart-header .cart-close-btn:focus,
+.cart-header .cart-close-btn:focus-visible {
+  outline: 2px solid var(--color-gold-light);
+  outline-offset: 2px;
+}
+
 .cart-empty {
   text-align: center;
   padding: 2rem;

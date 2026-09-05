@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForProducts, waitForLoadingToFinish } from './helpers'
+import { waitForProducts, waitForLoadingToFinish, revealCartDrawer } from './helpers'
 
 test.describe('Home page', () => {
   test.beforeEach(async ({ page }) => {
@@ -51,11 +51,15 @@ test.describe('Home page', () => {
   })
 
   test('shows the Shopping Cart sidebar', async ({ page }) => {
+    // On <=768px the cart is a hidden drawer; open it so the assertions hold at
+    // every breakpoint. No-op on desktop where it is a visible sticky sidebar.
+    await revealCartDrawer(page)
     await expect(page.locator('.cart')).toBeVisible()
     await expect(page.locator('.cart h2')).toContainText('Shopping Cart')
   })
 
   test('shows empty cart message when no items added', async ({ page }) => {
+    await revealCartDrawer(page)
     await expect(page.locator('.cart-empty')).toBeVisible()
     await expect(page.locator('.cart-empty')).toContainText('Your cart is empty')
   })

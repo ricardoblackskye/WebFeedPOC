@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForProducts, waitForLoadingToFinish } from './helpers'
+import { waitForProducts, waitForLoadingToFinish, revealCartDrawer } from './helpers'
 
 // Resolve to the first available product's URL so tests work with both
 // real Wix products and the mock fallback catalogue.
@@ -36,6 +36,9 @@ test.describe('Product detail page', () => {
     const url = await getFirstProductUrl(page)
     await page.goto(url ?? '/')
     await page.locator('button').filter({ hasText: /Add to Cart/i }).first().click()
+    // On <=768px the cart is a hidden drawer; open it before asserting the item
+    // is visible. No-op on desktop where it is a visible sticky sidebar.
+    await revealCartDrawer(page)
     await expect(page.locator('.cart-item')).toBeVisible()
   })
 

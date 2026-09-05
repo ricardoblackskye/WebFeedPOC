@@ -162,7 +162,101 @@
   }
 }
 
-/* Footer */
+/* Cart toggle button + item-count badge — visible only on mobile (<=768px),
+   where the cart becomes a slide-over drawer. On desktop the sticky sidebar is
+   the cart UI, so the header button is hidden (see width <= 768px block below). */
+.cart-btn {
+  display: none;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cart-btn:focus,
+.cart-btn:focus-visible {
+  outline: 2px solid var(--color-gold-light);
+  outline-offset: 2px;
+}
+
+/* Backdrop overlay shown behind the drawer when open (click to dismiss). */
+.cart-backdrop {
+  display: none;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gold);
+  color: #1a1a1a;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-family: var(--font-secondary);
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (width <= 768px) {
+  .cart-btn {
+    display: inline-flex;
+  }
+
+  /* Cart becomes a slide-over drawer from the right edge. The sidebar's sticky
+     behaviour (from .cart in Cart.css) is overridden here: the aside is taken
+     out of flow and parked off-screen, sliding in when data-drawer-open=true.
+     `visibility: hidden` when closed keeps it out of the tab order and the
+     accessibility tree (and makes the playwright toBeHidden() assertion true),
+     while a transition on transform gives the slide animation. */
+  .cart-section {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100dvh;
+    width: min(85vw, 360px);
+    z-index: 1000;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s;
+    overflow-y: auto;
+    box-shadow: -8px 0 24px rgb(0 0 0 / 30%);
+  }
+
+  .cart-section[data-drawer-open='true'] {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s;
+    /* Must sit ABOVE the backdrop (z-index: 999) so its controls remain
+       clickable. The aside is rendered before .cart-backdrop in the DOM, so
+       without this the backdrop would intercept pointer events over the panel. */
+    z-index: 1001;
+  }
+
+  /* Backdrop only renders (in JSX) and shows when the drawer is open. */
+  .cart-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgb(0 0 0 / 50%);
+    opacity: 1;
+  }
+}
+
 .app-footer {
   text-align: center;
   padding: 2rem 1rem;
