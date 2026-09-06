@@ -14,6 +14,35 @@ function ProductCard({ product, onAddToCart }) {
   const truncatedDescription = truncateWords(plainDescription, 50)
   const isTruncated = plainDescription.length > truncatedDescription.length
 
+  // Prepare responsive image sources
+  const getImageSources = () => {
+    // If we have multiple images, create srcset
+    if (product.images && product.images.length > 0) {
+      // Create srcset with different widths
+      const sources = product.images.map((img, index) => {
+        // Use different widths for responsive images
+        const width = 400 + (index * 400) // 400, 800, 1200, etc.
+        return `${img} ${width}w`
+      })
+      return sources.join(', ')
+    }
+    // Fallback to single image with multiple densities
+    return `${product.image} 400w, ${product.image} 800w, ${product.image} 1200w`
+  }
+
+  // Determine stock status for display
+  const getStockStatus = () => {
+    if (!product.stock) return null
+    if (!product.stock.trackInventory) return <span className="stock-status unlimited">In Stock</span>
+    if (product.stock.inStock) {
+      if (product.stock.quantity <= 5) {
+        return <span className="stock-status low">Low Stock ({product.stock.quantity} left)</span>
+      }
+      return <span className="stock-status in-stock">In Stock</span>
+    }
+    return <span className="stock-status out-of-stock">Out of Stock</span>
+  }
+
   return (
     <article className="product-card">
       <Link to={`/products/${product.slug}`} className="product-card-link">
@@ -21,11 +50,11 @@ function ProductCard({ product, onAddToCart }) {
           {product.image ? (
             <img
               src={product.image}
+              srcSet={getImageSources()}
+              sizes="(max-width: 479px) 100vw, (max-width: 768px) 50vw, 33vw"
               alt={product.name}
               loading="lazy"
               decoding="async"
-              width="400"
-              height="400"
             />
           ) : (
             <div className="product-image-placeholder">No Image</div>
@@ -39,6 +68,8 @@ function ProductCard({ product, onAddToCart }) {
               <span className="view-more"> View More</span>
             )}
           </div>
+          {/* Stock indicator */}
+          {getStockStatus()}
         </div>
       </Link>
       <div className="product-footer">
