@@ -1,10 +1,17 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
 import SortControls from './SortControls'
-// Import the CSS as a raw string so we can assert the responsive contract
-// independent of jsdom, which does NOT apply stylesheets or @media queries.
-// Real computed-style verification happens in the Playwright e2e suite.
-import cssRaw from './SortControls.css?raw'
+
+// Read the CSS from disk so we can assert the responsive contract independent
+// of jsdom, which does NOT apply stylesheets or @media queries. Real
+// computed-style verification happens in the Playwright e2e suite. Mirrors the
+// repo's tests/lint-config.test.js pattern (fs.readFileSync + process.cwd()).
+const cssRaw = readFileSync(
+  path.resolve(process.cwd(), 'src/components/SortControls.css'),
+  'utf8'
+)
 
 describe('SortControls', () => {
   const defaultProps = {
