@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import SortControls from './SortControls'
+// Import the CSS as a raw string so we can assert the responsive contract
+// independent of jsdom, which does NOT apply stylesheets or @media queries.
+// Real computed-style verification happens in the Playwright e2e suite.
+import cssRaw from './SortControls.css?raw'
 
 describe('SortControls', () => {
   const defaultProps = {
@@ -49,5 +53,40 @@ describe('SortControls', () => {
 
     const input = screen.getByPlaceholderText('Search products...')
     expect(input.value).toBe('clock')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Issue #111 — responsive contract (RED until SortControls.css is fixed)
+// These pin the CSS requirements that jsdom cannot evaluate:
+//   - inputs >= 16px font-size (prevents iOS focus zoom)
+//   - inputs >= 44px min-height (WCAG 2.5.5 touch target)
+//   - vertical stack of search + sort at the phone tier (<=479px)
+// ---------------------------------------------------------------------------
+describe('SortControls responsive CSS contract (#111)', () => {
+  it('enforces a minimum 16px font-size on search input and sort select', () => {
+    expect(cssRaw, 'SortControls.css should declare 16px font-size on .search-input')
+      .toMatch(/\.search-input\s*\{[^}]*font-size:\s*16px/)
+    expect(cssRaw, 'SortControls.css should declare 16px font-size on .sort-select')
+      .toMatch(/\.sort-select\s*\{[^}]*font-size:\s*16px/)
+  })
+
+  it('enforces a minimum 44px touch-target height on inputs', () => {
+    expect(cssRaw, 'SortControls.css should declare min-height: 44px on .search-input')
+      .toMatch(/\.search-input\s*\{[^}]*min-height:\s*44px/)
+    expect(cssRaw, 'SortControls.css should declare min-height: 44px on .sort-select')
+      .toMatch(/\.sort-select\s*\{[^}]*min-height:\s*44px/)
+  })
+
+  it('stacks search and sort vertically at phone width (<=479px)', () => {
+    // The phone media query must exist and set the controls to a column.
+    expect(cssRaw, 'SortControls.css should have a @media (width <= 479px) block')
+      .toMatch(/@media\s*\(width\s*<=\s*479px\)/)
+    expect(
+      cssRaw,
+      'the <=479px block must make .sort-controls a vertical column'
+    ).toMatch(
+      /@media\s*\(width\s*<=\s*479px\)\s*\{[^@]*\.sort-controls\s*\{[^}]*flex-direction:\s*column/
+    )
   })
 })
