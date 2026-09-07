@@ -18,8 +18,10 @@
   border-radius: 4px;
   background-color: rgb(0 0 0 / 2%);
   color: #2c2416;
+
   /* 16px minimum prevents iOS Safari auto-zoom on focus (issue #111) */
   font-size: 16px;
+
   /* WCAG 2.5.5: touch targets must be at least 44x44px */
   min-height: 44px;
   outline: none;
@@ -60,8 +62,10 @@
   border-radius: 4px;
   background-color: rgb(0 0 0 / 2%);
   color: #2c2416;
+
   /* 16px minimum prevents iOS Safari auto-zoom on focus (issue #111) */
   font-size: 16px;
+
   /* WCAG 2.5.5: touch targets must be at least 44x44px */
   min-height: 44px;
   cursor: pointer;
