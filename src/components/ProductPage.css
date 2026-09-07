@@ -249,7 +249,7 @@
 .image-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgb(0 0 0 / 85%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,7 +263,7 @@
   max-height: 90vh;
   overflow: hidden;
   border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
   animation: slide-up 0.3s ease-out;
 }
 
@@ -271,8 +271,8 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: rgb(255 255 255 / 10%);
+  border: 1px solid rgb(212 175 55 / 50%);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -315,7 +315,7 @@
 }
 
 .image-modal-nav button {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
   border: none;
   color: var(--color-gold);
   font-size: 2rem;
@@ -330,7 +330,7 @@
 }
 
 .image-modal-nav button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 20%);
   transform: scale(1.1);
 }
 
@@ -340,8 +340,14 @@
 }
 
 @keyframes slide-up {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @media (width <= 768px) {
