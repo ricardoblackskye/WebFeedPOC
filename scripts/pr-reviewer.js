@@ -30,7 +30,7 @@ async function triggerRemoteEveWebhook(rawEventPayload) {
     process.env.EVE_WEBHOOK_URL ||
     "https://agent-eve-gold.vercel.app/api/github/webhook";
   const webhookSecret =
-    process.env.EVE_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET || "";
+    process.env.EVE_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET || process.env.GH_WEBHOOK_SECRET || "";
 
   console.log(`Sending remote webhook request to Eve agent (${webhookUrl})...`);
 
