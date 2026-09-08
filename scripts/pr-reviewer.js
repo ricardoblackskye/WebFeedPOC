@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import crypto from "node:crypto";
 
 // ── 1) Secrets redaction (Security) ──────────────────────────────────
 // Every piece of API error text that reaches the logs MUST pass through here.
@@ -21,6 +22,62 @@ function fail(context, err) {
   const detail = err ? `\n${redact(String((err && (err.stack || err.message)) || err))}` : "";
   console.error(`❌ ${context}${detail}`);
   process.exit(1);
+}
+
+// ── Remote Eve Agent Webhook ─────────────────────────────────────────
+async function triggerRemoteEveWebhook(rawEventPayload) {
+  const webhookUrl =
+    process.env.EVE_WEBHOOK_URL ||
+    "https://agent-eve-gold.vercel.app/api/github/webhook";
+  const webhookSecret =
+    process.env.EVE_WEBHOOK_SECRET || process.env.WEBHOOK_SECRET || "";
+
+  console.log(`Sending remote webhook request to Eve agent (${webhookUrl})...`);
+
+  const eventName = process.env.GITHUB_EVENT_NAME || "pull_request";
+  const deliveryId = process.env.GITHUB_RUN_ID || String(Date.now());
+
+  const headers = {
+    "Content-Type": "application/json",
+    "User-Agent": "GitHub-Hookshot/agent-eve",
+    "X-GitHub-Event": eventName,
+    "X-GitHub-Delivery": deliveryId,
+  };
+
+  if (webhookSecret) {
+    const hmac = crypto.createHmac("sha256", webhookSecret).update(rawEventPayload).digest("hex");
+    headers["X-Hub-Signature-256"] = `sha256=${hmac}`;
+    headers["X-Webhook-Secret"] = webhookSecret;
+    headers["Authorization"] = `Bearer ${webhookSecret}`;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers,
+      body: rawEventPayload,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    console.log(`Remote Eve webhook HTTP status: ${response.status}`);
+    if (response.ok) {
+      console.log("✅ Successfully triggered remote Eve code review agent.");
+      return { ok: true };
+    }
+    const errText = await response.text();
+    console.warn(
+      `Remote Eve webhook returned non-OK status (${response.status}): ${redact(errText.slice(0, 500))}`
+    );
+    return { ok: false };
+  } catch (err) {
+    clearTimeout(timeoutId);
+    console.warn(`Remote Eve webhook fetch failed: ${redact(err.message)}`);
+    return { ok: false };
+  }
 }
 
 // ── 7) Diff truncation (token budget) ────────────────────────────────
@@ -51,13 +108,23 @@ if (!process.env.GITHUB_TOKEN) {
   fail("GITHUB_TOKEN environment variable is not set — required to fetch the PR diff and post the review.");
 }
 
+let eventContent;
 let event;
 try {
-  const eventContent = await fs.promises.readFile(eventPath, "utf8"); // async I/O
+  eventContent = await fs.promises.readFile(eventPath, "utf8"); // async I/O
   event = JSON.parse(eventContent);
 } catch (error) {
   fail("Failed to read or parse GitHub event.", error);
 }
+
+// ── Attempt Remote Eve Webhook First ──────────────────────────────────
+const remoteResult = await triggerRemoteEveWebhook(eventContent);
+if (remoteResult.ok) {
+  console.log("Remote Eve agent trigger finished successfully.");
+  process.exit(0);
+}
+
+console.log("Falling back to local PR review processing...");
 
 // ── Extract PR info (comments payload, PR payload, or give up) ────────
 let prNumber, repoOwner, repoName, prDiffUrl;
