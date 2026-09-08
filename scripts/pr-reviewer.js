@@ -74,7 +74,24 @@ async function triggerRemoteEveWebhook(rawEventPayload) {
     console.log(`Remote Eve webhook HTTP status: ${response.status}`);
     if (response.ok) {
       console.log("✅ Successfully triggered remote Eve code review agent.");
-      return { ok: true };
+      let data = null;
+      try {
+        const text = await response.text();
+        data = JSON.parse(text);
+      } catch (_) {}
+
+      const reviewText =
+        data &&
+        (data.review || data.comment || data.text || data.message || data.output || data.body);
+      if (reviewText && typeof reviewText === "string" && reviewText.trim().length > 0) {
+        return { ok: true, review: reviewText };
+      }
+
+      if (data && data.postedRemotely === true) {
+        return { ok: true, postedRemotely: true };
+      }
+
+      return { ok: true, ackOnly: true };
     }
     const errText = await response.text();
     console.warn(
@@ -125,15 +142,6 @@ try {
   fail("Failed to read or parse GitHub event.", error);
 }
 
-// ── Attempt Remote Eve Webhook First ──────────────────────────────────
-const remoteResult = await triggerRemoteEveWebhook(eventContent);
-if (remoteResult.ok) {
-  console.log("Remote Eve agent trigger finished successfully.");
-  process.exit(0);
-}
-
-console.log("Falling back to local PR review processing...");
-
 // ── Extract PR info (comments payload, PR payload, or give up) ────────
 let prNumber, repoOwner, repoName, prDiffUrl;
 if (event.pull_request) {
@@ -152,6 +160,22 @@ if (event.pull_request) {
 }
 
 console.log(`Processing PR #${prNumber} in ${repoOwner}/${repoName}`);
+
+// ── Attempt Remote Eve Webhook First ──────────────────────────────────
+const remoteResult = await triggerRemoteEveWebhook(eventContent);
+if (remoteResult.ok) {
+  if (remoteResult.review) {
+    console.log("Received review from remote Eve agent. Posting to GitHub PR...");
+    await postComment(repoOwner, repoName, prNumber, remoteResult.review);
+    console.log("Remote Eve review posted to PR successfully.");
+    process.exit(0);
+  }
+  if (remoteResult.postedRemotely) {
+    console.log("Remote Eve agent confirmed comment posted to GitHub PR.");
+    process.exit(0);
+  }
+  console.log("Remote Eve agent acknowledged webhook (ack mode). Generating and posting PR review...");
+}
 
 // ── Fetch the PR diff ─────────────────────────────────────────────────
 let prDiff;
