@@ -45,10 +45,14 @@ async function triggerRemoteEveWebhook(rawEventPayload) {
   };
 
   if (webhookSecret) {
-    const hmac = crypto.createHmac("sha256", webhookSecret).update(rawEventPayload).digest("hex");
-    headers["X-Hub-Signature-256"] = `sha256=${hmac}`;
+    const hmac256 = crypto.createHmac("sha256", webhookSecret).update(rawEventPayload).digest("hex");
+    const hmac1 = crypto.createHmac("sha1", webhookSecret).update(rawEventPayload).digest("hex");
+    headers["X-Hub-Signature-256"] = `sha256=${hmac256}`;
+    headers["X-Hub-Signature"] = `sha1=${hmac1}`;
     headers["X-Webhook-Secret"] = webhookSecret;
     headers["Authorization"] = `Bearer ${webhookSecret}`;
+  } else {
+    console.warn("⚠️ Warning: EVE_WEBHOOK_SECRET / WEBHOOK_SECRET is not configured in GitHub Secrets.");
   }
 
   const controller = new AbortController();
