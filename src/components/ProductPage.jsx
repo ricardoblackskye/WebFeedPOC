@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async'
 import { stripHtml } from '../utils/helpers'
 import { generateProductSchema, generateBreadcrumbSchema, SITE_NAME } from '../utils/structuredData'
 import StockIndicator from './StockIndicator'
+import ImageModal from './ImageModal'
 import './ProductPage.css'
 
 function getDisplayImages(product) {
@@ -24,6 +25,8 @@ function ProductPage({ products, onAddToCart }) {
   const { slug } = useParams()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [addedToCart, setAddedToCart] = useState(false)
+  const [showImageModal, setShowImageModal] = useState(false)
+  const [modalImageIndex, setModalImageIndex] = useState(0)
 
   const product = products.find(p => p.slug === slug)
 
@@ -69,6 +72,19 @@ function ProductPage({ products, onAddToCart }) {
     setTimeout(() => setAddedToCart(false), 2000)
   }
 
+  const handleImageClick = (index) => {
+    setModalImageIndex(index)
+    setShowImageModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowImageModal(false)
+  }
+
+  const handleModalNavigate = (newIndex) => {
+    setModalImageIndex(newIndex)
+  }
+
   return (
     <div className="product-page">
       <Helmet>
@@ -111,6 +127,8 @@ function ProductPage({ products, onAddToCart }) {
                 width="600"
                 height="600"
                 itemProp="image"
+                onClick={() => handleImageClick(selectedImageIndex)}
+                style={{ cursor: 'pointer' }}
               />
               {displayImages.length > 1 && (
                 <div className="product-page-thumbnails">
@@ -153,7 +171,6 @@ function ProductPage({ products, onAddToCart }) {
             </div>
           )}
 
-          {/* Stock availability indicator */}
           {product.stock && <StockIndicator stock={product.stock} />}
 
           <div className="product-page-description" itemProp="description">
@@ -205,6 +222,16 @@ function ProductPage({ products, onAddToCart }) {
           <Link to="/" className="product-page-back">← Continue Shopping</Link>
         </div>
       </article>
+
+      {showImageModal && (
+        <ImageModal
+          images={displayImages}
+          currentIndex={modalImageIndex}
+          onClose={handleCloseModal}
+          onNavigate={handleModalNavigate}
+          productName={product.name}
+        />
+      )}
     </div>
   )
 }

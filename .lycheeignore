@@ -12,3 +12,7 @@ https://www.antiquesmarketplace.co.uk/
 # Root-relative HTML links in static template check
 /vite.svg
 https://www.patreon.com/feross
+
+# Remote webhook endpoints that return 405 Method Not Allowed for GET/HEAD checks
+https://agent-eve-gold.vercel.app/api/github/webhook
+https://agent-eve-gold.vercel.app/

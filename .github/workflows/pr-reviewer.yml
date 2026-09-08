@@ -1,7 +1,8 @@
+---
 name: PR Reviewer
 
 # Triggered on PR creation/update, mirroring agent-eve's pipeline (#137).
-on:
+'on':
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -28,6 +29,8 @@ jobs:
       - name: Run PR Reviewer
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVE_WEBHOOK_SECRET: ${{ secrets.EVE_WEBHOOK_SECRET || secrets.WEBHOOK_SECRET || secrets.GH_WEBHOOK_SECRET }}
+          EVE_WEBHOOK_URL: ${{ secrets.EVE_WEBHOOK_URL || 'https://agent-eve-gold.vercel.app/api/github/webhook' }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           MODEL_NAME: ${{ vars.MODEL_NAME || 'openai/gpt-4o-mini' }}
         run: |
