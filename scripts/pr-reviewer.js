@@ -44,6 +44,10 @@ async function triggerRemoteEveWebhook(rawEventPayload) {
     "X-GitHub-Delivery": deliveryId,
   };
 
+  if (process.env.GITHUB_TOKEN) {
+    headers["X-GitHub-Token"] = process.env.GITHUB_TOKEN;
+  }
+
   if (webhookSecret) {
     const hmac256 = crypto.createHmac("sha256", webhookSecret).update(rawEventPayload).digest("hex");
     const hmac1 = crypto.createHmac("sha1", webhookSecret).update(rawEventPayload).digest("hex");
