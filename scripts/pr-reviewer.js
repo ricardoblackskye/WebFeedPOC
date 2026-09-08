@@ -371,6 +371,10 @@ function generateFallbackReview(number, owner, repo, diff) {
 
 // ── Post the review as a PR comment (one retry for transient failures) ─
 async function postComment(owner, repo, number, body) {
+  const formattedBody = body.startsWith("**Eve's comments:**")
+    ? body
+    : `**Eve's comments:**\n\n${body}`;
+
   const doPost = async () => {
     const commentResponse = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/issues/${number}/comments`,
@@ -380,7 +384,7 @@ async function postComment(owner, repo, number, body) {
           Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ body }),
+        body: JSON.stringify({ body: formattedBody }),
       },
     );
     if (!commentResponse.ok) {
