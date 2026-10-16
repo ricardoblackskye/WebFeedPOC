@@ -6,6 +6,7 @@ import { stripHtml } from '../utils/helpers'
 import { generateProductSchema, generateBreadcrumbSchema, SITE_NAME } from '../utils/structuredData'
 import StockIndicator from './StockIndicator'
 import ImageModal from './ImageModal'
+import WelcomeHeading from './WelcomeHeading'
 import './ProductPage.css'
 
 function getDisplayImages(product) {
@@ -87,6 +88,7 @@ function ProductPage({ products, onAddToCart }) {
 
   return (
     <div className="product-page">
+      <WelcomeHeading />
       <Helmet>
         <title>{product.name} | {SITE_NAME}</title>
         <meta name="description" content={metaDescription} />

@@ -40,6 +40,11 @@ const renderProductPage = (product = mockProduct) => {
 }
 
 describe('ProductPage Image Modal', () => {
+  it("renders the 'Welcome to the site' sub-heading on the main page", () => {
+    renderProductPage()
+    expect(screen.getByRole('heading', { level: 2, name: 'Welcome to the site' })).toBeInTheDocument()
+  })
+
   it('clicking the main image opens the full-size image modal', () => {
     const { container } = renderProductPage()
     const mainImage = container.querySelector('.product-page-main-image')
