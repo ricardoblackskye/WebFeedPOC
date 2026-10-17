@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import '@testing-library/jest-dom'
 import ProductList from '../components/ProductList'
 
 describe('ProductList', () => {
@@ -61,5 +62,13 @@ describe('ProductList', () => {
 
     const addToCartButtons = screen.getAllByText('Add to Cart')
     expect(addToCartButtons.length).toBe(2)
+  })
+
+  it('renders bold welcome sub-heading', () => {
+    renderList()
+
+    const heading = screen.getByRole('heading', { level: 2, name: 'Welcome to the site' })
+    expect(heading).toBeInTheDocument()
+    expect(heading).toHaveStyle('font-weight: bold')
   })
 })
