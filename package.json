@@ -60,5 +60,8 @@
     "vite": "^6.4.5",
     "vitest": "^4.1.12",
     "yaml-lint": "^1.7.0"
+  },
+  "overrides": {
+    "source-map-js": "1.2.2"
   }
 }
