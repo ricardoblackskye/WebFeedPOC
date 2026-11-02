@@ -42,6 +42,20 @@ jobs:
           docker-images: true
           tools-cache: true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Install dependencies on the RUNNER (reliable filesystem). MegaLinter's
+      # Docker container bind-mounts the workspace, so node_modules is visible
+      # inside the container. We deliberately do NOT run `npm ci` inside the
+      # container: on the overlayfs bind mount npm hits ENOTEMPTY rmdir errors.
+      # --include=dev guards against NODE_ENV=production omitting eslint etc.
+      - name: Install dependencies (incl. dev) for MegaLinter ESLint
+        run: npm ci --include=dev
+
       - name: MegaLinter
         id: ml
         uses: oxsecurity/megalinter@15e5b45552097e318c93de385779ce3b1084052c # v10.0.0
