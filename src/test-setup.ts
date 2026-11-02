@@ -25,7 +25,6 @@ Object.defineProperty(globalThis, 'matchMedia', {
   }))
 })
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 class MockIntersectionObserver implements IntersectionObserver {
   readonly root: Element | Document | null = null
   readonly rootMargin: string = ''

@@ -13,7 +13,11 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test --config playwright.config.cjs",
     "test:e2e:ui": "playwright test --config playwright.config.cjs --ui",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.10.0",
@@ -33,6 +37,7 @@
     "uuid": "^11.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
@@ -44,19 +49,19 @@
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^4.1.12",
     "@vitest/ui": "^4.1.12",
+    "eslint": "^9.39.5",
+    "globals": "^15.15.0",
+    "husky": "^9.1.7",
     "js-yaml": "^5.4.1",
     "jsdom": "^25.0.1",
+    "prettier": "^3.9.10",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1",
     "vite": "^6.4.5",
     "vitest": "^4.1.12",
     "yaml-lint": "^1.7.0"
   },
-  "standard": {
-    "ignore": [
-      "api/wix-*.js",
-      ".specify/**",
-      "src/hooks/useWix*.js",
-      "src/services/stripeService*.js"
-    ]
+  "overrides": {
+    "source-map-js": "1.2.2"
   }
 }

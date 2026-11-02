@@ -129,7 +129,7 @@ export function generateProductSchema (product: Product | null | undefined): Pro
   const availability = determineAvailability(product.stock)
 
   let image: string[] | undefined
-  if (product.images?.length! > 0) {
+  if ((product.images?.length ?? 0) > 0) {
     image = product.images
   } else if (product.image) {
     image = [product.image]
