@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
           # MegaLinter compares the pull-request diff with the default branch.
@@ -36,7 +36,7 @@ jobs:
       # disk exhaustion is not mistaken for a clean vulnerability scan.
       # NOTE: android/dotnet/haskell removal is omitted because it hangs on runners.
       - name: Reclaim runner disk space for scanner databases
-        uses: insightsengineering/disk-space-reclaimer@dae9fabcb8febe09f6585471948acf9dc9a57489
+        uses: insightsengineering/disk-space-reclaimer@dae9fabcb8febe09f6585471948acf9dc9a57489 # v1.1.2
         with:
           large-packages: true
           docker-images: true
@@ -48,11 +48,12 @@ jobs:
           node-version: 20
           cache: npm
 
-      # Install dependencies on the RUNNER (reliable filesystem). MegaLinter's
+      # Install dependencies on the RUNNER (reliable filesystem). The MegaLinter
       # Docker container bind-mounts the workspace, so node_modules is visible
-      # inside the container. We deliberately do NOT run `npm ci` inside the
-      # container: on the overlayfs bind mount npm hits ENOTEMPTY rmdir errors.
-      # --include=dev guards against NODE_ENV=production omitting eslint etc.
+      # inside it. We deliberately do NOT run `npm ci` inside the container:
+      # installing there is unreliable (npm hits "directory not empty" rmdir
+      # errors on @types/node etc.). --include=dev guards against
+      # NODE_ENV=production omitting eslint etc.
       - name: Install dependencies (incl. dev) for MegaLinter ESLint
         run: npm ci --include=dev
 
@@ -69,7 +70,7 @@ jobs:
 
       - name: Upload MegaLinter reports
         if: success() || failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: MegaLinter reports
           include-hidden-files: true
