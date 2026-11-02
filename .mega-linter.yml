@@ -53,14 +53,17 @@ SPELL_LYCHEE_FILTER_REGEX_EXCLUDE: '(package-lock\.json)'
 # Use the project's own ESLint (with dependencies installed) so the flat
 # config's bare imports (@eslint/js, typescript-eslint, globals) resolve.
 # MegaLinter's bundled ESLint cannot see the project node_modules.
+# --include=dev is REQUIRED: GitHub Actions sets NODE_ENV=production, which
+# makes `npm ci` omit devDependencies (eslint/typescript-eslint), so the
+# node_modules/.bin/eslint binary would be missing and the descriptor fails.
 JAVASCRIPT_ES_PRE_COMMANDS:
-  - command: npm ci --ignore-scripts
+  - command: npm ci --include=dev --ignore-scripts
     cwd: workspace
     continue_if_failed: false
 JAVASCRIPT_ES_CLI_EXECUTABLE:
   - node_modules/.bin/eslint
 TYPESCRIPT_ES_PRE_COMMANDS:
-  - command: npm ci --ignore-scripts
+  - command: npm ci --include=dev --ignore-scripts
     cwd: workspace
     continue_if_failed: false
 TYPESCRIPT_ES_CLI_EXECUTABLE:
