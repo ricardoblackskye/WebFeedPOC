@@ -157,6 +157,9 @@ function HomePage() {
           onAddToCart={addToCart}
         />
       )}
+      <div style={{textAlign: 'center', marginTop: '20px', fontStyle: 'italic'}}>
+        Built by the Dark Factory
+      </div>
     </>
   )
 }
