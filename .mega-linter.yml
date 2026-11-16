@@ -20,9 +20,17 @@ ACTION_ZIZMOR_UNSECURED_ENV_VARIABLES:
 # Disable TypeScript Standard because ts-standard is incompatible with
 # the TypeScript version used in this project. Type checking is handled
 # by tsc during build.
+#
+# Disable the dictionary spell check (#215): cspell uses a general-English dictionary
+# rather than this project's domain language, so it rejects legitimate vocabulary - it
+# rejected a word derived from this repository's own build:prerender script. The Dark
+# Factory also writes model-authored plan artifacts into this repository, and no
+# dictionary can be kept in step with a model's vocabulary. The LINK checker
+# (SPELL_LYCHEE) is a different concern and stays active.
 DISABLE_LINTERS:
   - TYPESCRIPT_STANDARD
   - REPOSITORY_DEVSKIM
+  - SPELL_CSPELL
 
 # Keep Grype strict; allow the scanner to refresh its database on each run.
 REPOSITORY_GRYPE_TIMEOUT_SECONDS: 600

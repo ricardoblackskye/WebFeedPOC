@@ -81,3 +81,25 @@ describe('Task 2: .cspell.json covers flagged unknown words', () => {
     }
   })
 })
+
+// ---------------------------------------------------------------------------
+// #215: the dictionary spell check is disabled; the LINK checker is not.
+// cspell rejects this project's own domain vocabulary (it rejected a word
+// derived from the build:prerender script), so it cannot be satisfied by the
+// model-authored plan artifacts the factory writes into this repository.
+// lychee is a link checker, not a dictionary, and stays active.
+// ---------------------------------------------------------------------------
+describe('#215 .mega-linter.yml disables the dictionary spell check', () => {
+  it('DISABLE_LINTERS contains SPELL_CSPELL, keeping the existing entries', () => {
+    const cfg = loadYaml('.mega-linter.yml')
+    expect(cfg.DISABLE_LINTERS).toContain('SPELL_CSPELL')
+    // The two entries that were already there must survive this edit.
+    expect(cfg.DISABLE_LINTERS).toContain('TYPESCRIPT_STANDARD')
+    expect(cfg.DISABLE_LINTERS).toContain('REPOSITORY_DEVSKIM')
+  })
+
+  it('does NOT disable the link checker, which is a different concern', () => {
+    const cfg = loadYaml('.mega-linter.yml')
+    expect(cfg.DISABLE_LINTERS).not.toContain('SPELL_LYCHEE')
+  })
+})
