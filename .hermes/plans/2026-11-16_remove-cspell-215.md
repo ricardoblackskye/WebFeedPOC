@@ -53,8 +53,13 @@ This is a configuration change, so the RED anchor is the repository's existing c
    descriptor, and that the two existing entries are still present. Confirm it fails against the current
    config. The second assertion is what stops a later edit silently dropping the existing entries.
 2. **GREEN** — add the entry and its explanatory comment to `.mega-linter.yml`. Confirm the guard passes.
-3. **Release notes** — add an entry to `releasenotes.md` under `### CI/Infrastructure`, following the shape
-   of the existing entry (the PR link, the closing issue link, and a prose summary).
+3. **Release notes — NOT in this pull request.** The entry is written after the merge by an automated step
+   (the previous one landed two minutes after its merge commit), and it names the pull request number, so it
+   cannot precede the pull request. Recorded here so the omission is deliberate rather than forgotten.
+
+   **Correction after review of the config:** this change removes the dictionary spell check, not all
+   spell-checking. `SPELL_LYCHEE` is also active on this repository and is a LINK checker, not a dictionary,
+   so it stays. The guard pins that distinction with a control assertion.
 4. **Local lint gate** — run the linters MegaLinter applies to the changed files: the pinned markdown table
    formatter, markdownlint, the link checker, and `standard` for any `.js` change.
 
