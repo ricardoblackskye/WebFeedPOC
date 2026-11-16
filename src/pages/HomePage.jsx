@@ -157,6 +157,10 @@ function HomePage() {
           onAddToCart={addToCart}
         />
       )}
+
+      <p className="home-credit" style={{ fontStyle: 'italic' }}>
+        Built by the Dark Factory - by the Developer Agent
+      </p>
     </>
   )
 }
