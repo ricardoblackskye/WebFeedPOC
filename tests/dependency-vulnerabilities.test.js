@@ -5,9 +5,9 @@
  * branch - including `main` - and the Dark Factory's Definition of Done reads the pull request's checks, so
  * no run against this repository can report done while it is red.
  *
- * The vulnerable copy is NESTED (`@typescript-eslint/typescript-estree/node_modules/minimatch`), which is
- * the copy a top-level glance misses, so this reads `package-lock.json` - the only place a nested copy's
- * resolved version lives - and checks EVERY copy.
+ * The affected copy is NESTED (`@typescript-eslint/typescript-estree/node_modules/minimatch`), which is the
+ * copy a top-level glance misses, so this reads `package-lock.json` - the only place a nested copy's resolved
+ * version lives - and checks EVERY copy.
  *
  * Range from GHSA-g3hv-75wg-m249 (CVE-2026-118764): introduced 7.0.0, fixed 11.0.1. The lower bound matters:
  * the three 3.1.5 copies under eslint's own packages are BELOW the affected range and are correctly clean,
@@ -20,14 +20,13 @@ import { resolve } from 'node:path'
 const FIRST_AFFECTED = [7, 0, 0]
 const FIRST_PATCHED = [11, 0, 1]
 
-function parseVersion(version) {
-  return String(version)
+const parseVersion = (version) =>
+  String(version)
     .split('-')[0]
     .split('.')
     .map((part) => Number.parseInt(part, 10))
-}
 
-function compare(a, b) {
+const compare = (a, b) => {
   for (let i = 0; i < Math.max(a.length, b.length); i += 1) {
     const left = a[i] ?? 0
     const right = b[i] ?? 0
@@ -37,13 +36,13 @@ function compare(a, b) {
 }
 
 /** True when the version sits inside `>= FIRST_AFFECTED` and `< FIRST_PATCHED`. */
-export function inAffectedRange(version) {
+export const inAffectedRange = (version) => {
   const parsed = parseVersion(version)
   return compare(parsed, FIRST_AFFECTED) >= 0 && compare(parsed, FIRST_PATCHED) < 0
 }
 
 /** Every resolved minimatch copy in the lock, nested ones included. */
-export function minimatchCopies() {
+export const minimatchCopies = () => {
   const lock = JSON.parse(readFileSync(resolve(process.cwd(), 'package-lock.json'), 'utf8'))
   return Object.entries(lock.packages ?? {})
     .filter(([key]) => key === 'node_modules/minimatch' || key.endsWith('/node_modules/minimatch'))
@@ -68,9 +67,7 @@ describe('#214 no vulnerable minimatch copy is installed', () => {
 
   it('has no copy inside the affected range', () => {
     const affected = minimatchCopies().filter((copy) => inAffectedRange(copy.version))
-    expect(
-      affected,
-      `affected minimatch copies still installed: ${JSON.stringify(affected)}`,
-    ).toEqual([])
+    const detail = `affected minimatch copies still installed: ${JSON.stringify(affected)}`
+    expect(affected, detail).toEqual([])
   })
 })
