@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import {
   transformOrder,
   getCheckoutUrl,
@@ -188,7 +188,6 @@ describe('wixCheckoutService', () => {
     })
 
     it('uses site URL from environment if available', () => {
-      const originalEnv = import.meta.env.VITE_WIX_SITE_URL
       
       // Note: In real tests, you'd mock the environment variable
       const checkoutId = 'checkout123'
