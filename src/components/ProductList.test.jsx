@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import ProductList from '../components/ProductList'
 
+const CREDIT_TEXT = 'Built by the Dark Factory - by the Developer Agent'
+
 describe('ProductList', () => {
   const mockProducts = [
     {
@@ -61,5 +63,40 @@ describe('ProductList', () => {
 
     const addToCartButtons = screen.getAllByText('Add to Cart')
     expect(addToCartButtons.length).toBe(2)
+  })
+
+  it('renders the Dark Factory credit line with the exact required text', () => {
+    renderList()
+
+    expect(screen.getByText(CREDIT_TEXT)).toBeDefined()
+  })
+
+  it('renders the credit line as italic emphasis (<em>)', () => {
+    renderList()
+
+    const credit = screen.getByText(CREDIT_TEXT)
+    expect(credit.tagName).toBe('EM')
+  })
+
+  it('renders the credit line after the last product card', () => {
+    const { container } = renderList()
+
+    const credit = screen.getByText(CREDIT_TEXT)
+    const cards = container.querySelectorAll('.product-card')
+    expect(cards.length).toBeGreaterThan(0)
+    const lastCard = cards[cards.length - 1]
+    expect(lastCard.compareDocumentPosition(credit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it('renders exactly one credit line for a multi-product list', () => {
+    renderList()
+
+    expect(screen.getAllByText(CREDIT_TEXT)).toHaveLength(1)
+  })
+
+  it('still renders every product in the list (regression)', () => {
+    renderList()
+
+    mockProducts.forEach(product => expect(screen.getByText(product.name)).toBeDefined())
   })
 })

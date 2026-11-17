@@ -18,3 +18,10 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.product-list-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-style: italic;
+}
