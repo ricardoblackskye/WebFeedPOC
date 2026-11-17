@@ -19,7 +19,7 @@ Main's own MegaLinter report is the authority here, and it is unusually clear:
 | `JSX_ESLINT-SUCCESS.log`  | clean                 |
 
 That is exactly the 13 the issue lists, in exactly the files it names. Reproduced locally with the same
-command CI uses, on the same nine files: **13 problems (13 errors, 0 warnings)**.
+command CI uses, on the same eight files: **13 problems (13 errors, 0 warnings)**.
 
 ### What "the last merge" actually was
 
@@ -67,7 +67,7 @@ satisfies `no-empty` — probed in-repo, so the `catch {` conversions are safe.
 This is a lint gate, so the linter's verdict *is* the behaviour to drive:
 
 1. **RED** is the current state, reproducible on demand with the command CI runs:
-   `npx eslint --no-ignore -c eslint.config.js <the nine files>` → **13 problems**.
+   `npx eslint --no-ignore -c eslint.config.js <the eight files>` → **13 problems**.
 2. Fix the 13 as tabled above.
 3. **GREEN** is the same command reporting **0 problems**.
 
@@ -86,7 +86,7 @@ making the suite slower and dependent on a spawned process.
 
 ## Validation
 
-- `npx eslint --no-ignore -c eslint.config.js` on the nine files reports **0 problems**.
+- `npx eslint --no-ignore -c eslint.config.js` on the eight files reports **0 problems**.
 - The changed files also pass `standard` where it applies — note `scripts/pr-reviewer.js` is excluded
   from `JAVASCRIPT_STANDARD` by `.mega-linter.yml:50`, and `TYPESCRIPT_STANDARD` is disabled, so eslint
   is the gate that matters for these files.

@@ -103,7 +103,9 @@ export async function triggerRemoteEveWebhook(rawEventPayload) {
       try {
         const text = await response.text();
         data = JSON.parse(text);
-      } catch (_) {}
+      } catch {
+        // The response body was not JSON; leave `data` as it was.
+      }
 
       const reviewText =
         data &&
@@ -248,7 +250,7 @@ export async function generateAiReview(number, owner, repo, diff, sanitizedDiff)
     let data;
     try {
       data = await openrouterResponse.json();
-    } catch (e) {
+    } catch {
       console.warn("OpenRouter returned a non-JSON 200 response; using fallback review.");
       return { ok: false };
     }
@@ -438,13 +440,15 @@ export async function runPRReviewer() {
   console.log(`Fetched diff of length ${prDiff.length}`);
 
   const sanitizedPrDiff = prDiff
+    // Deliberate: strip control characters out of the diff before it reaches the model.
+    // eslint-disable-next-line no-control-regex -- deliberate control-character strip
     .replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f]/g, "")
     .replace(/`/g, "\\`");
 
   let review;
   try {
     review = await generateAiReview(prNumber, repoOwner, repoName, prDiff, sanitizedPrDiff);
-  } catch (error) {
+  } catch {
     console.warn("Unexpected error generating AI review; using fallback review.");
     review = generateFallbackReview(prNumber, repoOwner, repoName, prDiff);
   }
