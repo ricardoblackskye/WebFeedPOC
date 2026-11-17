@@ -150,6 +150,8 @@ function HomePage() {
         <div className="error">No products available</div>
       )}
 
+      <p><em>Built by the Dark Factory - by the Developer Agent</em></p>
+
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
