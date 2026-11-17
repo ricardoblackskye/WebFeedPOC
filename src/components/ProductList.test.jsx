@@ -62,4 +62,11 @@ describe('ProductList', () => {
     const addToCartButtons = screen.getAllByText('Add to Cart')
     expect(addToCartButtons.length).toBe(2)
   })
+
+  it('does not render the built-by footer (footer is home-page only)', () => {
+    renderList()
+    expect(
+      screen.queryByText('Built by the Dark Factory - by the Developer Agent')
+    ).toBeNull()
+  })
 })
