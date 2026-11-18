@@ -4,15 +4,20 @@ import './ProductList.css'
 
 function ProductList({ products, onAddToCart }) {
   return (
-    <div className="product-list">
-      {products.map(product => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          onAddToCart={onAddToCart}
-        />
-      ))}
-    </div>
+    <>
+      <div className="product-list">
+        {products.map(product => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onAddToCart={onAddToCart}
+          />
+        ))}
+      </div>
+      <p className="product-list-footer">
+        <em>Built by the Dark Factory - by the Developer Agent</em>
+      </p>
+    </>
   )
 }
 
