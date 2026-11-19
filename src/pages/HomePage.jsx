@@ -58,12 +58,12 @@ function HomePage() {
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * PRODUCTS_PER_PAGE
     return sortedProducts.slice(start, start + PRODUCTS_PER_PAGE)
-  }, [sortedProducts, currentPage])
+  }, [sortedProducts, currentPage]) // Added [sortedProducts, currentPage]
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1)
-  }, [selectedCategory, searchTerm, sortBy])
+  }, [selectedCategory, searchTerm, sortBy]) // Added [selectedCategory, searchTerm, sortBy]
 
   const handleCloseModal = () => {
     setSelectedProduct(null)
@@ -157,7 +157,12 @@ function HomePage() {
           onAddToCart={addToCart}
         />
       )}
-    </>
+
+      <p className="home-footer-credit">
+        <em>Built by the Dark Factory - by the Developer Agent</em>
+      </p>
+
+    </> // Closing fragment
   )
 }
 
