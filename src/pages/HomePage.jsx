@@ -157,6 +157,10 @@ function HomePage() {
           onAddToCart={addToCart}
         />
       )}
+
+      <footer className="home-footer">
+        <p><em>Built by the Dark Factory - by the Developer Agent</em></p>
+      </footer>
     </>
   )
 }
