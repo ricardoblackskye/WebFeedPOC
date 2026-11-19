@@ -388,3 +388,8 @@
     font-size: 1.75rem;
   }
 }
+
+/* Product image gallery trigger (magnifier affordance) */
+.product-image-trigger {
+  cursor: zoom-in;
+}

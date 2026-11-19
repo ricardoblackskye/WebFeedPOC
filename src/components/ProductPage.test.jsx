@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { HelmetProvider } from 'react-helmet-async'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
@@ -14,6 +16,8 @@ vi.mock('../utils/structuredData', () => ({
   SITE_NAME: 'WebFeedPOC',
 }))
 
+const productImages = ['https://example.com/camera.jpg', 'https://example.com/camera-2.jpg']
+
 const mockProduct = {
   id: '1',
   name: 'Vintage Camera',
@@ -21,7 +25,7 @@ const mockProduct = {
   description: '<p>A classic film camera.</p>',
   price: 199.99,
   image: 'https://example.com/camera.jpg',
-  images: ['https://example.com/camera.jpg', 'https://example.com/camera-2.jpg'],
+  images: productImages,
   category: 'Cameras',
   stock: { trackInventory: false },
 }
@@ -37,6 +41,14 @@ const renderProductPage = (product = mockProduct) => {
       </MemoryRouter>
     </HelmetProvider>
   )
+}
+
+const readProductPageCss = () => {
+  const moduleUrl = new URL(import.meta.url)
+  const cssPath = moduleUrl.protocol === 'file:'
+    ? fileURLToPath(new URL('./ProductPage.css', moduleUrl))
+    : 'src/components/ProductPage.css'
+  return readFileSync(cssPath, 'utf-8')
 }
 
 describe('ProductPage Image Modal', () => {
@@ -71,5 +83,22 @@ describe('ProductPage Image Modal', () => {
     // Prev (wrap to last = index 0 in 2-image list)
     fireEvent.click(navButtons[0])
     expect(container.querySelector('.image-modal-image').getAttribute('src')).toBe('https://example.com/camera.jpg')
+  })
+
+  it('opens the image modal with the clicked image when a product image is clicked', () => {
+    renderProductPage()
+    expect(screen.queryByRole('dialog')).toBeNull()
+    const triggers = screen.getAllByRole('button', { name: /view .* full size/i })
+    fireEvent.click(triggers[1])
+    const dialog = screen.getByRole('dialog')
+    expect(dialog.querySelector('.image-modal-image').getAttribute('src')).toBe(productImages[1])
+  })
+
+  it('applies a zoom-in magnifier cursor to the product image', () => {
+    renderProductPage()
+    const trigger = screen.getAllByRole('button', { name: /view .* full size/i })[0]
+    expect(trigger.classList.contains('product-image-trigger')).toBe(true)
+    const css = readProductPageCss()
+    expect(css).toMatch(/\.product-image-trigger\s*\{[^}]*cursor:\s*zoom-in/)
   })
 })

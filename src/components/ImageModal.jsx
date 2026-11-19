@@ -7,7 +7,13 @@ function ImageModal({ images, currentIndex, onClose, onNavigate, productName }) 
   const handleNext = () => onNavigate((safeIndex + 1) % images.length)
 
   return (
-    <div className="image-modal-backdrop" onClick={onClose}>
+    <div
+      className="image-modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${productName} image viewer`}
+      onClick={onClose}
+    >
       <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="image-modal-close" onClick={onClose} aria-label="Close">
           ×
@@ -16,6 +22,7 @@ function ImageModal({ images, currentIndex, onClose, onNavigate, productName }) 
           src={images[safeIndex]}
           alt={productName}
           className="image-modal-image"
+          onClick={onClose}
         />
         {images.length > 1 && (
           <div className="image-modal-nav">
