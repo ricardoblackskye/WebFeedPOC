@@ -25,8 +25,7 @@ function ProductPage({ products, onAddToCart }) {
   const { slug } = useParams()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [addedToCart, setAddedToCart] = useState(false)
-  const [showImageModal, setShowImageModal] = useState(false)
-  const [modalImageIndex, setModalImageIndex] = useState(0)
+  const [modalIndex, setModalIndex] = useState(null)
 
   const product = products.find(p => p.slug === slug)
 
@@ -73,16 +72,20 @@ function ProductPage({ products, onAddToCart }) {
   }
 
   const handleImageClick = (index) => {
-    setModalImageIndex(index)
-    setShowImageModal(true)
+    setModalIndex(index)
   }
 
   const handleCloseModal = () => {
-    setShowImageModal(false)
+    setModalIndex(null)
   }
 
   const handleModalNavigate = (newIndex) => {
-    setModalImageIndex(newIndex)
+    setModalIndex(newIndex)
+  }
+
+  const handleThumbnailClick = (index) => {
+    setSelectedImageIndex(index)
+    setModalIndex(index)
   }
 
   return (
@@ -134,10 +137,11 @@ function ProductPage({ products, onAddToCart }) {
                 <div className="product-page-thumbnails">
                   {displayImages.map((imageUrl, index) => (
                     <button
+                      type="button"
                       key={imageUrl}
-                      className={`product-page-thumb ${index === selectedImageIndex ? 'active' : ''}`}
-                      onClick={() => setSelectedImageIndex(index)}
-                      aria-label={`View ${product.name} image ${index + 1}`}
+                      className={`product-page-thumb product-image-trigger ${index === selectedImageIndex ? 'active' : ''}`}
+                      onClick={() => handleThumbnailClick(index)}
+                      aria-label={`View ${product.name} full size`}
                     >
                       <img
                         src={imageUrl}
@@ -223,10 +227,10 @@ function ProductPage({ products, onAddToCart }) {
         </div>
       </article>
 
-      {showImageModal && (
+      {modalIndex !== null && displayImages.length > 0 && (
         <ImageModal
           images={displayImages}
-          currentIndex={modalImageIndex}
+          currentIndex={modalIndex}
           onClose={handleCloseModal}
           onNavigate={handleModalNavigate}
           productName={product.name}
