@@ -1,5 +1,11 @@
 # Release Notes
 
+## v0.0.2 (2026-11-19)
+
+### Features
+
+- [PR #236], closes [#235]: Made a product image in the gallery open a modal viewer when it is clicked and close that viewer when the image is clicked again, and gave the gallery trigger a `zoom-in` cursor so the image reads as clickable — previously clicking a product image only swapped the inline image with no dialog, and the modal's own image swallowed clicks without closing — and collapsed `ProductPage`'s two modal state flags (`showImageModal` plus `modalImageIndex`) into one nullable `modalIndex`, so the open state and the displayed image can no longer disagree; `ImageModal` is now a labelled modal dialog (`role="dialog"`, `aria-modal`, `aria-label`), a `modalIndex !== null && displayImages.length > 0` guard keeps it from opening on a product with no images, and the behavior is covered by new tests in `ProductPage.test.jsx` and `ImageModal.test.jsx`.
+
 ## v0.0.1 (2026-11-16)
 
 ### CI/Infrastructure
