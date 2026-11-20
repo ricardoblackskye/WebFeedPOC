@@ -17,7 +17,9 @@
   border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
   background-color: rgb(0 0 0 / 2%);
-  color: #2c2416;
+  color: var(--color-gold);
+  caret-color: var(--color-gold);
+  font-weight: 700;
 
   /* 16px minimum prevents iOS Safari auto-zoom on focus (issue #111) */
   font-size: 16px;
@@ -30,7 +32,9 @@
 }
 
 .search-input::placeholder {
-  color: rgb(44 36 22 / 50%);
+  color: var(--color-gold);
+  font-weight: 700;
+  opacity: 1;
 }
 
 .search-input:focus {
@@ -48,10 +52,10 @@
 .sort-label {
   /* Not a focus-zoom target; keep compact but legible (issue #111) */
   font-size: 0.8rem;
-  color: #2c2416;
+  color: var(--color-gold);
   white-space: nowrap;
   font-family: var(--font-secondary);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -61,7 +65,8 @@
   border: 1px solid rgb(212 175 55 / 30%);
   border-radius: 4px;
   background-color: rgb(0 0 0 / 2%);
-  color: #2c2416;
+  color: var(--color-gold);
+  font-weight: 700;
 
   /* 16px minimum prevents iOS Safari auto-zoom on focus (issue #111) */
   font-size: 16px;
