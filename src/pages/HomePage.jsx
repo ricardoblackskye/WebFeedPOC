@@ -157,6 +157,8 @@ function HomePage() {
           onAddToCart={addToCart}
         />
       )}
+
+      <p><em>Built by the Dark Factory - by the Developer Agent</em></p>
     </>
   )
 }
