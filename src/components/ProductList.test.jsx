@@ -2,6 +2,23 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import ProductList from '../components/ProductList'
+import HomePage from '../pages/HomePage'
+
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useOutletContext: () => ({
+      products: [],
+      loading: false,
+      error: null,
+      categories: [],
+      productCounts: { All: 0 },
+      addToCart: () => {},
+    }),
+    useSearchParams: () => [new URLSearchParams(), () => {}],
+  }
+})
 
 describe('ProductList', () => {
   const mockProducts = [
@@ -61,5 +78,21 @@ describe('ProductList', () => {
 
     const addToCartButtons = screen.getAllByText('Add to Cart')
     expect(addToCartButtons.length).toBe(2)
+  })
+})
+
+describe('HomePage Dark Factory footer', () => {
+  it('renders the Dark Factory footer line in italics', () => {
+    render(<HomePage />)
+
+    const footerLine = screen.getByText('Built by the Dark Factory - by the Developer Agent')
+    expect(footerLine.tagName).toBe('EM')
+    expect(footerLine.closest('footer')).not.toBeNull()
+  })
+
+  it('keeps existing home page content rendered alongside the new footer', () => {
+    render(<HomePage />)
+
+    expect(screen.getByRole('heading', { name: /All Items/ })).toBeDefined()
   })
 })
