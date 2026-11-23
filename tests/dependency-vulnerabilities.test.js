@@ -20,6 +20,8 @@ import { resolve } from 'node:path'
 const FIRST_AFFECTED = [7, 0, 0]
 const FIRST_PATCHED = [11, 0, 1]
 
+const I18NEXT_FIRST_PATCHED = [26, 3, 4]
+
 const parseVersion = (version) =>
   String(version)
     .split('-')[0]
@@ -71,3 +73,36 @@ describe('#214 no vulnerable minimatch copy is installed', () => {
     expect(affected, detail).toEqual([])
   })
 })
+
+/** True when the i18next version is below FIRST_PATCHED (26.3.4). */
+export const inI18nextAffectedRange = (version) => {
+  const parsed = parseVersion(version)
+  return compare(parsed, I18NEXT_FIRST_PATCHED) < 0
+}
+
+/** Every resolved i18next copy in the lock, nested ones included. */
+export const i18nextCopies = () => {
+  const lock = JSON.parse(readFileSync(resolve(process.cwd(), 'package-lock.json'), 'utf8'))
+  return Object.entries(lock.packages ?? {})
+    .filter(([key]) => key === 'node_modules/i18next' || key.endsWith('/node_modules/i18next'))
+    .map(([key, entry]) => ({ key, version: entry.version }))
+}
+
+describe('GHSA-6jcc-5g8w-32mx no vulnerable i18next copy is installed', () => {
+  it('finds at least one copy, so this guard cannot pass vacuously', () => {
+    expect(i18nextCopies().length).toBeGreaterThan(0)
+  })
+
+  it('places the range boundaries correctly', () => {
+    expect(inI18nextAffectedRange('26.3.4')).toBe(false)
+    expect(inI18nextAffectedRange('26.3.3')).toBe(true)
+    expect(inI18nextAffectedRange('25.8.7')).toBe(true)
+  })
+
+  it('has no copy inside the affected range', () => {
+    const affected = i18nextCopies().filter((copy) => inI18nextAffectedRange(copy.version))
+    const detail = `affected i18next copies still installed: ${JSON.stringify(affected)}`
+    expect(affected, detail).toEqual([])
+  })
+})
+
