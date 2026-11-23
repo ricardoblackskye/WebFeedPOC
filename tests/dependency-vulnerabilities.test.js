@@ -105,4 +105,3 @@ describe('GHSA-6jcc-5g8w-32mx no vulnerable i18next copy is installed', () => {
     expect(affected, detail).toEqual([])
   })
 })
-
