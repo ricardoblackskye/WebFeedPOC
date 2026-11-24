@@ -159,7 +159,9 @@ function HomePage() {
       )}
 
       <footer className="home-footer">
-        <em>Built by the Dark Factory - by the Developer Agent</em>
+        <p>
+          <em>Built by the Dark Factory - by the Developer Agent</em>
+        </p>
       </footer>
     </>
   )
