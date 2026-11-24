@@ -1,5 +1,19 @@
 # Release Notes
 
+## v0.0.3 (2026-11-24)
+
+### Features
+
+- [PR #252], closes [#242]: Gave every navigation label on the home page one identical bold gold treatment — the same `var(--color-gold)` (#D4AF37) at `font-weight: 700` that the category buttons already used on hover — because the previous dark brown (`#2c2416`, at weights 400/600) made the 'Categories' heading, the resting category buttons and their counts, the 'All Items (106)' item-count heading, the 'Search Products' placeholder and typed search text, and the 'Sort by' label plus the 'Name (A-Z)' select value and arrow read as too faint against the page, so the affordances that drive catalog navigation were easy to miss; the change is CSS-only in `CategoryFilter.css` and `SortControls.css` with no markup or data-flow change, the 'All Items (106)' heading — which lives in `HomePage.jsx`, outside the permitted change set — is reached through a `.products-section h2:has(> .product-count)` anchor on the unique count span plus a direct `font-weight: 700` on `.product-count` so the rule cannot match an unrelated heading, and `.category-btn.active` keeps its distinct gold-fill/dark-label treatment; proven by new stylesheet-content and DOM assertions in `CategoryFilter.test.jsx` and `SortControls.test.jsx` that locate the CSS with `node:fs` + `process.cwd()` rather than `import.meta.url`, per the review feedback on #242.
+
+### CI/Infrastructure
+
+- [PR #252], closes [#242]: Extended `tests/dependency-vulnerabilities.test.js` with a second guard, `GHSA-6jcc-5g8w-32mx`, that walks every resolved `i18next` copy in `package-lock.json` — nested copies included — and fails if any sits below the patched `26.3.4`, and paired it with an `i18next: "^26.3.4"` override in `package.json` so the transitive copy `@wix/sdk` pulls in (resolved 25.8.7 → 26.7.2) cannot silently reintroduce the advisory — since `osv-scanner` is a required MegaLinter descriptor, one affected copy turns MegaLinter red on every branch including `main`, and the Dark Factory's Definition of Done reads the PR's own checks.
+
+### Documentation
+
+- [PR #252], closes [#242]: Rewrote `README.md` as a system blueprint (system overview, subdirectory boundaries, global invariants and side effects, build/test commands) and added per-module READMEs for `api/`, `scripts/`, `src/`, `src/components/`, `src/hooks/`, `src/pages/`, `src/services/`, `src/test-utils/` and `src/utils/`, each documenting that module's interface, invariants, side effects and verification command — so the documented module boundaries now match the code, which is what lets the drift-detection step assert "no drift detected" for every README in `2026-11-22_DRIFT_REPORT.md`.
+
 ## v0.0.2 (2026-11-19)
 
 ### Features
