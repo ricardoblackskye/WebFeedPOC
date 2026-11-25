@@ -18,3 +18,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.product-list-footer {
+  font-style: italic;
+}

@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
 import ProductList from '../components/ProductList'
+
+const cssText = readFileSync(
+  path.resolve(process.cwd(), 'src/components/ProductList.css'),
+  'utf8'
+)
 
 describe('ProductList', () => {
   const mockProducts = [
@@ -61,5 +68,55 @@ describe('ProductList', () => {
 
     const addToCartButtons = screen.getAllByText('Add to Cart')
     expect(addToCartButtons.length).toBe(2)
+  })
+
+  it('renders the Dark Factory footer line with the exact story copy', () => {
+    render(
+      <MemoryRouter>
+        <ProductList
+          products={[{ id: '1', name: 'Test Item', price: 10 }]}
+          onAddToCart={vi.fn()}
+        />
+      </MemoryRouter>
+    )
+
+    const footer = screen.getByText(
+      'Built by the Dark Factory - by the Developer Agent'
+    )
+    expect(footer).toBeDefined()
+    expect(footer.classList.contains('product-list-footer')).toBe(true)
+  })
+
+  it('styles the footer line in italics via .product-list-footer', () => {
+    const withoutComments = cssText.replace(/\/\*[\s\S]*?\*\//g, ' ')
+    expect(withoutComments).toMatch(
+      /\.product-list-footer\s*\{[^}]*font-style:\s*italic/i
+    )
+  })
+
+  it('still renders every product card passed to it', () => {
+    renderList([
+      {
+        id: '1',
+        name: 'Alpha Item',
+        slug: 'alpha-item',
+        description: 'Description Alpha',
+        price: 10,
+        image: null,
+        category: 'Category A',
+      },
+      {
+        id: '2',
+        name: 'Beta Item',
+        slug: 'beta-item',
+        description: 'Description Beta',
+        price: 20,
+        image: null,
+        category: 'Category B',
+      },
+    ])
+
+    expect(screen.getByText('Alpha Item')).toBeDefined()
+    expect(screen.getByText('Beta Item')).toBeDefined()
   })
 })
