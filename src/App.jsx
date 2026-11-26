@@ -73,9 +73,9 @@ function App({ initialProducts }) {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${SITE_NAME} — Discover Unique Antiques & Vintage Treasures`} />
         <meta property="og:description" content="Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more." />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={SITE_NAME} />
-        <meta name="twitter:description" content="Discover unique antiques and vintage treasures." />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content={SITE_NAME} />
+        <meta property="twitter:description" content="Discover unique antiques and vintage treasures." />
         <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(webSiteSchema)}</script>
       </Helmet>
@@ -148,7 +148,10 @@ function App({ initialProducts }) {
       </main>
 
       <footer className="app-footer">
-        <p>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.{' '}
+          <em>Built by the Dark Factory - by the Developer Agent</em>
+        </p>
       </footer>
     </div>
   )
