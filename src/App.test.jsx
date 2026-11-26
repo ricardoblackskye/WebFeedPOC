@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App'
 import HomePage from './pages/HomePage'
 import * as wixHook from './hooks/useWixProducts'
@@ -335,5 +336,72 @@ describe('Cart drawer controls', () => {
 
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
+})
+
+describe('App footer', () => {
+  const CREDIT_TEXT = 'Built by the Dark Factory - by the Developer Agent'
+
+  function renderAppWithFooter() {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+      refreshing: false,
+    })
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <HelmetProvider>
+          <MemoryRouter initialEntries={['/']}>
+            <Routes>
+              <Route path="/" element={<App />}>
+                <Route index element={<HomePage />} />
+              </Route>
+            </Routes>
+          </MemoryRouter>
+        </HelmetProvider>
+      </QueryClientProvider>
+    )
+  }
+
+  it('renders the exact credit copy in the footer', () => {
+    renderAppWithFooter()
+    const credit = screen.getByText(CREDIT_TEXT)
+    expect(credit).toBeDefined()
+    expect(credit.closest('footer.app-footer')).not.toBeNull()
+  })
+
+  it('renders the credit copy in italics', () => {
+    renderAppWithFooter()
+    expect(screen.getByText(CREDIT_TEXT).tagName).toBe('EM')
+  })
+
+  it('renders the credit next to the existing copyright sentence', () => {
+    renderAppWithFooter()
+    const credit = screen.getByText(CREDIT_TEXT)
+    const paragraph = credit.closest('p')
+    expect(paragraph).not.toBeNull()
+    expect(paragraph.textContent).toContain('All rights reserved.')
+    expect(paragraph.textContent).toContain(String(new Date().getFullYear()))
+    expect(paragraph.textContent.trim().endsWith(CREDIT_TEXT)).toBe(true)
+  })
+
+  it('adds nothing else to the footer', () => {
+    renderAppWithFooter()
+    const footer = document.querySelector('footer.app-footer')
+    expect(footer).not.toBeNull()
+    expect(footer.querySelectorAll('p')).toHaveLength(1)
+    expect(footer.querySelectorAll('em')).toHaveLength(1)
+    expect(footer.querySelector('em').textContent).toBe(CREDIT_TEXT)
+  })
+
+  it('renders the credit in the synchronous initial markup (SSR/prerender safe)', () => {
+    const { container } = renderAppWithFooter()
+    expect(container.innerHTML).toContain(CREDIT_TEXT)
   })
 })

@@ -148,7 +148,10 @@ function App({ initialProducts }) {
       </main>
 
       <footer className="app-footer">
-        <p>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
+        <p>
+          &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.{' '}
+          <em>Built by the Dark Factory - by the Developer Agent</em>
+        </p>
       </footer>
     </div>
   )
