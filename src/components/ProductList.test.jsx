@@ -62,4 +62,26 @@ describe('ProductList', () => {
     const addToCartButtons = screen.getAllByText('Add to Cart')
     expect(addToCartButtons.length).toBe(2)
   })
+
+  it('renders the Dark Factory footer line in italics on the home route', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <ProductList products={[]} onAddToCart={() => {}} />
+      </MemoryRouter>
+    )
+
+    const footerText = screen.getByText('Built by the Dark Factory - by the Developer Agent')
+    expect(footerText.tagName).toBe('EM')
+    expect(footerText.textContent).toBe('Built by the Dark Factory - by the Developer Agent')
+  })
+
+  it('does not render the Dark Factory footer line outside the home route', () => {
+    render(
+      <MemoryRouter initialEntries={['/category/antiques']}>
+        <ProductList products={[]} onAddToCart={() => {}} />
+      </MemoryRouter>
+    )
+
+    expect(screen.queryByText('Built by the Dark Factory - by the Developer Agent')).toBeNull()
+  })
 })
