@@ -337,3 +337,41 @@ describe('Cart drawer controls', () => {
     expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
   })
 })
+
+describe('Dark Factory footer credit', () => {
+  beforeEach(() => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+  })
+
+  it('renders the Dark Factory footer line on the home page', () => {
+    renderApp()
+    expect(screen.getByText('Built by the Dark Factory - by the Developer Agent')).toBeDefined()
+  })
+
+  it('renders the Dark Factory footer line in italics (em element)', () => {
+    renderApp()
+    const line = screen.getByText('Built by the Dark Factory - by the Developer Agent')
+    expect(line.tagName).toBe('EM')
+  })
+
+  it('renders the Dark Factory line next to the copyright notice inside the site footer', () => {
+    const { container } = renderApp()
+    const footer = container.querySelector('footer.app-footer')
+    expect(footer).not.toBeNull()
+    expect(footer.textContent).toContain('Built by the Dark Factory - by the Developer Agent')
+    expect(footer.textContent).toContain('All rights reserved.')
+    expect(footer.textContent).toContain(String(new Date().getFullYear()))
+  })
+
+  it('keeps the existing copyright notice unchanged', () => {
+    const { container } = renderApp()
+    const footer = container.querySelector('footer.app-footer')
+    expect(footer.querySelectorAll('p').length).toBe(2)
+    const firstParagraph = footer.querySelector('p')
+    expect(firstParagraph.textContent).toMatch(/^©\s*\d{4}\s+.*All rights reserved\.$/)
+  })
+})
