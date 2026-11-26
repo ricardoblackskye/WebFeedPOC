@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import './Pagination.css'
 
-function Pagination({ currentPage, totalPages, onPageChange }) {
-  if (totalPages <= 1) return null
+const FOOTER_TEXT = 'Built by the Dark Factory - by the Developer Agent'
 
+function Pagination({ currentPage, totalPages, onPageChange }) {
   const getPageNumbers = () => {
     const pages = []
     const maxVisible = 5
@@ -33,39 +33,45 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   }
 
   return (
-    <div className="pagination">
-      <button
-        className="pagination-btn"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
-        Previous
-      </button>
+    <>
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-btn"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
 
-      <div className="pagination-pages">
-        {getPageNumbers().map((page) =>
-          typeof page === 'string' && page.startsWith('ellipsis') ? (
-            <span key={page} className="pagination-ellipsis">…</span>
-          ) : (
-            <button
-              key={page}
-              className={`pagination-page ${page === currentPage ? 'active' : ''}`}
-              onClick={() => onPageChange(page)}
-            >
-              {page}
-            </button>
-          )
-        )}
-      </div>
+          <div className="pagination-pages">
+            {getPageNumbers().map((page) =>
+              typeof page === 'string' && page.startsWith('ellipsis') ? (
+                <span key={page} className="pagination-ellipsis">…</span>
+              ) : (
+                <button
+                  key={page}
+                  className={`pagination-page ${page === currentPage ? 'active' : ''}`}
+                  onClick={() => onPageChange(page)}
+                >
+                  {page}
+                </button>
+              )
+            )}
+          </div>
 
-      <button
-        className="pagination-btn"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >
-        Next
-      </button>
-    </div>
+          <button
+            className="pagination-btn"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      <p className="pagination-footer"><em>{FOOTER_TEXT}</em></p>
+    </>
   )
 }
 
