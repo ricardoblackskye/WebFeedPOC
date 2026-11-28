@@ -16,7 +16,7 @@ function renderApp(initialEntries = ['/']) {
     <HelmetProvider>
       <MemoryRouter initialEntries={initialEntries}>
         <Routes>
-          <Route path="/" element={<App />}>
+          <Route path='/' element={<App />}>
             <Route index element={<HomePage />} />
           </Route>
         </Routes>
@@ -335,5 +335,48 @@ describe('Cart drawer controls', () => {
 
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
+})
+
+describe('App footer', () => {
+  const CREDIT = 'This is Built by the Dark Factory - by the Developer Agent'
+
+  function mockEmptyProducts() {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+  }
+
+  it('renders the Dark Factory credit in italics', () => {
+    mockEmptyProducts()
+    renderApp()
+    const footer = screen.getByRole('contentinfo')
+    const credit = footer.querySelector('em')
+    expect(credit).not.toBeNull()
+    expect(credit.textContent).toBe(CREDIT)
+  })
+
+  it('renders the credit in the same paragraph as the copyright line, immediately after it', () => {
+    mockEmptyProducts()
+    renderApp()
+    const footer = screen.getByRole('contentinfo')
+    const paragraph = footer.querySelector('p')
+    expect(paragraph).not.toBeNull()
+    expect(paragraph.textContent).toContain('All rights reserved.')
+    expect(paragraph.textContent).toContain(CREDIT)
+    expect(paragraph.textContent.indexOf('All rights reserved.')).toBeLessThan(
+      paragraph.textContent.indexOf(CREDIT)
+    )
+    expect(paragraph.querySelector('em')).not.toBeNull()
+  })
+
+  it('keeps the existing copyright text unchanged', () => {
+    mockEmptyProducts()
+    renderApp()
+    const footer = screen.getByRole('contentinfo')
+    expect(footer.textContent).toMatch(/©\s*\d{4}\s+.*All rights reserved\./)
+    expect(footer.querySelectorAll('p')).toHaveLength(1)
   })
 })
