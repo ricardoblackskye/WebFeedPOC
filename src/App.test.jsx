@@ -6,6 +6,8 @@ import App from './App'
 import HomePage from './pages/HomePage'
 import * as wixHook from './hooks/useWixProducts'
 
+const CREDIT = 'This is Built by the Dark Factory - by the Developer Agent'
+
 // Mock Stripe
 vi.mock('@stripe/stripe-js', () => ({
   loadStripe: vi.fn(() => Promise.resolve(null)),
@@ -264,6 +266,61 @@ describe('App Integration Tests', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
     fireEvent.click(toggle)
     expect(toggle.getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('renders the Dark Factory credit line in the site footer with the exact story copy', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const credit = screen.getByText(CREDIT)
+    expect(credit).toBeDefined()
+    expect(credit.textContent).toBe(CREDIT)
+  })
+
+  it('renders the credit line as an em element so it displays in italics', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    expect(screen.getByText(CREDIT).tagName).toBe('EM')
+  })
+
+  it('renders the credit line alongside the copyright text inside the footer paragraph', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    const credit = screen.getByText(CREDIT)
+    expect(credit.closest('footer.app-footer')).not.toBeNull()
+    expect(credit.parentElement.textContent).toMatch(/© \d{4} Antiques Marketplace\. All rights reserved\./)
+    expect(credit.parentElement.textContent).toContain(CREDIT)
+    expect(credit.parentElement.textContent).toContain('reserved. ' + CREDIT)
+  })
+
+  it('keeps the existing copyright text and footer structure intact', () => {
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+    })
+
+    renderApp()
+
+    expect(screen.getByText(/© \d{4} Antiques Marketplace\. All rights reserved\./)).toBeDefined()
+    expect(document.querySelectorAll('footer.app-footer')).toHaveLength(1)
   })
 })
 
