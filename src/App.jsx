@@ -60,65 +60,65 @@ function App({ initialProducts }) {
   const totalCartItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0)
 
   return (
-    <div className="app">
+    <div className='app'>
       {refreshing && (
-        <output className="refresh-bar" aria-label="Refreshing products" />
+        <output className='refresh-bar' aria-label='Refreshing products' />
       )}
       <Helmet>
         <title>{SITE_NAME} — Discover Unique Antiques &amp; Vintage Treasures</title>
-        <meta name="description" content="Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more. Free delivery on selected items." />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="/" />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${SITE_NAME} — Discover Unique Antiques & Vintage Treasures`} />
-        <meta property="og:description" content="Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more." />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={SITE_NAME} />
-        <meta name="twitter:description" content="Discover unique antiques and vintage treasures." />
-        <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(webSiteSchema)}</script>
+        <meta name='description' content='Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more. Free delivery on selected items.' />
+        <meta name='robots' content='index, follow' />
+        <link rel='canonical' href='/' />
+        <meta property='og:site_name' content={SITE_NAME} />
+        <meta property='og:type' content='website' />
+        <meta property='og:title' content={`${SITE_NAME} — Discover Unique Antiques & Vintage Treasures`} />
+        <meta property='og:description' content='Browse our curated collection of authentic antiques and vintage treasures. Furniture, timepieces, decorative arts, ceramics, and more.' />
+        <meta name='twitter:card' content='summary_large_image' />
+        <meta name='twitter:title' content={SITE_NAME} />
+        <meta name='twitter:description' content='Discover unique antiques and vintage treasures.' />
+        <script type='application/ld+json'>{JSON.stringify(orgSchema)}</script>
+        <script type='application/ld+json'>{JSON.stringify(webSiteSchema)}</script>
       </Helmet>
 
-      <header className="app-header">
-        <Link to="/" className="app-header-link">
+      <header className='app-header'>
+        <Link to='/' className='app-header-link'>
           <h1>Antiques Marketplace</h1>
           <p>Discover unique treasures from the past</p>
         </Link>
         <button
-          type="button"
-          className="nav-toggle"
+          type='button'
+          className='nav-toggle'
           aria-expanded={navOpen}
-          aria-controls="primary-nav"
-          aria-label="Toggle navigation menu"
+          aria-controls='primary-nav'
+          aria-label='Toggle navigation menu'
           onClick={() => setNavOpen((open) => !open)}
         >
           &#9776;
         </button>
         <button
-          type="button"
-          className="cart-btn"
+          type='button'
+          className='cart-btn'
           aria-expanded={cartDrawerOpen}
-          aria-controls="cart-drawer"
+          aria-controls='cart-drawer'
           aria-label={`Cart, ${totalCartItems} item${totalCartItems === 1 ? '' : 's'}`}
           onClick={() => setCartDrawerOpen((open) => !open)}
         >
-          <span aria-hidden="true">&#128722;</span>
-          <span className="cart-badge" aria-hidden="true">{totalCartItems}</span>
+          <span aria-hidden='true'>&#128722;</span>
+          <span className='cart-badge' aria-hidden='true'>{totalCartItems}</span>
         </button>
-        <nav id="primary-nav" className="app-nav" data-open={navOpen} aria-label="Site navigation">
-          <Link to="/">Shop</Link>
-          <Link to="/about">About</Link>
-          <Link to="/architecture">Architecture</Link>
+        <nav id='primary-nav' className='app-nav' data-open={navOpen} aria-label='Site navigation'>
+          <Link to='/'>Shop</Link>
+          <Link to='/about'>About</Link>
+          <Link to='/architecture'>Architecture</Link>
         </nav>
       </header>
 
-      <main className="app-main">
-        <section className="products-section">
+      <main className='app-main'>
+        <section className='products-section'>
           <Outlet context={{ products, loading, error, categories, productCounts, addToCart }} />
         </section>
 
-        <aside className="cart-section" id="cart-drawer" data-drawer-open={cartDrawerOpen}>
+        <aside className='cart-section' id='cart-drawer' data-drawer-open={cartDrawerOpen}>
           <Cart
             items={cart}
             onUpdateQuantity={updateQuantity}
@@ -140,15 +140,18 @@ function App({ initialProducts }) {
             the drawer on click. */}
         {cartDrawerOpen && (
           <div
-            className="cart-backdrop"
-            aria-hidden="true"
+            className='cart-backdrop'
+            aria-hidden='true'
             onClick={() => setCartDrawerOpen(false)}
           />
         )}
       </main>
 
-      <footer className="app-footer">
-        <p>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
+      <footer className='app-footer'>
+        <p>
+          &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.{' '}
+          <em className='footer-credit'>This is Built by the Dark Factory - by the Developer Agent</em>
+        </p>
       </footer>
     </div>
   )
