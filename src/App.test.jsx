@@ -2,9 +2,11 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
+import { renderToString } from 'react-dom/server'
 import App from './App'
 import HomePage from './pages/HomePage'
 import * as wixHook from './hooks/useWixProducts'
+import * as cartHook from './hooks/useWixCart'
 
 // Mock Stripe
 vi.mock('@stripe/stripe-js', () => ({
@@ -19,6 +21,18 @@ function renderApp(initialEntries = ['/']) {
           <Route path="/" element={<App />}>
             <Route index element={<HomePage />} />
           </Route>
+        </Routes>
+      </MemoryRouter>
+    </HelmetProvider>
+  )
+}
+
+function renderAppShell(path = '/') {
+  return render(
+    <HelmetProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="*" element={<App />} />
         </Routes>
       </MemoryRouter>
     </HelmetProvider>
@@ -335,5 +349,72 @@ describe('Cart drawer controls', () => {
 
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(cartToggle.getAttribute('aria-expanded')).toBe('false')
+  })
+})
+
+describe('Dark Factory footer credit', () => {
+  const CREDIT = 'This is Built by the Dark Factory - by the Developer Agent'
+
+  const mockEmptyData = () => {
+    vi.restoreAllMocks()
+    vi.spyOn(wixHook, 'useWixProducts').mockReturnValue({
+      products: [],
+      loading: false,
+      error: null,
+      refreshing: false,
+    })
+    vi.spyOn(cartHook, 'useWixCart').mockReturnValue({
+      cart: [],
+      loading: false,
+      error: null,
+      useWixBackend: false,
+      addToCart: vi.fn(),
+      removeFromCart: vi.fn(),
+      updateQuantity: vi.fn(),
+      totals: { subtotal: 0, discount: 0, shipping: 0, tax: 0, total: 0 },
+    })
+  }
+
+  it('renders the Dark Factory credit in the footer', () => {
+    mockEmptyData()
+    const { container } = renderApp()
+    const footer = container.querySelector('footer.app-footer')
+    expect(footer).not.toBeNull()
+    expect(footer.textContent).toContain(CREDIT)
+  })
+
+  it('renders the credit in italics via an <em> element', () => {
+    mockEmptyData()
+    const { container } = renderApp()
+    const credit = container.querySelector('footer.app-footer em')
+    expect(credit).not.toBeNull()
+    expect(credit.textContent).toBe(CREDIT)
+  })
+
+  it('places the credit next to the copyright text and adds no other footer content', () => {
+    mockEmptyData()
+    const { container } = renderApp()
+    const footer = container.querySelector('footer.app-footer')
+    expect(footer.querySelectorAll('p')).toHaveLength(1)
+    const line = footer.querySelector('p')
+    expect(line.textContent).toMatch(/All rights reserved\.\s+This is Built by the Dark Factory - by the Developer Agent$/)
+  })
+
+  it('renders the credit in server-rendered HTML', () => {
+    mockEmptyData()
+    const html = renderToString(
+      <HelmetProvider>
+        <MemoryRouter initialEntries={['/']}>
+          <App />
+        </MemoryRouter>
+      </HelmetProvider>
+    )
+    expect(html).toContain(CREDIT)
+  })
+
+  it('renders the credit exactly once on a non-home route', () => {
+    mockEmptyData()
+    renderAppShell('/products/vase')
+    expect(screen.getAllByText(CREDIT)).toHaveLength(1)
   })
 })
